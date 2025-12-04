@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Tutor - Home</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">AI Tutor</div>
+            <ul class="menu">
+                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="home.html">Course</a></li>
+                <li><a href="questiontag.html">Question Tag</a></li>
+                <li class="dropdown">
+                    <a href="#">Login</a>
+                    <div class="dropdown-content">
+                        <a href="#" onclick="showLogin('student')">Student Login</a>
+                        <a href="#" onclick="showLogin('tutor')">Tutor Login</a>
+                        <a href="#" onclick="showLogin('admin')">Admin Login</a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main class="main-content">
+        <section id="home">
+            <div class="hero">
+                <h1>Welcome to AI Tutor</h1>
+                <p>Your personalized learning platform powered by artificial intelligence.</p>
+                <a href="home.html" class="cta-button">Explore Courses</a>
+            </div>
+
+            <div class="chatbot-container">
+                <h2 class="chatbot-header">AI Chatbot Assistant</h2>
+                <div class="chat-box" id="chatBox">
+                    <div class="chat-message bot-message">
+                        <i class="fas fa-robot"></i>
+                        Hello! I'm your AI tutor. How can I help you today?
+                    </div>
+                </div>
+                <div class="input-group">
+                    <input type="text" class="chat-input" id="chatInput" placeholder="Type your question here...">
+                    <button class="send-btn" id="sendBtn">
+                        <i class="fas fa-paper-plane"></i> Send
+                    </button>
+                </div>
+            </div>
+
+            <div class="features">
+                <h2>Why Choose AI Tutor?</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <i class="fas fa-brain"></i>
+                        <h3>AI-Powered</h3>
+                        <p>Advanced AI algorithms adapt to your learning style</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-graduation-cap"></i>
+                        <h3>Expert Tutors</h3>
+                        <p>Learn from qualified educators and industry experts</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-clock"></i>
+                        <h3>24/7 Availability</h3>
+                        <p>Learn anytime, anywhere at your own pace</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Login Modal -->
+        <div id="loginModal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn" onclick="closeModal()">&times;</span>
+                <div id="login-form-container"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 AI Tutor. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Contact Us</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

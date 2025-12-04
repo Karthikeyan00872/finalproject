@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Tutor - Courses</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">AI Tutor</div>
+            <ul class="menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="home.html" class="active">Course</a></li>
+                <li><a href="questiontag.html">Question Tag</a></li>
+                <li class="dropdown">
+                    <a href="#">Login</a>
+                    <div class="dropdown-content">
+                        <a href="#" onclick="showLogin('student')">Student Login</a>
+                        <a href="#" onclick="showLogin('tutor')">Tutor Login</a>
+                        <a href="#" onclick="showLogin('admin')">Admin Login</a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main class="main-content">
+        <section id="course">
+            <div class="hero">
+                <h1>Courses</h1>
+                <p>Select your class and subject to start learning</p>
+            </div>
+
+            <div class="filter-options">
+                <select id="gradeFilter">
+                    <option value="all">All Grades</option>
+                    <option value="10th">10th Grade</option>
+                    <option value="12th">12th Grade</option>
+                </select>
+                <select id="subjectFilter">
+                    <option value="all">All Subjects</option>
+                    <option value="physics">Physics</option>
+                    <option value="chemistry">Chemistry</option>
+                    <option value="math">Mathematics</option>
+                </select>
+            </div>
+
+            <div class="courses-container">
+                <div class="course-card" data-grade="10th" data-subject="physics">
+                    <div class="course-icon">
+                        <i class="fas fa-atom"></i>
+                    </div>
+                    <h3>10th Physics</h3>
+                    <p>Master the fundamentals of physics with interactive lessons and practice problems.</p>
+                    <div class="course-meta">
+                        <span><i class="fas fa-video"></i> 25 Lessons</span>
+                        <span><i class="fas fa-clock"></i> 40 Hours</span>
+                    </div>
+                    <button class="course-btn" onclick="enrollCourse('10th Physics')">Enroll Now</button>
+                </div>
+                
+                <div class="course-card" data-grade="10th" data-subject="chemistry">
+                    <div class="course-icon">
+                        <i class="fas fa-flask"></i>
+                    </div>
+                    <h3>10th Chemistry</h3>
+                    <p>Learn chemical reactions and concepts with visual explanations and experiments.</p>
+                    <div class="course-meta">
+                        <span><i class="fas fa-video"></i> 30 Lessons</span>
+                        <span><i class="fas fa-clock"></i> 45 Hours</span>
+                    </div>
+                    <button class="course-btn" onclick="enrollCourse('10th Chemistry')">Enroll Now</button>
+                </div>
+                
+                <div class="course-card" data-grade="10th" data-subject="math">
+                    <div class="course-icon">
+                        <i class="fas fa-calculator"></i>
+                    </div>
+                    <h3>10th Mathematics</h3>
+                    <p>Build strong math skills with comprehensive tutorials and problem-solving strategies.</p>
+                    <div class="course-meta">
+                        <span><i class="fas fa-video"></i> 35 Lessons</span>
+                        <span><i class="fas fa-clock"></i> 50 Hours</span>
+                    </div>
+                    <button class="course-btn" onclick="enrollCourse('10th Mathematics')">Enroll Now</button>
+                </div>
+                
+                <div class="course-card" data-grade="12th" data-subject="physics">
+                    <div class="course-icon">
+                        <i class="fas fa-satellite"></i>
+                    </div>
+                    <h3>12th Physics</h3>
+                    <p>Dive deep into advanced physics concepts including mechanics, thermodynamics, and electromagnetism.</p>
+                    <div class="course-meta">
+                        <span><i class="fas fa-video"></i> 40 Lessons</span>
+                        <span><i class="fas fa-clock"></i> 60 Hours</span>
+                    </div>
+                    <button class="course-btn" onclick="enrollCourse('12th Physics')">Enroll Now</button>
+                </div>
+                
+                <div class="course-card" data-grade="12th" data-subject="chemistry">
+                    <div class="course-icon">
+                        <i class="fas fa-vial"></i>
+                    </div>
+                    <h3>12th Chemistry</h3>
+                    <p>Explore organic, inorganic, and physical chemistry with detailed explanations and solutions.</p>
+                    <div class="course-meta">
+                        <span><i class="fas fa-video"></i> 45 Lessons</span>
+                        <span><i class="fas fa-clock"></i> 65 Hours</span>
+                    </div>
+                    <button class="course-btn" onclick="enrollCourse('12th Chemistry')">Enroll Now</button>
+                </div>
+                
+                <div class="course-card" data-grade="12th" data-subject="math">
+                    <div class="course-icon">
+                        <i class="fas fa-infinity"></i>
+                    </div>
+                    <h3>12th Mathematics</h3>
+                    <p>Master calculus, algebra, and trigonometry with step-by-step guidance and practice tests.</p>
+                    <div class="course-meta">
+                        <span><i class="fas fa-video"></i> 50 Lessons</span>
+                        <span><i class="fas fa-clock"></i> 70 Hours</span>
+                    </div>
+                    <button class="course-btn" onclick="enrollCourse('12th Mathematics')">Enroll Now</button>
+                </div>
+            </div>
+
+            <div class="stats">
+                <div class="stat-item">
+                    <h3>500+</h3>
+                    <p>Students Enrolled</p>
+                </div>
+                <div class="stat-item">
+                    <h3>50+</h3>
+                    <p>Expert Tutors</p>
+                </div>
+                <div class="stat-item">
+                    <h3>95%</h3>
+                    <p>Success Rate</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Login Modal -->
+        <div id="loginModal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn" onclick="closeModal()">&times;</span>
+                <div id="login-form-container"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 AI Tutor. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Contact Us</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
