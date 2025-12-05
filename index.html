@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body>
     <header>
         <nav>
@@ -15,9 +17,9 @@
                 <li><a href="index.html" class="active">Home</a></li>
                 <li><a href="home.html">Course</a></li>
                 <li><a href="questiontag.html">Question Tag</a></li>
-                <li class="dropdown">
-                    <a href="#">Login</a>
-                    <div class="dropdown-content">
+                <li class="dropdown" id="login-dropdown-li">
+                    <a href="#" id="login-status-link">Login</a>
+                    <div class="dropdown-content" id="auth-dropdown-content">
                         <a href="#" onclick="showLogin('student')">Student Login</a>
                         <a href="#" onclick="showLogin('tutor')">Tutor Login</a>
                         <a href="#" onclick="showLogin('admin')">Admin Login</a>
@@ -26,7 +28,7 @@
             </ul>
         </nav>
     </header>
-    
+
     <main class="main-content">
         <section id="home">
             <div class="hero">
@@ -94,4 +96,5 @@
 
     <script src="script.js"></script>
 </body>
+
 </html>

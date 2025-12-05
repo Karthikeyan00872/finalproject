@@ -1,4 +1,4 @@
-# api_server.py - Flask Server for Gemini Chat and MongoDB Login
+# api_server.py - Flask Server for Gemini Chat and MongoDB Login (Plain-text fix included)
 
 import os
 import datetime 
@@ -39,7 +39,6 @@ try:
     mongo_client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
     mongo_client.admin.command('ping')
     print("Successfully connected to MongoDB.")
-    # Initialize the database instance
     mongo_db = mongo_client[DB_NAME]
 except ServerSelectionTimeoutError as e:
     print(f"FATAL: Could not connect to MongoDB. Check if the server is running and MONGO_URI is correct. Details: {e}")
@@ -55,11 +54,10 @@ CORS(app)
 # --- Registration Endpoint ---
 @app.route('/register', methods=['POST'])
 def register():
-    """Allows creating a test user with a HASHED password."""
     data = request.get_json()
     username = data.get('username')
     password = data.get('password')
-    user_type = data.get('user_type', 'student') # Default to student
+    user_type = data.get('user_type', 'student') 
     
     if not username or not password:
         return jsonify({"success": False, "message": "Username and password required"}), 400
@@ -67,11 +65,10 @@ def register():
     try:
         users_col = mongo_db[USER_COLLECTION]
         
-        # Check if user already exists
         if users_col.find_one({"username": username}):
             return jsonify({"success": False, "message": "User already exists."}), 409
             
-        # HASH THE PASSWORD before saving
+        # HASH THE PASSWORD before saving (Recommended for new users)
         hashed_password = generate_password_hash(password)
         
         user_data = {
@@ -88,38 +85,45 @@ def register():
         print(f"Registration Server Error: {e}")
         return jsonify({"success": False, "message": f"Server error during registration: {e}"}), 500
 
-# --- Login Endpoint (CORRECTED for robust search) ---
+# --- Login Endpoint (MODIFIED to handle plain-text or hashed passwords) ---
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
     username = data.get('username')
     password = data.get('password')
-    # The 'user_type' field is no longer mandatory for the database lookup.
-    # It can still be sent from the frontend if needed for other validation, 
-    # but the primary search is by username for stability.
     
     if not username or not password:
         return jsonify({"success": False, "message": "Username and password required"}), 400
 
     try:
         users_col = mongo_db[USER_COLLECTION]
+        user = users_col.find_one({"username": username})
         
-        # 1. Find user ONLY by username (assuming usernames are unique)
-        user = users_col.find_one({
-            "username": username
-        })
+        is_authenticated = False
         
-        # 2. Check if user exists and verify HASHED password
-        if user and check_password_hash(user.get('password'), password):
+        if user:
+            db_password = user.get('password')
+            
+            # 1. Attempt to check against HASHED password (SECURE METHOD)
+            if db_password and db_password.startswith(('pbkdf2:sha256', 'sha256', 'bcrypt')):
+                if check_password_hash(db_password, password):
+                    is_authenticated = True
+            
+            # 2. Check against PLAIN TEXT password (INSECURE - FOR YOUR CURRENT DB USER)
+            if not is_authenticated:
+                 if db_password == password:
+                    print(f"!!! SECURITY ALERT: User '{username}' logged in with PLAIN TEXT password from DB. Please use the /register endpoint for new users. !!!")
+                    is_authenticated = True
+                    
+        if is_authenticated:
             print(f"User logged in: {username} ({user.get('user_type')})")
             return jsonify({
                 "success": True, 
                 "message": "Login successful", 
                 "username": user.get('username'), 
-                "user_type": user.get('user_type') # Return the stored type
+                "user_type": user.get('user_type') 
             })
         else:
-            # Important: Do not specify if it was the username or password that was wrong
             return jsonify({"success": False, "message": "Invalid credentials"}), 401
 
     except OperationFailure as err:
@@ -128,7 +132,7 @@ def login():
     except Exception as e:
         print(f"Server Error: {e}")
         return jsonify({"success": False, "message": f"Server error: {e}"}), 500
-
+        
 # --- New History Endpoint (FOR INDIVIDUAL CHAT HISTORY) ---
 @app.route('/history', methods=['POST'])
 def get_history():
@@ -141,7 +145,6 @@ def get_history():
     try:
         chat_col = mongo_db[CHAT_COLLECTION]
         
-        # Fetch history for the specific username
         history = chat_col.find(
             {"username": username}, 
             {"_id": 0, "prompt": 1, "response": 1}
@@ -177,7 +180,6 @@ def chat():
         )
         ai_response_text = response_obj.text
         
-        # Save chat interaction to MongoDB
         chat_col = mongo_db[CHAT_COLLECTION]
         chat_entry = {
             "username": username,
@@ -197,5 +199,4 @@ def chat():
         }), 500
 
 if __name__ == '__main__':
-    # Ensure debug=True is only used for development
     app.run(debug=True, port=5000)

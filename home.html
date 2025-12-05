@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body>
     <header>
         <nav>
@@ -15,9 +17,9 @@
                 <li><a href="index.html">Home</a></li>
                 <li><a href="home.html" class="active">Course</a></li>
                 <li><a href="questiontag.html">Question Tag</a></li>
-                <li class="dropdown">
-                    <a href="#">Login</a>
-                    <div class="dropdown-content">
+                <li class="dropdown" id="login-dropdown-li">
+                    <a href="#" id="login-status-link">Login</a>
+                    <div class="dropdown-content" id="auth-dropdown-content">
                         <a href="#" onclick="showLogin('student')">Student Login</a>
                         <a href="#" onclick="showLogin('tutor')">Tutor Login</a>
                         <a href="#" onclick="showLogin('admin')">Admin Login</a>
@@ -26,7 +28,7 @@
             </ul>
         </nav>
     </header>
-    
+
     <main class="main-content">
         <section id="course">
             <div class="hero">
@@ -61,7 +63,7 @@
                     </div>
                     <button class="course-btn" onclick="enrollCourse('10th Physics')">Enroll Now</button>
                 </div>
-                
+
                 <div class="course-card" data-grade="10th" data-subject="chemistry">
                     <div class="course-icon">
                         <i class="fas fa-flask"></i>
@@ -74,7 +76,7 @@
                     </div>
                     <button class="course-btn" onclick="enrollCourse('10th Chemistry')">Enroll Now</button>
                 </div>
-                
+
                 <div class="course-card" data-grade="10th" data-subject="math">
                     <div class="course-icon">
                         <i class="fas fa-calculator"></i>
@@ -87,20 +89,21 @@
                     </div>
                     <button class="course-btn" onclick="enrollCourse('10th Mathematics')">Enroll Now</button>
                 </div>
-                
+
                 <div class="course-card" data-grade="12th" data-subject="physics">
                     <div class="course-icon">
                         <i class="fas fa-satellite"></i>
                     </div>
                     <h3>12th Physics</h3>
-                    <p>Dive deep into advanced physics concepts including mechanics, thermodynamics, and electromagnetism.</p>
+                    <p>Dive deep into advanced physics concepts including mechanics, thermodynamics, and
+                        electromagnetism.</p>
                     <div class="course-meta">
                         <span><i class="fas fa-video"></i> 40 Lessons</span>
                         <span><i class="fas fa-clock"></i> 60 Hours</span>
                     </div>
                     <button class="course-btn" onclick="enrollCourse('12th Physics')">Enroll Now</button>
                 </div>
-                
+
                 <div class="course-card" data-grade="12th" data-subject="chemistry">
                     <div class="course-icon">
                         <i class="fas fa-vial"></i>
@@ -113,7 +116,7 @@
                     </div>
                     <button class="course-btn" onclick="enrollCourse('12th Chemistry')">Enroll Now</button>
                 </div>
-                
+
                 <div class="course-card" data-grade="12th" data-subject="math">
                     <div class="course-icon">
                         <i class="fas fa-infinity"></i>
@@ -165,4 +168,5 @@
 
     <script src="script.js"></script>
 </body>
+
 </html>

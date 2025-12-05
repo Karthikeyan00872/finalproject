@@ -7,8 +7,13 @@ const sendBtn = document.getElementById('sendBtn');
 const modal = document.getElementById('loginModal');
 const loginFormContainer = document.getElementById('login-form-container');
 
+// NEW DOM Elements for Username Display
+// These must be present in your index.html, home.html, and questiontag.html
+const loginStatusLink = document.getElementById('login-status-link');
+const authDropdownContent = document.getElementById('auth-dropdown-content');
+
 // --- Global Variable for Logged-in User ---
-// This is used to track the current user for MongoDB history
+// This stores the username retrieved from login, persisting across tabs/reloads.
 let currentUsername = localStorage.getItem('currentUsername') || null; 
 // -----------------------------------------
 
@@ -16,19 +21,18 @@ const BACKEND_URL = 'http://localhost:5000'; // Define the backend base URL
 
 // Utility Functions
 function showNotification(message) {
-    // In a full application, this would be a custom notification bar, 
-    // but for simplicity, we log it to the console here.
     console.log(`[Notification] ${message}`);
 }
 
 function closeModal() {
     if (modal) {
-        modal.style.display = 'none';
+        // Changed to 'none' for consistency with original file
+        modal.style.display = 'none'; 
     }
 }
 
 function addMessage(text, sender) {
-    if (!chatBox) return; // Guard clause if not on the chat page
+    if (!chatBox) return; 
 
     const messageDiv = document.createElement('div');
     messageDiv.className = `chat-message ${sender}-message`;
@@ -43,13 +47,57 @@ function addMessage(text, sender) {
         messageDiv.appendChild(icon);
     }
     
-    // Create a span for the text content to allow proper styling separation from the icon
     const textSpan = document.createElement('span');
     textSpan.textContent = text;
     messageDiv.appendChild(textSpan);
     
     chatBox.appendChild(messageDiv);
     chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+// **NEW/MODIFIED: Function to update the Login/Username UI**
+function updateLoginUI() {
+    // Re-fetch elements inside function to ensure they are available on all pages
+    const loginStatusLink = document.getElementById('login-status-link');
+    const authDropdownContent = document.getElementById('auth-dropdown-content');
+
+    if (loginStatusLink && authDropdownContent) {
+        if (currentUsername) {
+            // User is logged in: Show Username
+            loginStatusLink.innerHTML = `<i class="fas fa-user-circle"></i> Hello, ${currentUsername}`;
+            loginStatusLink.style.fontWeight = 'bold'; 
+            loginStatusLink.onclick = null; // Prevent default action
+
+            // Show Logout button in the dropdown content
+            authDropdownContent.innerHTML = `
+                <a href="#" onclick="handleLogout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            `;
+        } else {
+            // User is logged out: Show Login options
+            loginStatusLink.innerHTML = `Login`;
+            loginStatusLink.style.fontWeight = '500'; 
+            loginStatusLink.onclick = null; 
+
+            // Restore original dropdown content
+            authDropdownContent.innerHTML = `
+                <a href="#" onclick="showLogin('student')">Student Login</a>
+                <a href="#" onclick="showLogin('tutor')">Tutor Login</a>
+                <a href="#" onclick="showLogin('admin')">Admin Login</a>
+            `;
+        }
+    }
+}
+
+// **NEW: Function to handle logout**
+function handleLogout() {
+    localStorage.removeItem('currentUsername');
+    currentUsername = null;
+    updateLoginUI(); // Update UI to show 'Login' again
+    
+    // Reload the page to reset chat and other login-dependent views
+    window.location.reload();
 }
 
 // **MODIFIED: Function to load messages from MongoDB history**
@@ -59,7 +107,7 @@ async function loadMessages() {
         return;
     }
     
-    if (chatBox) chatBox.innerHTML = ''; // Clear existing messages
+    if (chatBox) chatBox.innerHTML = ''; 
     
     addMessage(`Welcome back, ${currentUsername}! Loading your chat history...`, "bot");
 
@@ -73,7 +121,6 @@ async function loadMessages() {
         const data = await response.json();
 
         if (response.ok && data.success) {
-            // Remove the loading message
             chatBox.innerHTML = ''; 
             
             if (data.history.length === 0) {
@@ -103,14 +150,10 @@ async function sendMessage() {
     const prompt = chatInput.value.trim();
     if (prompt === "") return;
 
-    // 1. Add user message to UI
     addMessage(prompt, 'user');
-    chatInput.value = ''; // Clear input
+    chatInput.value = ''; 
 
-    // Simulate AI typing indicator
     addMessage("AI Tutor is thinking...", "bot");
-    
-    // Remove the typing indicator before adding the real response
     const typingIndicator = chatBox.lastElementChild;
     
     try {
@@ -120,7 +163,6 @@ async function sendMessage() {
             body: JSON.stringify({ prompt: prompt, username: currentUsername })
         });
         
-        // Remove typing indicator before processing response
         if (typingIndicator) {
             chatBox.removeChild(typingIndicator);
         }
@@ -128,7 +170,6 @@ async function sendMessage() {
         const data = await response.json();
 
         if (response.ok && data.text) {
-            // 2. Add AI response to UI
             addMessage(data.text, 'bot');
         } else {
             addMessage(`Error: ${data.error || 'Unknown server response'}`, 'bot');
@@ -136,7 +177,6 @@ async function sendMessage() {
         }
 
     } catch (error) {
-        // Remove typing indicator if an error occurred
         if (typingIndicator) {
             chatBox.removeChild(typingIndicator);
         }
@@ -147,11 +187,9 @@ async function sendMessage() {
 
 // **MODIFIED: The corrected handleLogin function**
 async function handleLogin(userType) {
-    // FIX: Ensure correct input IDs are targeted ('username' and 'password' are assumed from HTML modal)
     const usernameInput = document.getElementById('username'); 
     const passwordInput = document.getElementById('password');
     
-    // NOTE: Using custom modal/dialog instead of alert() for better UX is recommended.
     if (!usernameInput || !passwordInput) {
         alert("Error: Login form inputs not found. Check HTML structure.");
         return false;
@@ -166,7 +204,7 @@ async function handleLogin(userType) {
     }
     
     try {
-        const backendUrl = `${BACKEND_URL}/login`; // Flask Login Endpoint
+        const backendUrl = `${BACKEND_URL}/login`;
 
         const response = await fetch(backendUrl, {
             method: 'POST',
@@ -174,9 +212,7 @@ async function handleLogin(userType) {
             body: JSON.stringify({ 
                 username: username, 
                 password: password,
-                // --- CRITICAL FIX: Send the user_type to the backend ---
                 user_type: userType 
-                // ----------------------------------------------------
             })
         });
 
@@ -185,23 +221,19 @@ async function handleLogin(userType) {
         if (response.ok && data.success) {
             showNotification(`Welcome ${data.user_type || userType}! Login Successful.`);
             
-            // --- NEW: Set Global and Local Storage Username for Session ---
+            // --- CRITICAL: Set Global and Local Storage Username for Session ---
             currentUsername = data.username;
             localStorage.setItem('currentUsername', data.username);
             // ------------------------------------------------
             
-            // Close modal and then load the user's chat history
+            // Close modal and update UI
             setTimeout(() => {
                 closeModal();
-                // Check if we are on the page that has the chatBox element
-                if (chatBox) {
-                    loadMessages(); // Load the specific user's chat history
-                }
+                updateLoginUI(); // <--- This updates the navigation bar to show the name
                 
-                // OPTIONAL: Redirect to a main page like 'home.html' after login
-                // if (window.location.pathname.endsWith('index.html')) {
-                //     window.location.href = 'home.html';
-                // }
+                if (chatBox) {
+                    loadMessages(); 
+                }
             }, 500);
             
         } else {
@@ -219,8 +251,6 @@ async function handleLogin(userType) {
 function getLoginForm(userType) {
     const capitalizedType = userType.charAt(0).toUpperCase() + userType.slice(1);
     
-    // Note: The form action is set to call the JS function handleLogin(userType)
-    // The 'username' and 'password' IDs are CRITICAL for handleLogin to work.
     return `
         <h2>${capitalizedType} Login</h2>
         <form id="loginForm" onsubmit="event.preventDefault(); handleLogin('${userType}');">
@@ -232,7 +262,7 @@ function getLoginForm(userType) {
                 <label for="password">Password:</label>
                 <input type="password" id="password" name="password" required>
             </div>
-            <button type="submit" class="btn btn-primary">Login</button>
+            <button type="submit" class="cta-button login-btn">Login</button>
         </form>
     `;
 }
@@ -240,7 +270,7 @@ function getLoginForm(userType) {
 function showLogin(userType) {
     if (loginFormContainer && modal) {
         loginFormContainer.innerHTML = getLoginForm(userType);
-        modal.style.display = 'block';
+        modal.style.display = 'flex'; // Changed to flex to center the modal
     }
 }
 
@@ -250,8 +280,9 @@ document.addEventListener('DOMContentLoaded', () => {
     window.showLogin = showLogin;
     window.closeModal = closeModal;
     window.handleLogin = handleLogin; 
-    
-    // Chat functionality event listeners (only on pages where they exist)
+    window.handleLogout = handleLogout; // Expose the new logout function
+
+    // Chat functionality event listeners 
     if (sendBtn) {
         sendBtn.addEventListener('click', sendMessage);
     }
@@ -262,6 +293,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+    
+    // **CRITICAL: Initialize the Login UI status on page load**
+    updateLoginUI(); 
 
     // Load initial chat history if a user is already logged in
     if (currentUsername && chatBox) {
@@ -279,19 +313,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Placeholder for other existing logic from the original script.js ---
 
-    // Example: Question Tag functionality placeholders
     const qLevelFilter = document.getElementById('qLevelFilter');
     const qSubjectFilter = document.getElementById('qSubjectFilter');
     
     function filterQuestions() {
         console.log("Filtering questions...");
-        // This is where your filtering logic would go
     }
     
     if (qLevelFilter) qLevelFilter.addEventListener('change', filterQuestions);
     if (qSubjectFilter) qSubjectFilter.addEventListener('change', filterQuestions);
     
-    // Add animation classes on scroll (example from previous versions)
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -303,5 +334,4 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.course-card, .question-card, .feature-card').forEach(card => {
         observer.observe(card);
     });
-
 });

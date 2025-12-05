@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body>
     <header>
         <nav>
@@ -15,9 +17,9 @@
                 <li><a href="index.html">Home</a></li>
                 <li><a href="home.html">Course</a></li>
                 <li><a href="questiontag.html" class="active">Question Tag</a></li>
-                <li class="dropdown">
-                    <a href="#">Login</a>
-                    <div class="dropdown-content">
+                <li class="dropdown" id="login-dropdown-li">
+                    <a href="#" id="login-status-link">Login</a>
+                    <div class="dropdown-content" id="auth-dropdown-content">
                         <a href="#" onclick="showLogin('student')">Student Login</a>
                         <a href="#" onclick="showLogin('tutor')">Tutor Login</a>
                         <a href="#" onclick="showLogin('admin')">Admin Login</a>
@@ -26,12 +28,13 @@
             </ul>
         </nav>
     </header>
-    
+
     <main class="main-content">
         <section id="questiontag">
             <div class="hero">
                 <h1>Question Bank</h1>
-                <p>Download individual questions or entire sets for practice. Questions are available in .txt format.</p>
+                <p>Download individual questions or entire sets for practice. Questions are available in .txt format.
+                </p>
             </div>
 
             <div class="search-filter">
@@ -64,13 +67,14 @@
                         </div>
                         <p>Explain Newton's three laws of motion with examples.</p>
                         <div class="question-footer">
-                            <button class="download-btn" data-filename="10th_physics_q1.txt" data-content="Explain Newton's three laws of motion with examples.">
+                            <button class="download-btn" data-filename="10th_physics_q1.txt"
+                                data-content="Explain Newton's three laws of motion with examples.">
                                 <i class="fas fa-download"></i> Download
                             </button>
                             <span class="question-meta">Physics | Chapter 3</span>
                         </div>
                     </div>
-                    
+
                     <div class="question-card" data-subject="chemistry">
                         <div class="question-header">
                             <h4>10th Chemistry - Q1</h4>
@@ -78,13 +82,14 @@
                         </div>
                         <p>Describe the periodic table and trends in atomic radius.</p>
                         <div class="question-footer">
-                            <button class="download-btn" data-filename="10th_chemistry_q1.txt" data-content="Describe the periodic table and trends in atomic radius.">
+                            <button class="download-btn" data-filename="10th_chemistry_q1.txt"
+                                data-content="Describe the periodic table and trends in atomic radius.">
                                 <i class="fas fa-download"></i> Download
                             </button>
                             <span class="question-meta">Chemistry | Chapter 5</span>
                         </div>
                     </div>
-                    
+
                     <div class="question-card" data-subject="math">
                         <div class="question-header">
                             <h4>10th Math - Q1</h4>
@@ -92,13 +97,14 @@
                         </div>
                         <p>Solve: If x^2 - 5x + 6 = 0, find x.</p>
                         <div class="question-footer">
-                            <button class="download-btn" data-filename="10th_math_q1.txt" data-content="Solve: If x^2 - 5x + 6 = 0, find x.">
+                            <button class="download-btn" data-filename="10th_math_q1.txt"
+                                data-content="Solve: If x^2 - 5x + 6 = 0, find x.">
                                 <i class="fas fa-download"></i> Download
                             </button>
                             <span class="question-meta">Mathematics | Chapter 2</span>
                         </div>
                     </div>
-                    
+
                     <div class="question-card" data-subject="physics">
                         <div class="question-header">
                             <h4>10th Physics - Q2</h4>
@@ -106,13 +112,14 @@
                         </div>
                         <p>Explain the concept of work and energy with a numerical example.</p>
                         <div class="question-footer">
-                            <button class="download-btn" data-filename="10th_physics_q2.txt" data-content="Explain the concept of work and energy with a numerical example.">
+                            <button class="download-btn" data-filename="10th_physics_q2.txt"
+                                data-content="Explain the concept of work and energy with a numerical example.">
                                 <i class="fas fa-download"></i> Download
                             </button>
                             <span class="question-meta">Physics | Chapter 4</span>
                         </div>
                     </div>
-                    
+
                     <div class="question-card" data-subject="chemistry">
                         <div class="question-header">
                             <h4>10th Chemistry - Q2</h4>
@@ -120,7 +127,8 @@
                         </div>
                         <p>What is pH? Explain acidic, basic and neutral solutions.</p>
                         <div class="question-footer">
-                            <button class="download-btn" data-filename="10th_chemistry_q2.txt" data-content="What is pH? Explain acidic, basic and neutral solutions.">
+                            <button class="download-btn" data-filename="10th_chemistry_q2.txt"
+                                data-content="What is pH? Explain acidic, basic and neutral solutions.">
                                 <i class="fas fa-download"></i> Download
                             </button>
                             <span class="question-meta">Chemistry | Chapter 8</span>
@@ -144,13 +152,14 @@
                         </div>
                         <p>Derive the equation of motion for a simple harmonic oscillator.</p>
                         <div class="question-footer">
-                            <button class="download-btn" data-filename="12th_physics_q1.txt" data-content="Derive the equation of motion for a simple harmonic oscillator.">
+                            <button class="download-btn" data-filename="12th_physics_q1.txt"
+                                data-content="Derive the equation of motion for a simple harmonic oscillator.">
                                 <i class="fas fa-download"></i> Download
                             </button>
                             <span class="question-meta">Physics | Chapter 7</span>
                         </div>
                     </div>
-                    
+
                     <div class="question-card" data-subject="chemistry">
                         <div class="question-header">
                             <h4>12th Chemistry - Q1</h4>
@@ -158,13 +167,14 @@
                         </div>
                         <p>Explain the concept of chemical equilibrium and Le Chatelier's principle.</p>
                         <div class="question-footer">
-                            <button class="download-btn" data-filename="12th_chemistry_q1.txt" data-content="Explain the concept of chemical equilibrium and Le Chatelier's principle.">
+                            <button class="download-btn" data-filename="12th_chemistry_q1.txt"
+                                data-content="Explain the concept of chemical equilibrium and Le Chatelier's principle.">
                                 <i class="fas fa-download"></i> Download
                             </button>
                             <span class="question-meta">Chemistry | Chapter 4</span>
                         </div>
                     </div>
-                    
+
                     <div class="question-card" data-subject="math">
                         <div class="question-header">
                             <h4>12th Math - Q1</h4>
@@ -172,13 +182,14 @@
                         </div>
                         <p>Evaluate the integral ∫ (2x / (x^2 + 1)) dx.</p>
                         <div class="question-footer">
-                            <button class="download-btn" data-filename="12th_math_q1.txt" data-content="Evaluate the integral ∫ (2x / (x^2 + 1)) dx.">
+                            <button class="download-btn" data-filename="12th_math_q1.txt"
+                                data-content="Evaluate the integral ∫ (2x / (x^2 + 1)) dx.">
                                 <i class="fas fa-download"></i> Download
                             </button>
                             <span class="question-meta">Mathematics | Chapter 9</span>
                         </div>
                     </div>
-                    
+
                     <div class="question-card" data-subject="physics">
                         <div class="question-header">
                             <h4>12th Physics - Q2</h4>
@@ -186,13 +197,14 @@
                         </div>
                         <p>Explain electromagnetic induction and Faraday's law with an example.</p>
                         <div class="question-footer">
-                            <button class="download-btn" data-filename="12th_physics_q2.txt" data-content="Explain electromagnetic induction and Faraday's law with an example.">
+                            <button class="download-btn" data-filename="12th_physics_q2.txt"
+                                data-content="Explain electromagnetic induction and Faraday's law with an example.">
                                 <i class="fas fa-download"></i> Download
                             </button>
                             <span class="question-meta">Physics | Chapter 10</span>
                         </div>
                     </div>
-                    
+
                     <div class="question-card" data-subject="chemistry">
                         <div class="question-header">
                             <h4>12th Chemistry - Q2</h4>
@@ -200,7 +212,8 @@
                         </div>
                         <p>Discuss the types of isomerism with examples.</p>
                         <div class="question-footer">
-                            <button class="download-btn" data-filename="12th_chemistry_q2.txt" data-content="Discuss the types of isomerism with examples.">
+                            <button class="download-btn" data-filename="12th_chemistry_q2.txt"
+                                data-content="Discuss the types of isomerism with examples.">
                                 <i class="fas fa-download"></i> Download
                             </button>
                             <span class="question-meta">Chemistry | Chapter 12</span>
@@ -235,4 +248,5 @@
 
     <script src="script.js"></script>
 </body>
+
 </html>
