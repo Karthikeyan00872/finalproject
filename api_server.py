@@ -197,4 +197,5 @@ def chat():
         }), 500
 
 if __name__ == '__main__':
+    # Ensure debug=True is only used for development
     app.run(debug=True, port=5000)
