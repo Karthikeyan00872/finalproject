@@ -1,4 +1,4 @@
-// script.js - Complete Ollama Chatbot Integration with fallback
+// script.js - Complete Gemini Chatbot Integration with Python Flask Backend
 
 // DOM Elements
 const chatBox = document.getElementById('chatBox');
@@ -7,25 +7,133 @@ const sendBtn = document.getElementById('sendBtn');
 const modal = document.getElementById('loginModal');
 const loginFormContainer = document.getElementById('login-form-container');
 
-// Ollama connection check
-let ollamaAvailable = false;
+// Chat Functions
+function addMessage(text, sender) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `chat-message ${sender}-message`;
+    
+    if (sender === 'bot') {
+        const icon = document.createElement('i');
+        icon.className = 'fas fa-robot';
+        messageDiv.appendChild(icon);
+    } else if (sender === 'user') {
+        const icon = document.createElement('i');
+        icon.className = 'fas fa-user';
+        messageDiv.appendChild(icon);
+    }
+    
+    const textNode = document.createTextNode(text);
+    messageDiv.appendChild(textNode);
+    chatBox.appendChild(messageDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+    
+    // --- START: NEW LOCALSTORAGE LOGIC (Save chat history) ---
+    const currentMessages = JSON.parse(localStorage.getItem('chatMessages') || '[]');
+    currentMessages.push({ text: text, sender: sender, timestamp: new Date().toISOString() });
+    localStorage.setItem('chatMessages', JSON.stringify(currentMessages));
+    // --- END: NEW LOCALSTORAGE LOGIC ---
+}
 
-// Check if Ollama is available on page load
-async function checkOllamaAvailability() {
-    try {
-        const response = await fetch('http://localhost:11434/api/tags', {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' }
+// Function to load messages from localStorage
+function loadMessages() {
+    const savedMessages = JSON.parse(localStorage.getItem('chatMessages') || '[]');
+    
+    // Clear the initial message added in index.html
+    chatBox.innerHTML = ''; 
+    
+    if (savedMessages.length > 0) {
+        savedMessages.forEach(msg => {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${msg.sender}-message`;
+            
+            if (msg.sender === 'bot') {
+                const icon = document.createElement('i');
+                icon.className = 'fas fa-robot';
+                messageDiv.appendChild(icon);
+            } else if (msg.sender === 'user') {
+                const icon = document.createElement('i');
+                icon.className = 'fas fa-user';
+                messageDiv.appendChild(icon);
+            }
+            
+            const textNode = document.createTextNode(msg.text);
+            messageDiv.appendChild(textNode);
+            chatBox.appendChild(messageDiv);
         });
-        ollamaAvailable = response.ok;
-        console.log('Ollama available:', ollamaAvailable);
-    } catch (error) {
-        console.log('Ollama not available, using mock responses');
-        ollamaAvailable = false;
+        chatBox.scrollTop = chatBox.scrollHeight;
+    } else {
+        // If no saved messages, add the initial bot welcome message
+        const welcomeDiv = document.createElement('div');
+        welcomeDiv.className = 'chat-message bot-message';
+        welcomeDiv.innerHTML = '<i class="fas fa-robot"></i> Hello! I\'m your AI tutor. How can I help you today?';
+        chatBox.appendChild(welcomeDiv);
     }
 }
 
-// Initialize on page load
+
+// **MODIFIED: Gemini API Integration (via Flask Server)**
+async function queryGemini(message) {
+    const backendUrl = 'http://localhost:5000/chat'; // <-- Flask Server Endpoint
+
+    // Show typing indicator
+    const typingIndicator = document.createElement('div');
+    typingIndicator.className = 'chat-message bot-message';
+    typingIndicator.innerHTML = '<i class="fas fa-robot"></i> Typing...';
+    chatBox.appendChild(typingIndicator);
+    chatBox.scrollTop = chatBox.scrollHeight;
+    
+    try {
+        // Send POST request to the Python backend
+        const response = await fetch(backendUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: message })
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        
+        // Remove typing indicator
+        chatBox.removeChild(typingIndicator);
+        
+        // Return the 'text' property from the JSON response
+        return data.text || "I apologize, but I couldn't generate a response from the AI server.";
+        
+    } catch (error) {
+        console.error('Python Flask Server Error:', error);
+        
+        // Remove typing indicator on error
+        if (chatBox.contains(typingIndicator)) {
+            chatBox.removeChild(typingIndicator);
+        }
+        
+        return "Sorry, I can't connect to the AI service. Please make sure the Python Flask server (http://localhost:5000) is running.";
+    }
+}
+
+// **MODIFIED: Send Message Function**
+async function sendMessage() {
+    //const message = chatInput.value.trim();
+    const message = chatInput.value.trim() + "without any symbols and special character,without bulletpoint,no bold";
+    if (!message) return;
+    
+    // Clear input
+    chatInput.value = '';
+    
+    // Add user message
+    addMessage(message, 'user');
+    
+    // Get AI response using the new Gemini function
+    let aiResponse = await queryGemini(message);
+    
+    // Add AI response
+    addMessage(aiResponse, 'bot');
+}
+
+// **MODIFIED: Initialize on page load**
 document.addEventListener('DOMContentLoaded', function() {
     // Add active class to current page link
     const currentPage = window.location.pathname.split('/').pop() || 'index.html';
@@ -39,9 +147,6 @@ document.addEventListener('DOMContentLoaded', function() {
             link.classList.remove('active');
         }
     });
-    
-    // Check Ollama availability
-    checkOllamaAvailability();
     
     // Initialize animations
     const observerOptions = {
@@ -68,125 +173,17 @@ document.addEventListener('DOMContentLoaded', function() {
         chatInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') sendMessage();
         });
+        
+        // --- NEW: Load saved chat messages on page load ---
+        loadMessages();
     }
 });
 
-// Chat Functions
-function addMessage(text, sender) {
-    const messageDiv = document.createElement('div');
-    messageDiv.className = `chat-message ${sender}-message`;
-    
-    if (sender === 'bot') {
-        const icon = document.createElement('i');
-        icon.className = 'fas fa-robot';
-        messageDiv.appendChild(icon);
-    } else if (sender === 'user') {
-        const icon = document.createElement('i');
-        icon.className = 'fas fa-user';
-        messageDiv.appendChild(icon);
-    }
-    
-    const textNode = document.createTextNode(text);
-    messageDiv.appendChild(textNode);
-    chatBox.appendChild(messageDiv);
-    chatBox.scrollTop = chatBox.scrollHeight;
-}
 
-// Ollama API Integration
-async function queryOllama(message) {
-    try {
-        // Show typing indicator
-        const typingIndicator = document.createElement('div');
-        typingIndicator.className = 'chat-message bot-message';
-        typingIndicator.innerHTML = '<i class="fas fa-robot"></i> Typing...';
-        chatBox.appendChild(typingIndicator);
-        chatBox.scrollTop = chatBox.scrollHeight;
-        
-        const response = await fetch('http://localhost:11434/api/generate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                model: 'llama2',
-                prompt: `You are an AI Tutor. Provide helpful, educational responses. Keep responses concise and focused on learning. User question: ${message}`,
-                stream: false,
-                options: {
-                    temperature: 0.7,
-                    max_tokens: 500
-                }
-            })
-        });
+// --- The rest of the original script.js code remains below this point ---
+// (filterCourses, filterQuestions, downloadAllQuestions, downloadFile, showNotification, 
+// showLogin, closeModal, handleLogin, enrollCourse, and animationStyles functions are unchanged)
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        
-        // Remove typing indicator
-        chatBox.removeChild(typingIndicator);
-        
-        // Add the actual response
-        return data.response || "I apologize, but I couldn't generate a response.";
-        
-    } catch (error) {
-        console.error('Ollama API Error:', error);
-        return getMockResponse(message);
-    }
-}
-
-// Send Message Function
-async function sendMessage() {
-    const message = chatInput.value.trim();
-    
-    if (!message) return;
-    
-    // Clear input
-    chatInput.value = '';
-    
-    // Add user message
-    addMessage(message, 'user');
-    
-    // Get AI response
-    let aiResponse;
-    if (ollamaAvailable) {
-        try {
-            aiResponse = await queryOllama(message);
-        } catch (error) {
-            console.error('Failed to query Ollama:', error);
-            aiResponse = getMockResponse(message);
-        }
-    } else {
-        aiResponse = getMockResponse(message);
-    }
-    
-    // Add AI response
-    addMessage(aiResponse, 'bot');
-}
-
-// Mock responses when Ollama is not available
-function getMockResponse(text) {
-    const lowerText = text.toLowerCase();
-    
-    if (lowerText.includes('hello') || lowerText.includes('hi')) {
-        return "Hello! How can I assist you with your studies today?";
-    } else if (lowerText.includes('physics')) {
-        return "Physics is fascinating! Would you like help with mechanics, thermodynamics, or electromagnetism?";
-    } else if (lowerText.includes('chemistry')) {
-        return "Chemistry is the study of matter. Are you interested in organic, inorganic, or physical chemistry?";
-    } else if (lowerText.includes('math') || lowerText.includes('mathematics')) {
-        return "Mathematics is everywhere! Need help with algebra, calculus, or trigonometry?";
-    } else if (lowerText.includes('course')) {
-        return "We have courses for 10th and 12th grades in Physics, Chemistry, and Mathematics. Visit our Courses page for details!";
-    } else if (lowerText.includes('question')) {
-        return "You can download practice questions from our Question Bank page. They're available in .txt format!";
-    } else if (lowerText.includes('thank')) {
-        return "You're welcome! Let me know if you need any more help.";
-    } else if (lowerText.includes('ollama') || lowerText.includes('ai') || lowerText.includes('model')) {
-        return "I'm using a local AI model. For advanced features, make sure Ollama is installed and running on your computer.";
-    } else {
-        return "I understand you're asking about \"" + text + "\". As an AI tutor, I'm here to help with your studies. Could you provide more context about what you're learning?";
-    }
-}
 
 // Course filtering
 const gradeFilter = document.getElementById('gradeFilter');
@@ -425,11 +422,11 @@ function showLogin(userType) {
             <form id="loginForm">
                 <div class="form-group">
                     <label for="username">Username</label>
-                    <input type="text" id="username" placeholder="Enter your username">
+                    <input type="text" id="username" placeholder="Enter your username" required>
                 </div>
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input type="password" id="password" placeholder="Enter your password">
+                    <input type="password" id="password" placeholder="Enter your password" required>
                 </div>
                 <button type="submit" class="login-btn">Login</button>
             </form>
@@ -446,6 +443,7 @@ function showLogin(userType) {
     if (loginForm) {
         loginForm.addEventListener('submit', function(e) {
             e.preventDefault();
+            // Call the async function
             handleLogin(userType);
         });
     }
@@ -457,8 +455,8 @@ function closeModal() {
     }
 }
 
-// Handle login submission
-function handleLogin(userType) {
+// **MODIFIED: Handle login submission with Flask backend**
+async function handleLogin(userType) {
     const usernameInput = document.getElementById('username');
     const passwordInput = document.getElementById('password');
     
@@ -473,14 +471,41 @@ function handleLogin(userType) {
         return false;
     }
     
-    // Show success message
-    showNotification(`Welcome ${userType}!`);
-    
-    // Close modal after delay
-    setTimeout(() => {
-        closeModal();
-    }, 1500);
-    
+    try {
+        const backendUrl = 'http://localhost:5000/login'; // Flask Login Endpoint
+
+        // Send POST request to the Python backend
+        const response = await fetch(backendUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                username: username, 
+                password: password,
+                user_type: userType // User type from the clicked dropdown link
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            // Success response
+            showNotification(`Welcome ${data.user_type || userType}! Login Successful.`);
+            
+            // Close modal after delay
+            setTimeout(() => {
+                closeModal();
+                // Optional: Redirect the user after successful login
+                // window.location.href = 'home.html';
+            }, 1500);
+        } else {
+            // Failure response
+            alert(`Login failed: ${data.message || 'Invalid credentials or server error.'}`);
+        }
+    } catch (error) {
+        console.error('Login Server Error:', error);
+        alert("Sorry, could not connect to the authentication server (http://localhost:5000).");
+    }
+
     return false;
 }
 
