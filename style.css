@@ -701,3 +701,48 @@ footer {
         margin-top: 1rem;
     }
 }
+/* --- Login Error Styles --- */
+.login-error {
+    display: block;
+    color: #e74c3c;
+    font-size: 0.85rem;
+    margin-top: 5px;
+    font-weight: 500;
+}
+
+#login-form-container input.error,
+#login-form-container select.error {
+    border-color: #e74c3c !important;
+}
+
+#login-form-container input:focus.error,
+#login-form-container select:focus.error {
+    border-color: #e74c3c !important;
+    box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.2);
+}
+
+#login-error-general {
+    background-color: #ffebee;
+    color: #c62828;
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border-left: 4px solid #c62828;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    display: none;
+}
+
+/* Add to existing form-group styles */
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #4CAF50;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+}
+
+/* Ensure form inputs have consistent styling */
+#login-form-container input,
+#login-form-container select {
+    transition: border-color 0.3s, box-shadow 0.3s;
+}

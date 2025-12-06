@@ -39,6 +39,76 @@ function closeModal() {
     }
 }
 
+// **Helper functions for login error messages**
+function showLoginError(fieldId, message) {
+    const field = document.getElementById(fieldId);
+    const formGroup = field ? field.closest('.form-group') : null;
+    
+    if (!formGroup) {
+        // If field not found or general error, show at top
+        let errorDiv = document.getElementById('login-error-general');
+        if (!errorDiv) {
+            errorDiv = document.createElement('div');
+            errorDiv.id = 'login-error-general';
+            errorDiv.style.cssText = `
+                background-color: #ffebee;
+                color: #c62828;
+                padding: 10px 15px;
+                border-radius: 5px;
+                margin-bottom: 15px;
+                border-left: 4px solid #c62828;
+                font-size: 0.9rem;
+            `;
+            const form = document.querySelector('#login-form-container form');
+            if (form) {
+                document.querySelector('#login-form-container').insertBefore(errorDiv, form);
+            }
+        }
+        errorDiv.textContent = message;
+        errorDiv.style.display = 'block';
+        return;
+    }
+    
+    // Remove existing error for this field
+    const existingError = formGroup.querySelector('.login-error');
+    if (existingError) existingError.remove();
+    
+    // Add error styling to input
+    field.style.borderColor = '#e74c3c';
+    
+    // Create and append error message
+    const errorSpan = document.createElement('span');
+    errorSpan.className = 'login-error';
+    errorSpan.style.cssText = `
+        display: block;
+        color: #e74c3c;
+        font-size: 0.85rem;
+        margin-top: 5px;
+    `;
+    errorSpan.textContent = message;
+    formGroup.appendChild(errorSpan);
+}
+
+function clearLoginErrors() {
+    // Clear all error messages
+    document.querySelectorAll('.login-error').forEach(el => el.remove());
+    
+    // Reset input borders
+    const loginContainer = document.getElementById('login-form-container');
+    if (loginContainer) {
+        loginContainer.querySelectorAll('input, select').forEach(input => {
+            input.style.borderColor = '';
+        });
+    }
+    
+    // Clear general error
+    const generalError = document.getElementById('login-error-general');
+    if (generalError) {
+        generalError.style.display = 'none';
+        generalError.textContent = '';
+    }
+}
+
 // **Function to update the Login/Username UI**
 function updateLoginUI() {
     console.log('Updating login UI. Current user:', currentUsername); // Debug log
@@ -139,8 +209,13 @@ function showLogin(userType) {
     if (loginFormContainer && modal) {
         loginFormContainer.innerHTML = getLoginForm(userType);
         modal.style.display = 'flex';
+        // Clear any previous errors
+        clearLoginErrors();
         // Focus on username field
-        setTimeout(() => document.getElementById('username')?.focus(), 100);
+        setTimeout(() => {
+            const usernameField = document.getElementById('username');
+            if (usernameField) usernameField.focus();
+        }, 100);
     }
 }
 
@@ -149,7 +224,12 @@ function showRegistration() {
     if (loginFormContainer && modal) {
         loginFormContainer.innerHTML = getLoginForm('register');
         modal.style.display = 'flex';
-        setTimeout(() => document.getElementById('username')?.focus(), 100);
+        // Clear any previous errors
+        clearLoginErrors();
+        setTimeout(() => {
+            const usernameField = document.getElementById('username');
+            if (usernameField) usernameField.focus();
+        }, 100);
     }
 }
 
@@ -160,11 +240,23 @@ async function handleAuth(event, endpoint, formType) {
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
 
+    // Clear previous error messages
+    clearLoginErrors();
+
     // Validate required fields
-    if (!data.username || !data.password) {
-        alert('Please fill in all required fields');
-        return;
+    let hasError = false;
+    
+    if (!data.username || data.username.trim() === '') {
+        showLoginError('username', 'Please enter a username');
+        hasError = true;
     }
+    
+    if (!data.password || data.password.trim() === '') {
+        showLoginError('password', 'Please enter a password');
+        hasError = true;
+    }
+    
+    if (hasError) return;
 
     // For login, the userType is from the hidden field
     if (formType !== 'register') {
@@ -173,7 +265,7 @@ async function handleAuth(event, endpoint, formType) {
         // For registration, get userType from the select box
         data.userType = document.getElementById('reg-usertype').value;
         if (!data.userType) {
-            alert('Please select a user type');
+            showLoginError('reg-usertype', 'Please select a user type');
             return;
         }
     }
@@ -227,14 +319,12 @@ async function handleAuth(event, endpoint, formType) {
 
         } else {
             const errorMessage = result.message || 'Authentication failed';
-            alert(`Error: ${errorMessage}`);
-            showNotification(`Authentication failed: ${errorMessage}`);
+            showLoginError('general', errorMessage);
         }
 
     } catch (error) {
         console.error('Authentication error:', error);
-        alert('Could not connect to the server. Please check:\n1. Backend server is running\n2. MongoDB is running\n3. No CORS errors');
-        showNotification('Server connection error');
+        showLoginError('general', 'Could not connect to the server. Please check:\n1. Backend server is running\n2. MongoDB is running\n3. No CORS errors');
     }
 }
 
