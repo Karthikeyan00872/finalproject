@@ -4,21 +4,33 @@
 const modal = document.getElementById('loginModal');
 const loginFormContainer = document.getElementById('login-form-container');
 
-// NEW DOM Elements for Username Display
-const loginStatusLink = document.getElementById('login-status-link');
-const authDropdownContent = document.getElementById('auth-dropdown-content');
-
 // --- Global Variable for Logged-in User ---
-// This stores the username retrieved from login, persisting across tabs/reloads.
 let currentUsername = localStorage.getItem('currentUsername') || null; 
-// -----------------------------------------
 
 const BACKEND_URL = 'http://localhost:5000'; // Define the backend base URL
+
+console.log('Common.js loaded. Current username:', currentUsername); // Debug log
 
 // --- Utility Functions ---
 
 function showNotification(message) {
     console.log(`[Notification] ${message}`);
+    // Optional: You can add a toast notification UI here
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.textContent = message;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #4CAF50;
+        color: white;
+        padding: 15px;
+        border-radius: 5px;
+        z-index: 1000;
+    `;
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 3000);
 }
 
 function closeModal() {
@@ -29,6 +41,8 @@ function closeModal() {
 
 // **Function to update the Login/Username UI**
 function updateLoginUI() {
+    console.log('Updating login UI. Current user:', currentUsername); // Debug log
+    
     // Re-fetch elements inside function to ensure they are available on all pages
     const loginStatusLink = document.getElementById('login-status-link');
     const authDropdownContent = document.getElementById('auth-dropdown-content');
@@ -36,153 +50,251 @@ function updateLoginUI() {
     if (loginStatusLink && authDropdownContent) {
         if (currentUsername) {
             // User is logged in: Show Username
-            loginStatusLink.innerHTML = `<i class="fas fa-user-circle"></i> Hello, ${currentUsername}`;
-            loginStatusLink.style.fontWeight = 'bold'; 
-            loginStatusLink.onclick = null; // Prevent default action
-
-            // Show Logout button in the dropdown content
+            console.log('Setting UI to logged in state for:', currentUsername);
+            loginStatusLink.innerHTML = `<i class="fas fa-user-circle"></i> ${currentUsername}`;
             authDropdownContent.innerHTML = `
-                <a href="#" onclick="handleLogout()">
-                    <i class="fas fa-sign-out-alt"></i> Logout
-                </a>
+                <a href="#" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
             `;
         } else {
             // User is logged out: Show Login options
-            loginStatusLink.innerHTML = `Login`;
-            loginStatusLink.style.fontWeight = '500'; 
-            loginStatusLink.onclick = null; 
-
-            // Restore original dropdown content
+            console.log('Setting UI to logged out state');
+            loginStatusLink.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
             authDropdownContent.innerHTML = `
-                <a href="#" onclick="showLogin('student')">Student Login</a>
-                <a href="#" onclick="showLogin('tutor')">Tutor Login</a>
-                <a href="#" onclick="showLogin('admin')">Admin Login</a>
+                <a href="#" onclick="showLogin('student')"><i class="fas fa-user-graduate"></i> Student Login</a>
+                <a href="#" onclick="showLogin('tutor')"><i class="fas fa-chalkboard-teacher"></i> Tutor Login</a>
+                <a href="#" onclick="showLogin('admin')"><i class="fas fa-user-shield"></i> Admin Login</a>
+                <a href="#" onclick="showRegistration()"><i class="fas fa-user-plus"></i> Register</a>
             `;
         }
+    } else {
+        console.log('Login UI elements not found on this page');
     }
 }
 
-// **Function to handle logout**
-function handleLogout() {
-    localStorage.removeItem('currentUsername');
-    currentUsername = null;
-    updateLoginUI(); // Update UI to show 'Login' again
+// **Utility function to trigger file download**
+function downloadFile(filename, content) {
+    if (!currentUsername) {
+        alert("Please log in to download files.");
+        showLogin('student');
+        return;
+    }
     
-    // Reload the page to reset login-dependent views (like chat or question bank access)
-    window.location.reload();
+    const element = document.createElement('a');
+    const file = new Blob([content], {type: 'text/plain'});
+    element.href = URL.createObjectURL(file);
+    element.download = filename;
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
 }
+window.downloadFile = downloadFile;
 
-// **Function to handle user login**
-async function handleLogin(userType) {
-    const usernameInput = document.getElementById('username'); 
-    const passwordInput = document.getElementById('password');
-    
-    if (!usernameInput || !passwordInput) {
-        alert("Error: Login form inputs not found. Check HTML structure.");
-        return false;
-    }
-    
-    const username = usernameInput.value;
-    const password = passwordInput.value;
-    
-    if (!username || !password) {
-        alert('Please fill in both username and password fields.');
-        return false;
-    }
-    
-    try {
-        const backendUrl = `${BACKEND_URL}/login`;
+// --- Authentication Handlers ---
 
-        const response = await fetch(backendUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                username: username, 
-                password: password,
-                user_type: userType 
-            })
-        });
-
-        const data = await response.json();
-
-        if (response.ok && data.success) {
-            showNotification(`Welcome ${data.user_type || userType}! Login Successful.`);
-            
-            // CRITICAL: Set Global and Local Storage Username for Session
-            currentUsername = data.username;
-            localStorage.setItem('currentUsername', data.username);
-            
-            // Close modal and update UI
-            setTimeout(() => {
-                closeModal();
-                updateLoginUI(); // Updates the navigation bar to show the name
-                
-                // If on the index page, start loading chat history
-                if (window.loadMessages) {
-                    window.loadMessages(); 
-                } else {
-                    // Otherwise, just reload to update the logged-in state on the current page
-                    window.location.reload();
-                }
-            }, 500);
-            
-        } else {
-            alert(`Login failed: ${data.message || 'Invalid credentials or server error.'}`);
-        }
-    } catch (error) {
-        console.error('Login Server Error:', error);
-        alert("Sorry, could not connect to the authentication server (http://localhost:5000). Please check if api_server.py is running.");
-    }
-
-    return false;
-}
-
-// --- Login Modal Handling ---
 function getLoginForm(userType) {
-    const capitalizedType = userType.charAt(0).toUpperCase() + userType.slice(1);
-    
-    return `
-        <h2>${capitalizedType} Login</h2>
-        <form id="loginForm" onsubmit="event.preventDefault(); handleLogin('${userType}');">
+    const action = userType === 'register' ? 'Register' : 'Login';
+    const endpoint = userType === 'register' ? '/register' : '/login';
+    const formHtml = `
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <h2>${action} ${userType !== 'register' ? 'as ' + userType.charAt(0).toUpperCase() + userType.slice(1) : ''}</h2>
+        <form onsubmit="event.preventDefault(); handleAuth(event, '${endpoint}', '${userType}')">
+            ${userType !== 'register' ? `<input type="hidden" name="userType" value="${userType}">` : ''}
             <div class="form-group">
                 <label for="username">Username:</label>
-                <input type="text" id="username" name="username" required>
+                <input type="text" id="username" name="username" required placeholder="Enter username">
             </div>
             <div class="form-group">
                 <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
+                <input type="password" id="password" name="password" required placeholder="Enter password">
             </div>
-            <button type="submit" class="cta-button login-btn">Login</button>
+            ${userType === 'register' ? `
+                <div class="form-group">
+                    <label for="reg-usertype">I am a:</label>
+                    <select id="reg-usertype" name="userType" required>
+                        <option value="">Select user type</option>
+                        <option value="student">Student</option>
+                        <option value="tutor">Tutor</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+            ` : ''}
+            <button type="submit" class="cta-button login-btn">
+                <i class="fas ${userType === 'register' ? 'fa-user-plus' : 'fa-sign-in-alt'}"></i> ${action}
+            </button>
+            ${userType !== 'register' ? `
+                <p style="margin-top: 15px; text-align: center; font-size: 14px;">
+                    Don't have an account? <a href="#" onclick="showRegistration()" style="color: #4CAF50;">Register here</a>
+                </p>
+            ` : `
+                <p style="margin-top: 15px; text-align: center; font-size: 14px;">
+                    Already have an account? <a href="#" onclick="showLogin('student')" style="color: #4CAF50;">Login here</a>
+                </p>
+            `}
         </form>
     `;
+    return formHtml;
 }
 
 function showLogin(userType) {
+    console.log('Showing login form for:', userType);
     if (loginFormContainer && modal) {
         loginFormContainer.innerHTML = getLoginForm(userType);
-        modal.style.display = 'flex'; // Changed to flex to center the modal
+        modal.style.display = 'flex';
+        // Focus on username field
+        setTimeout(() => document.getElementById('username')?.focus(), 100);
     }
+}
+
+function showRegistration() {
+    console.log('Showing registration form');
+    if (loginFormContainer && modal) {
+        loginFormContainer.innerHTML = getLoginForm('register');
+        modal.style.display = 'flex';
+        setTimeout(() => document.getElementById('username')?.focus(), 100);
+    }
+}
+
+async function handleAuth(event, endpoint, formType) {
+    event.preventDefault();
+    
+    const form = event.target;
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+
+    // Validate required fields
+    if (!data.username || !data.password) {
+        alert('Please fill in all required fields');
+        return;
+    }
+
+    // For login, the userType is from the hidden field
+    if (formType !== 'register') {
+        data.userType = form.querySelector('input[name="userType"]').value;
+    } else {
+        // For registration, get userType from the select box
+        data.userType = document.getElementById('reg-usertype').value;
+        if (!data.userType) {
+            alert('Please select a user type');
+            return;
+        }
+    }
+    
+    console.log('Sending auth request to:', BACKEND_URL + endpoint);
+    console.log('Request data:', { ...data, password: '***' }); // Hide password in logs
+    
+    try {
+        const response = await fetch(BACKEND_URL + endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+
+        console.log('Response status:', response.status);
+        const result = await response.json();
+        console.log('Response data:', result);
+
+        if (result.success) {
+            const successMessage = formType === 'register' 
+                ? `Registration successful! Welcome ${data.username}!`
+                : `Login successful! Welcome back ${result.username}!`;
+            
+            showNotification(successMessage);
+            
+            // Set user data on successful login (not on registration)
+            if (formType !== 'register') {
+                currentUsername = result.username;
+                localStorage.setItem('currentUsername', result.username);
+                localStorage.setItem('userType', result.userType);
+                
+                console.log('User logged in:', currentUsername, 'Type:', result.userType);
+            }
+            
+            // Close modal and update UI
+            setTimeout(() => { 
+                closeModal(); 
+                updateLoginUI();
+                
+                // Reload page to update all components
+                setTimeout(() => {
+                    if (formType === 'register') {
+                        // After registration, show login form
+                        showLogin('student');
+                    } else {
+                        // After login, reload page
+                        location.reload();
+                    }
+                }, 500);
+            }, 300);
+
+        } else {
+            const errorMessage = result.message || 'Authentication failed';
+            alert(`Error: ${errorMessage}`);
+            showNotification(`Authentication failed: ${errorMessage}`);
+        }
+
+    } catch (error) {
+        console.error('Authentication error:', error);
+        alert('Could not connect to the server. Please check:\n1. Backend server is running\n2. MongoDB is running\n3. No CORS errors');
+        showNotification('Server connection error');
+    }
+}
+
+function handleLogout() {
+    console.log('Logging out user:', currentUsername);
+    const username = currentUsername;
+    currentUsername = null;
+    localStorage.removeItem('currentUsername');
+    localStorage.removeItem('userType');
+    updateLoginUI();
+    showNotification(`Goodbye ${username}! You have been logged out.`);
+    
+    // Clear chat on index page
+    if (window.clearChat) {
+        window.clearChat();
+    }
+    
+    // Reload page to reset all states
+    setTimeout(() => location.reload(), 1000);
 }
 
 // --- Initialization ---
 document.addEventListener('DOMContentLoaded', () => {
-    // Expose functions globally so they can be called from HTML onclick attributes
+    console.log('DOM loaded. Initializing common.js');
+    
+    // Expose functions globally
     window.showLogin = showLogin;
     window.closeModal = closeModal;
-    window.handleLogin = handleLogin; 
-    window.handleLogout = handleLogout; 
+    window.handleAuth = handleAuth;
+    window.handleLogout = handleLogout;
+    window.showRegistration = showRegistration;
+    window.currentUsername = currentUsername;
+    window.BACKEND_URL = BACKEND_URL;
 
-    // CRITICAL: Initialize the Login UI status on page load
-    updateLoginUI(); 
+    // Initialize the Login UI
+    updateLoginUI();
+    
+    // Check if backend is reachable
+    fetch(BACKEND_URL + '/test')
+        .then(response => {
+            if (response.ok) {
+                console.log('Backend server is reachable');
+            } else {
+                console.warn('Backend server returned error:', response.status);
+            }
+        })
+        .catch(error => {
+            console.error('Backend server is not reachable:', error);
+            showNotification('Warning: Backend server is not reachable');
+        });
 
-    // Close modal when clicking outside of it
+    // Close modal when clicking outside
     window.addEventListener('click', (event) => {
         if (event.target === modal) {
             closeModal();
         }
     });
 
-    // Observer for card animations (used on all pages)
+    // Add animation observer
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -191,7 +303,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }, { threshold: 0.1 });
 
-    document.querySelectorAll('.course-card, .question-card, .feature-card').forEach(card => {
+    document.querySelectorAll('.course-card, .feature-card, .question-card').forEach(card => {
         observer.observe(card);
     });
+    
+    console.log('Common.js initialization complete');
 });

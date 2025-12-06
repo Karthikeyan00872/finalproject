@@ -23,6 +23,8 @@
                         <a href="#" onclick="showLogin('student')">Student Login</a>
                         <a href="#" onclick="showLogin('tutor')">Tutor Login</a>
                         <a href="#" onclick="showLogin('admin')">Admin Login</a>
+                        <!-- ADD THIS LINE -->
+                        <a href="#" onclick="showRegistration()">Register</a>
                     </div>
                 </li>
             </ul>
@@ -33,10 +35,10 @@
         <section id="course">
             <div class="hero">
                 <h1>Courses</h1>
-                <p>Select your class and subject to start learning</p>
+                <p>Select your class and subject to explore courses tailored for your success.</p>
             </div>
 
-            <div class="filter-options">
+            <div class="search-filter">
                 <select id="gradeFilter">
                     <option value="all">All Grades</option>
                     <option value="10th">10th Grade</option>
@@ -47,84 +49,46 @@
                     <option value="physics">Physics</option>
                     <option value="chemistry">Chemistry</option>
                     <option value="math">Mathematics</option>
+                    <option value="biology">Biology</option>
                 </select>
             </div>
 
             <div class="courses-container">
                 <div class="course-card" data-grade="10th" data-subject="physics">
-                    <div class="course-icon">
-                        <i class="fas fa-atom"></i>
-                    </div>
-                    <h3>10th Physics</h3>
-                    <p>Master the fundamentals of physics with interactive lessons and practice problems.</p>
+                    <h3>10th Grade Physics</h3>
+                    <p>A comprehensive course on Newtonian mechanics and electricity basics.</p>
                     <div class="course-meta">
-                        <span><i class="fas fa-video"></i> 25 Lessons</span>
-                        <span><i class="fas fa-clock"></i> 40 Hours</span>
-                    </div>
-                    <button class="course-btn" onclick="enrollCourse('10th Physics')">Enroll Now</button>
-                </div>
-
-                <div class="course-card" data-grade="10th" data-subject="chemistry">
-                    <div class="course-icon">
-                        <i class="fas fa-flask"></i>
-                    </div>
-                    <h3>10th Chemistry</h3>
-                    <p>Learn chemical reactions and concepts with visual explanations and experiments.</p>
-                    <div class="course-meta">
-                        <span><i class="fas fa-video"></i> 30 Lessons</span>
-                        <span><i class="fas fa-clock"></i> 45 Hours</span>
-                    </div>
-                    <button class="course-btn" onclick="enrollCourse('10th Chemistry')">Enroll Now</button>
-                </div>
-
-                <div class="course-card" data-grade="10th" data-subject="math">
-                    <div class="course-icon">
-                        <i class="fas fa-calculator"></i>
-                    </div>
-                    <h3>10th Mathematics</h3>
-                    <p>Build strong math skills with comprehensive tutorials and problem-solving strategies.</p>
-                    <div class="course-meta">
-                        <span><i class="fas fa-video"></i> 35 Lessons</span>
-                        <span><i class="fas fa-clock"></i> 50 Hours</span>
-                    </div>
-                    <button class="course-btn" onclick="enrollCourse('10th Mathematics')">Enroll Now</button>
-                </div>
-
-                <div class="course-card" data-grade="12th" data-subject="physics">
-                    <div class="course-icon">
-                        <i class="fas fa-satellite"></i>
-                    </div>
-                    <h3>12th Physics</h3>
-                    <p>Dive deep into advanced physics concepts including mechanics, thermodynamics, and
-                        electromagnetism.</p>
-                    <div class="course-meta">
-                        <span><i class="fas fa-video"></i> 40 Lessons</span>
+                        <span><i class="fas fa-book"></i> 40 Lessons</span>
                         <span><i class="fas fa-clock"></i> 60 Hours</span>
                     </div>
-                    <button class="course-btn" onclick="enrollCourse('12th Physics')">Enroll Now</button>
+                    <button class="course-btn" onclick="enrollCourse('10th Grade Physics')">Enroll Now</button>
                 </div>
-
-                <div class="course-card" data-grade="12th" data-subject="chemistry">
-                    <div class="course-icon">
-                        <i class="fas fa-vial"></i>
-                    </div>
-                    <h3>12th Chemistry</h3>
-                    <p>Explore organic, inorganic, and physical chemistry with detailed explanations and solutions.</p>
+                
+                <div class="course-card" data-grade="10th" data-subject="chemistry">
+                    <h3>10th Grade Chemistry</h3>
+                    <p>Fundamentals of chemical reactions, acids, bases, and salts.</p>
                     <div class="course-meta">
-                        <span><i class="fas fa-video"></i> 45 Lessons</span>
-                        <span><i class="fas fa-clock"></i> 65 Hours</span>
+                        <span><i class="fas fa-book"></i> 30 Lessons</span>
+                        <span><i class="fas fa-clock"></i> 45 Hours</span>
                     </div>
-                    <button class="course-btn" onclick="enrollCourse('12th Chemistry')">Enroll Now</button>
+                    <button class="course-btn" onclick="enrollCourse('10th Grade Chemistry')">Enroll Now</button>
+                </div>
+                
+                <div class="course-card" data-grade="12th" data-subject="physics">
+                    <h3>12th Grade Advanced Physics</h3>
+                    <p>Dive into electromagnetism, optics, and modern physics concepts.</p>
+                    <div class="course-meta">
+                        <span><i class="fas fa-book"></i> 60 Lessons</span>
+                        <span><i class="fas fa-clock"></i> 90 Hours</span>
+                    </div>
+                    <button class="course-btn" onclick="enrollCourse('12th Grade Advanced Physics')">Enroll Now</button>
                 </div>
 
                 <div class="course-card" data-grade="12th" data-subject="math">
-                    <div class="course-icon">
-                        <i class="fas fa-infinity"></i>
-                    </div>
-                    <h3>12th Mathematics</h3>
-                    <p>Master calculus, algebra, and trigonometry with step-by-step guidance and practice tests.</p>
+                    <h3>12th Grade Mathematics</h3>
+                    <p>Calculus, vectors, and three-dimensional geometry for exam preparation.</p>
                     <div class="course-meta">
-                        <span><i class="fas fa-video"></i> 50 Lessons</span>
+                        <span><i class="fas fa-book"></i> 50 Lessons</span>
                         <span><i class="fas fa-clock"></i> 70 Hours</span>
                     </div>
                     <button class="course-btn" onclick="enrollCourse('12th Mathematics')">Enroll Now</button>
@@ -149,7 +113,6 @@
 
         <div id="loginModal" class="modal">
             <div class="modal-content">
-                <span class="close-btn" onclick="closeModal()">&times;</span>
                 <div id="login-form-container"></div>
             </div>
         </div>
@@ -166,7 +129,7 @@
         </div>
     </footer>
 
-    <script src="common.js"></script>>
+    <script src="common.js"></script>
     <script src="course.js"></script>
 </body>
 

@@ -30,6 +30,8 @@ function addMessage(text, sender) {
 
 // Function to load messages from MongoDB history
 async function loadMessages() {
+    console.log("loadMessages called for user:", window.currentUsername);
+    
     // currentUsername and BACKEND_URL are from common.js
     if (!window.currentUsername) {
         if (chatBox) chatBox.innerHTML = ''; 
@@ -42,23 +44,29 @@ async function loadMessages() {
     addMessage(`Welcome back, ${window.currentUsername}! Loading your chat history...`, "bot");
 
     try {
+        console.log("Fetching history from:", `${window.BACKEND_URL}/history`);
         const response = await fetch(`${window.BACKEND_URL}/history`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username: window.currentUsername })
         });
 
+        console.log("History response status:", response.status);
         const data = await response.json();
+        console.log("History response data:", data);
 
         if (response.ok && data.success) {
             chatBox.innerHTML = ''; 
             
-            if (data.history.length === 0) {
+            if (data.history && data.history.length === 0) {
                  addMessage("Hello! I'm your AI Tutor. How can I help you learn today?", "bot");
-            } else {
+            } else if (data.history) {
+                console.log("Loading", data.history.length, "messages");
                 data.history.forEach(msg => {
                     addMessage(msg.text, msg.sender);
                 });
+            } else {
+                addMessage("Hello! I'm your AI Tutor. How can I help you learn today?", "bot");
             }
         } else {
             console.error('Failed to load history:', data.message);

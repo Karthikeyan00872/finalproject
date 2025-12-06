@@ -26,6 +26,7 @@ function filterCourses() {
 }
 
 function enrollCourse(courseName) {
+    // currentUsername comes from common.js via window scope
     if (!window.currentUsername) {
         alert("Please log in to enroll in a course.");
         return;
@@ -47,6 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
         subjectFilter.addEventListener('change', filterCourses);
     }
 
-    // Apply initial filter
+    // Apply initial filter on load
     filterCourses();
 });

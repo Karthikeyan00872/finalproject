@@ -23,6 +23,8 @@
                         <a href="#" onclick="showLogin('student')">Student Login</a>
                         <a href="#" onclick="showLogin('tutor')">Tutor Login</a>
                         <a href="#" onclick="showLogin('admin')">Admin Login</a>
+                        <!-- ADD THIS LINE -->
+                        <a href="#" onclick="showRegistration()">Register</a>
                     </div>
                 </li>
             </ul>
@@ -55,75 +57,30 @@
             <div class="grade-section">
                 <div class="grade-header">
                     <h2><i class="fas fa-graduation-cap"></i> 10th Grade Questions</h2>
-                    <button class="download-all-btn" onclick="downloadAllQuestions('10th')">
-                        <i class="fas fa-download"></i> Download All 10th Questions
+                    <button class="cta-button" onclick="downloadAllQuestions('10th')">
+                        <i class="fas fa-download"></i> Download All 10th Grade
                     </button>
                 </div>
-                <div class="questions-grid" id="grade-10-questions">
+                <div class="questions-grid">
                     <div class="question-card" data-subject="physics">
                         <div class="question-header">
-                            <h4>10th Physics - Q1</h4>
+                            <h4>Q1: Define Resistance</h4>
                             <span class="difficulty easy">Easy</span>
                         </div>
-                        <p>Explain Newton's three laws of motion with examples.</p>
+                        <p>What is electrical resistance, and what factors does the resistance of a conductor depend on?</p>
                         <div class="question-footer">
                             <button class="download-btn" data-filename="10th_physics_q1.txt"
-                                data-content="Explain Newton's three laws of motion with examples.">
+                                data-content="What is electrical resistance, and what factors does the resistance of a conductor depend on?">
                                 <i class="fas fa-download"></i> Download
                             </button>
-                            <span class="question-meta">Physics | Chapter 3</span>
+                            <span class="question-meta">Physics | Chapter 10</span>
                         </div>
                     </div>
 
                     <div class="question-card" data-subject="chemistry">
                         <div class="question-header">
-                            <h4>10th Chemistry - Q1</h4>
+                            <h4>Q2: Acids and Bases</h4>
                             <span class="difficulty medium">Medium</span>
-                        </div>
-                        <p>Describe the periodic table and trends in atomic radius.</p>
-                        <div class="question-footer">
-                            <button class="download-btn" data-filename="10th_chemistry_q1.txt"
-                                data-content="Describe the periodic table and trends in atomic radius.">
-                                <i class="fas fa-download"></i> Download
-                            </button>
-                            <span class="question-meta">Chemistry | Chapter 5</span>
-                        </div>
-                    </div>
-
-                    <div class="question-card" data-subject="math">
-                        <div class="question-header">
-                            <h4>10th Math - Q1</h4>
-                            <span class="difficulty easy">Easy</span>
-                        </div>
-                        <p>Solve: If x^2 - 5x + 6 = 0, find x.</p>
-                        <div class="question-footer">
-                            <button class="download-btn" data-filename="10th_math_q1.txt"
-                                data-content="Solve: If x^2 - 5x + 6 = 0, find x.">
-                                <i class="fas fa-download"></i> Download
-                            </button>
-                            <span class="question-meta">Mathematics | Chapter 2</span>
-                        </div>
-                    </div>
-
-                    <div class="question-card" data-subject="physics">
-                        <div class="question-header">
-                            <h4>10th Physics - Q2</h4>
-                            <span class="difficulty medium">Medium</span>
-                        </div>
-                        <p>Explain the concept of work and energy with a numerical example.</p>
-                        <div class="question-footer">
-                            <button class="download-btn" data-filename="10th_physics_q2.txt"
-                                data-content="Explain the concept of work and energy with a numerical example.">
-                                <i class="fas fa-download"></i> Download
-                            </button>
-                            <span class="question-meta">Physics | Chapter 4</span>
-                        </div>
-                    </div>
-
-                    <div class="question-card" data-subject="chemistry">
-                        <div class="question-header">
-                            <h4>10th Chemistry - Q2</h4>
-                            <span class="difficulty hard">Hard</span>
                         </div>
                         <p>What is pH? Explain acidic, basic and neutral solutions.</p>
                         <div class="question-footer">
@@ -140,74 +97,29 @@
             <div class="grade-section">
                 <div class="grade-header">
                     <h2><i class="fas fa-graduation-cap"></i> 12th Grade Questions</h2>
-                    <button class="download-all-btn" onclick="downloadAllQuestions('12th')">
-                        <i class="fas fa-download"></i> Download All 12th Questions
+                    <button class="cta-button" onclick="downloadAllQuestions('12th')">
+                        <i class="fas fa-download"></i> Download All 12th Grade
                     </button>
                 </div>
-                <div class="questions-grid" id="grade-12-questions">
-                    <div class="question-card" data-subject="physics">
-                        <div class="question-header">
-                            <h4>12th Physics - Q1</h4>
-                            <span class="difficulty hard">Hard</span>
-                        </div>
-                        <p>Derive the equation of motion for a simple harmonic oscillator.</p>
-                        <div class="question-footer">
-                            <button class="download-btn" data-filename="12th_physics_q1.txt"
-                                data-content="Derive the equation of motion for a simple harmonic oscillator.">
-                                <i class="fas fa-download"></i> Download
-                            </button>
-                            <span class="question-meta">Physics | Chapter 7</span>
-                        </div>
-                    </div>
-
-                    <div class="question-card" data-subject="chemistry">
-                        <div class="question-header">
-                            <h4>12th Chemistry - Q1</h4>
-                            <span class="difficulty medium">Medium</span>
-                        </div>
-                        <p>Explain the concept of chemical equilibrium and Le Chatelier's principle.</p>
-                        <div class="question-footer">
-                            <button class="download-btn" data-filename="12th_chemistry_q1.txt"
-                                data-content="Explain the concept of chemical equilibrium and Le Chatelier's principle.">
-                                <i class="fas fa-download"></i> Download
-                            </button>
-                            <span class="question-meta">Chemistry | Chapter 4</span>
-                        </div>
-                    </div>
-
+                <div class="questions-grid">
                     <div class="question-card" data-subject="math">
                         <div class="question-header">
-                            <h4>12th Math - Q1</h4>
-                            <span class="difficulty medium">Medium</span>
-                        </div>
-                        <p>Evaluate the integral ∫ (2x / (x^2 + 1)) dx.</p>
-                        <div class="question-footer">
-                            <button class="download-btn" data-filename="12th_math_q1.txt"
-                                data-content="Evaluate the integral ∫ (2x / (x^2 + 1)) dx.">
-                                <i class="fas fa-download"></i> Download
-                            </button>
-                            <span class="question-meta">Mathematics | Chapter 9</span>
-                        </div>
-                    </div>
-
-                    <div class="question-card" data-subject="physics">
-                        <div class="question-header">
-                            <h4>12th Physics - Q2</h4>
+                            <h4>Q3: Calculus Problem</h4>
                             <span class="difficulty hard">Hard</span>
                         </div>
-                        <p>Explain electromagnetic induction and Faraday's law with an example.</p>
+                        <p>Find the area under the curve y = x^2 from x = 1 to x = 3.</p>
                         <div class="question-footer">
-                            <button class="download-btn" data-filename="12th_physics_q2.txt"
-                                data-content="Explain electromagnetic induction and Faraday's law with an example.">
+                            <button class="download-btn" data-filename="12th_math_q3.txt"
+                                data-content="Find the area under the curve y = x^2 from x = 1 to x = 3.">
                                 <i class="fas fa-download"></i> Download
                             </button>
-                            <span class="question-meta">Physics | Chapter 10</span>
+                            <span class="question-meta">Mathematics | Chapter 7</span>
                         </div>
                     </div>
 
                     <div class="question-card" data-subject="chemistry">
                         <div class="question-header">
-                            <h4>12th Chemistry - Q2</h4>
+                            <h4>Q4: Isomerism</h4>
                             <span class="difficulty medium">Medium</span>
                         </div>
                         <p>Discuss the types of isomerism with examples.</p>
@@ -229,7 +141,6 @@
 
         <div id="loginModal" class="modal">
             <div class="modal-content">
-                <span class="close-btn" onclick="closeModal()">&times;</span>
                 <div id="login-form-container"></div>
             </div>
         </div>
@@ -246,8 +157,8 @@
         </div>
     </footer>
 
-     <script src ="common.js"></script>>
-     <script src ="questiontag.js"></script>
+    <script src="common.js"></script>
+    <script src="questiontag.js"></script>
 </body>
 
 </html>

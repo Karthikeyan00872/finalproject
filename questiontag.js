@@ -4,6 +4,8 @@
 const questionSearch = document.getElementById('questionSearch');
 const gradeSelect = document.getElementById('gradeSelect');
 const subjectSelect = document.getElementById('subjectSelect');
+// Note: We need to re-query for cards to ensure dynamic changes are captured if any
+// But for this static HTML, we can use the initial query.
 const allQuestionCards = document.querySelectorAll('.question-card');
 
 function filterAndSearchQuestions() {
@@ -12,17 +14,22 @@ function filterAndSearchQuestions() {
     const selectedSubject = subjectSelect.value;
 
     allQuestionCards.forEach(card => {
-        const cardGrade = card.closest('.grade-section').querySelector('h2').textContent.includes(selectedGrade === '10th' ? '10th' : '12th');
+        // Determine the grade of the card's section
+        // This logic is fragile; a better approach is to add a data-grade attribute to the card itself
+        // Based on the HTML, we extract it from the closest grade-section h2.
+        const sectionHeader = card.closest('.grade-section').querySelector('h2').textContent;
+        const cardGrade = sectionHeader.includes('10th') ? '10th' : (sectionHeader.includes('12th') ? '12th' : 'other');
+        
         const cardSubject = card.getAttribute('data-subject');
         const cardContent = card.querySelector('p').textContent.toLowerCase();
         
         // Grade Match
-        const gradeMatch = selectedGrade === 'all' || cardGrade;
+        const gradeMatch = selectedGrade === 'all' || selectedGrade === cardGrade;
 
         // Subject Match
         const subjectMatch = selectedSubject === 'all' || selectedSubject === cardSubject;
 
-        // Search Match
+        // Search Match (Check question content)
         const searchMatch = cardContent.includes(searchTerm);
 
         if (gradeMatch && subjectMatch && searchMatch) {
@@ -33,31 +40,22 @@ function filterAndSearchQuestions() {
     });
 }
 
-function downloadFile(filename, content) {
-    const element = document.createElement('a');
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(content));
-    element.setAttribute('download', filename);
-    element.style.display = 'none';
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
-    window.showNotification(`Downloaded: ${filename}`);
-}
-
 function downloadAllQuestions(grade) {
     if (!window.currentUsername) {
-        alert("Please log in to download the question bank.");
+        alert("Please log in to download question banks.");
         return;
     }
     
-    const gradeElement = document.getElementById(`grade-${grade}-questions`);
-    if (!gradeElement) return;
-
+    // Find all visible cards for the specified grade
     let allContent = `--- ${grade} Grade Question Bank ---\n\n`;
-    
-    // Collect content only from visible (filtered) cards
-    gradeElement.querySelectorAll('.question-card').forEach(card => {
-        if (card.style.display !== 'none') {
+
+    document.querySelectorAll('.question-card').forEach(card => {
+        // Check if the card is visible and belongs to the specified grade's section
+        const sectionHeader = card.closest('.grade-section').querySelector('h2').textContent;
+        const cardGrade = sectionHeader.includes('10th') ? '10th' : (sectionHeader.includes('12th') ? '12th' : 'other');
+
+        // Only include questions from the correct grade AND that are currently visible
+        if (card.style.display !== 'none' && cardGrade === grade) {
             const title = card.querySelector('h4').textContent;
             const content = card.querySelector('p').textContent;
             allContent += `[${title}]\n${content}\n\n`;
@@ -69,7 +67,8 @@ function downloadAllQuestions(grade) {
         return;
     }
 
-    downloadFile(`${grade}_question_bank.txt`, allContent);
+    // downloadFile is from common.js
+    window.downloadFile(`${grade}_question_bank.txt`, allContent);
 }
 
 // Initialization for questiontag.html
@@ -87,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
         subjectSelect.addEventListener('change', filterAndSearchQuestions);
     }
 
-    // Individual Download buttons
+    // Individual Download buttons (uses downloadFile from common.js)
     document.querySelectorAll('.download-btn').forEach(button => {
         button.addEventListener('click', function() {
             if (!window.currentUsername) {
@@ -96,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             const filename = this.getAttribute('data-filename');
             const content = this.getAttribute('data-content');
-            downloadFile(filename, content);
+            window.downloadFile(filename, content);
         });
     });
 

@@ -23,6 +23,7 @@
                         <a href="#" onclick="showLogin('student')">Student Login</a>
                         <a href="#" onclick="showLogin('tutor')">Tutor Login</a>
                         <a href="#" onclick="showLogin('admin')">Admin Login</a>
+                        <a href="#" onclick="showRegistration()">Register</a>
                     </div>
                 </li>
             </ul>
@@ -32,28 +33,25 @@
     <main class="main-content">
         <section id="home">
             <div class="hero">
-                <h1>Welcome to AI Tutor</h1>
-                <p>Your personalized learning platform powered by artificial intelligence.</p>
-                <a href="course.html" class="cta-button">Explore Courses</a>
+                <h1>Your Personal AI Tutor</h1>
+                <p>Start chatting to get personalized help, study guidance, and instant answers to your questions.</p>
+                <a href="#chatbot" class="cta-button">Start Learning Now</a>
             </div>
 
-            <div class="chatbot-container">
-                <h2 class="chatbot-header">AI Chatbot Assistant</h2>
+            <div class="chatbot-container" id="chatbot">
+                <div class="chat-header">
+                    <h3><i class="fas fa-comment-dots"></i> AI Chatbot</h3>
+                </div>
                 <div class="chat-box" id="chatBox">
-                    <div class="chat-message bot-message">
-                        <i class="fas fa-robot"></i>
-                        Hello! I'm your AI tutor. How can I help you today?
                     </div>
-                </div>
                 <div class="input-group">
-                    <input type="text" class="chat-input" id="chatInput" placeholder="Type your question here...">
-                    <button class="send-btn" id="sendBtn">
-                        <i class="fas fa-paper-plane"></i> Send
-                    </button>
+                    <input type="text" id="chatInput" class="chat-input" placeholder="Ask your question here..."
+                        autocomplete="off">
+                    <button id="sendBtn" class="send-btn cta-button"><i class="fas fa-paper-plane"></i> Send</button>
                 </div>
             </div>
 
-            <div class="features">
+            <div class="features-section">
                 <h2>Why Choose AI Tutor?</h2>
                 <div class="features-grid">
                     <div class="feature-card">
@@ -77,8 +75,8 @@
 
         <div id="loginModal" class="modal">
             <div class="modal-content">
-                <span class="close-btn" onclick="closeModal()">&times;</span>
-                <div id="login-form-container"></div>
+                <div id="login-form-container">
+                </div>
             </div>
         </div>
     </main>
@@ -93,8 +91,8 @@
             </div>
         </div>
     </footer>
-    <script src ="common.js"></script>>
-    <script src ="index.js"></script>
+    <script src="common.js"></script>
+    <script src="index.js"></script>
 </body>
 
 </html>
