@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Tutor - Admin Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <header>
+        <nav>
+            <div class="logo">AI Tutor Admin</div>
+            <ul class="menu">
+                <!-- <li><a href="index.html">Home</a></li>
+                <li><a href="admin.html" class="active">Dashboard</a></li>
+                <li><a href="user-management.html">Users</a></li>
+                <li><a href="analytics.html">Analytics</a></li> -->
+                <li class="dropdown" id="login-dropdown-li">
+                    <a href="#" id="login-status-link">Admin</a>
+                    <div class="dropdown-content" id="auth-dropdown-content">
+                        <a href="#" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <section id="admin-dashboard">
+            <div class="hero">
+                <h1><i class="fas fa-user-shield"></i> Admin Dashboard</h1>
+                <p>Welcome, <span id="admin-username">Admin</span>! Manage your AI Tutor platform.</p>
+            </div>
+
+            <!-- Admin Stats Cards -->
+            <div class="admin-stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 id="total-users">0</h3>
+                    <p>Total Users</p>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <h3 id="total-students">0</h3>
+                    <p>Students</p>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <h3 id="total-tutors">0</h3>
+                    <p>Tutors</p>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h3 id="total-chats">0</h3>
+                    <p>Chat Sessions</p>
+                </div>
+            </div>
+
+            <!-- User Management Table -->
+            <div class="admin-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-users-cog"></i> User Management</h2>
+                    <button class="cta-button" onclick="refreshUsers()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+
+                <div class="table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>User Type</th>
+                                <th>Registration Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-table-body">
+                            <!-- Users will be loaded here -->
+                            <tr>
+                                <td colspan="5" class="loading">Loading users...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- System Information -->
+            <div class="admin-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-info-circle"></i> System Information</h2>
+                </div>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h4>Server Status</h4>
+                        <p id="server-status">Checking...</p>
+                    </div>
+                    <div class="info-card">
+                        <h4>Database Status</h4>
+                        <p id="database-status">Checking...</p>
+                    </div>
+                    <div class="info-card">
+                        <h4>API Status</h4>
+                        <p id="api-status">Checking...</p>
+                    </div>
+                    <div class="info-card">
+                        <h4>Last Updated</h4>
+                        <p id="last-updated">Never</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 AI Tutor Admin. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">Admin Guide</a>
+                <a href="#">System Logs</a>
+                <a href="#" onclick="exportData()">Export Data</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Add to existing modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <div id="login-form-container"></div>
+        </div>
+    </div>
+
+    <script src="common.js"></script>
+    <script src="admin.js"></script>
+</body>
+
+</html>

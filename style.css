@@ -819,3 +819,207 @@ footer {
         padding: 10px;
     }
 }
+/* --- Admin Dashboard Styles --- */
+
+.admin-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.stat-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    text-align: center;
+    transition: transform 0.3s;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: #4CAF50;
+}
+
+.stat-card h3 {
+    font-size: 2rem;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.stat-card p {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.admin-section {
+    background: white;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 2rem 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.section-header h2 {
+    color: #2c3e50;
+    font-size: 1.5rem;
+}
+
+.section-header h2 i {
+    margin-right: 10px;
+    color: #2575fc;
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admin-table th {
+    background-color: #f5f7fa;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: #2c3e50;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.admin-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+    vertical-align: middle;
+}
+
+.admin-table tr:hover {
+    background-color: #f9f9f9;
+}
+
+.user-type-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.user-type-badge.student {
+    background-color: #e3f2fd;
+    color: #1976d2;
+}
+
+.user-type-badge.tutor {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+}
+
+.user-type-badge.admin {
+    background-color: #fff3e0;
+    color: #ef6c00;
+}
+
+.status {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.status.active {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+}
+
+.status.online {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+}
+
+.status.offline {
+    background-color: #ffebee;
+    color: #c62828;
+}
+
+.action-btn {
+    padding: 0.5rem;
+    margin: 0 0.25rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.3s;
+}
+
+.view-btn {
+    background-color: #e3f2fd;
+    color: #1976d2;
+}
+
+.view-btn:hover {
+    background-color: #bbdefb;
+}
+
+.delete-btn {
+    background-color: #ffebee;
+    color: #c62828;
+}
+
+.delete-btn:hover {
+    background-color: #ffcdd2;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.info-card {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border-left: 4px solid #4CAF50;
+}
+
+.info-card h4 {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.info-card p {
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.loading, .no-data {
+    text-align: center;
+    color: #999;
+    font-style: italic;
+    padding: 2rem !important;
+}
+
+/* Admin logout confirmation */
+#login-status-link.admin-logged-in {
+    color: #4CAF50;
+    font-weight: bold;
+}

@@ -258,6 +258,175 @@ def test_db():
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
 
+# --- Admin Endpoints ---
+
+@app.route('/admin/users', methods=['GET'])
+def get_all_users():
+    """Admin endpoint to get all users (requires admin authentication)."""
+    try:
+        # In production, you should add authentication/authorization here
+        # For now, we'll assume it's called from admin dashboard
+        
+        user_col = mongo_db[USER_COLLECTION]
+        # Exclude passwords for security
+        users = list(user_col.find({}, {'password': 0}))
+        
+        # Convert ObjectId to string for JSON serialization
+        for user in users:
+            user['_id'] = str(user['_id'])
+            if 'createdAt' in user:
+                user['createdAt'] = user['createdAt'].isoformat()
+        
+        return jsonify({
+            "success": True,
+            "users": users,
+            "count": len(users)
+        })
+    except Exception as e:
+        print(f"Admin users error: {e}")
+        return jsonify({"success": False, "message": str(e)}), 500
+
+@app.route('/admin/users/<username>', methods=['DELETE'])
+def delete_user(username):
+    """Admin endpoint to delete a user."""
+    try:
+        # In production, add admin authentication here
+        
+        user_col = mongo_db[USER_COLLECTION]
+        result = user_col.delete_one({"username": username})
+        
+        if result.deleted_count > 0:
+            # Also delete user's chat history
+            chat_col = mongo_db[CHAT_COLLECTION]
+            chat_deleted = chat_col.delete_many({"username": username})
+            
+            print(f"Deleted user {username} and {chat_deleted.deleted_count} chat messages")
+            
+            return jsonify({
+                "success": True,
+                "message": f"User {username} deleted successfully",
+                "chats_deleted": chat_deleted.deleted_count
+            })
+        else:
+            return jsonify({"success": False, "message": "User not found"}), 404
+    except Exception as e:
+        print(f"Delete user error: {e}")
+        return jsonify({"success": False, "message": str(e)}), 500
+
+@app.route('/admin/chats/count', methods=['GET'])
+def get_chat_count():
+    """Get total number of chat sessions."""
+    try:
+        chat_col = mongo_db[CHAT_COLLECTION]
+        count = chat_col.count_documents({})
+        
+        return jsonify({
+            "success": True,
+            "count": count
+        })
+    except Exception as e:
+        print(f"Chat count error: {e}")
+        return jsonify({"success": False, "message": str(e)}), 500
+
+@app.route('/admin/stats', methods=['GET'])
+def get_admin_stats():
+    """Get comprehensive admin statistics."""
+    try:
+        user_col = mongo_db[USER_COLLECTION]
+        chat_col = mongo_db[CHAT_COLLECTION]
+        
+        # User counts by type
+        total_users = user_col.count_documents({})
+        students = user_col.count_documents({"userType": "student"})
+        tutors = user_col.count_documents({"userType": "tutor"})
+        admins = user_col.count_documents({"userType": "admin"})
+        
+        # Chat stats
+        total_chats = chat_col.count_documents({})
+        
+        # Recent activity (last 5 users)
+        recent_users = list(user_col.find(
+            {}, 
+            {'password': 0}
+        ).sort("createdAt", -1).limit(5))
+        
+        # Convert ObjectId to string for JSON serialization
+        for user in recent_users:
+            user['_id'] = str(user['_id'])
+            if 'createdAt' in user:
+                user['createdAt'] = user['createdAt'].isoformat()
+        
+        return jsonify({
+            "success": True,
+            "stats": {
+                "total_users": total_users,
+                "students": students,
+                "tutors": tutors,
+                "admins": admins,
+                "total_chats": total_chats,
+                "recent_users": recent_users
+            }
+        })
+    except Exception as e:
+        print(f"Admin stats error: {e}")
+        return jsonify({"success": False, "message": str(e)}), 500
+
+@app.route('/admin/chats', methods=['GET'])
+def get_all_chats():
+    """Get all chat sessions (for admin viewing)."""
+    try:
+        chat_col = mongo_db[CHAT_COLLECTION]
+        # Get last 100 chats
+        chats = list(chat_col.find().sort("timestamp", -1).limit(100))
+        
+        # Convert ObjectId and datetime for JSON serialization
+        for chat in chats:
+            chat['_id'] = str(chat['_id'])
+            if 'timestamp' in chat:
+                chat['timestamp'] = chat['timestamp'].isoformat()
+        
+        return jsonify({
+            "success": True,
+            "chats": chats,
+            "count": len(chats)
+        })
+    except Exception as e:
+        print(f"Get all chats error: {e}")
+        return jsonify({"success": False, "message": str(e)}), 500
+
+# --- Create Default Admin User Endpoint (for setup) ---
+@app.route('/admin/create-default', methods=['POST'])
+def create_default_admin():
+    """Create a default admin user for initial setup."""
+    try:
+        # Check if admin already exists
+        user_col = mongo_db[USER_COLLECTION]
+        existing_admin = user_col.find_one({"username": "admin"})
+        
+        if existing_admin:
+            return jsonify({
+                "success": False,
+                "message": "Admin user already exists"
+            }), 409
+        
+        # Create default admin
+        hashed_password = generate_password_hash("admin123")
+        user_col.insert_one({
+            "username": "admin",
+            "password": hashed_password,
+            "userType": "admin",
+            "createdAt": datetime.datetime.now()
+        })
+        
+        return jsonify({
+            "success": True,
+            "message": "Default admin created successfully. Username: admin, Password: admin123"
+        }), 201
+        
+    except Exception as e:
+        print(f"Create default admin error: {e}")
+        return jsonify({"success": False, "message": str(e)}), 500
+
 # --- Server Run ---
 if __name__ == '__main__':
     print("=" * 50)
@@ -266,6 +435,21 @@ if __name__ == '__main__':
     print(f"MongoDB URI: {MONGO_URI}")
     print(f"Database: {DB_NAME}")
     print("=" * 50)
+    
+    # Create default admin if needed (uncomment if needed)
+    # try:
+    #     user_col = mongo_db[USER_COLLECTION]
+    #     if not user_col.find_one({"username": "admin"}):
+    #         hashed_password = generate_password_hash("admin123")
+    #         user_col.insert_one({
+    #             "username": "admin",
+    #             "password": hashed_password,
+    #             "userType": "admin",
+    #             "createdAt": datetime.datetime.now()
+    #         })
+    #         print("Default admin user created: admin / admin123")
+    # except Exception as e:
+    #     print(f"Failed to create default admin: {e}")
     
     # Running on port 5000
     app.run(debug=True, host='0.0.0.0', port=5000)

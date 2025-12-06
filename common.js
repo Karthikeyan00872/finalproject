@@ -122,9 +122,22 @@ function updateLoginUI() {
             // User is logged in: Show Username
             console.log('Setting UI to logged in state for:', currentUsername);
             loginStatusLink.innerHTML = `<i class="fas fa-user-circle"></i> ${currentUsername}`;
-            authDropdownContent.innerHTML = `
-                <a href="#" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
-            `;
+            
+            // Get user type from localStorage
+            const userType = localStorage.getItem('userType');
+            
+            if (userType === 'admin') {
+                // Admin shows admin-specific options
+                authDropdownContent.innerHTML = `
+                    <a href="admin.html"><i class="fas fa-user-shield"></i> Admin Dashboard</a>
+                    <a href="#" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                `;
+            } else {
+                // Regular users show normal logout
+                authDropdownContent.innerHTML = `
+                    <a href="#" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                `;
+            }
         } else {
             // User is logged out: Show Login options
             console.log('Setting UI to logged out state');
@@ -183,7 +196,8 @@ function getLoginForm(userType) {
                     <select id="reg-usertype" name="userType" required>
                         <option value="">Select user type</option>
                         <option value="student">Student</option>
-                        <option value="tutor">Tutor</option>                        
+                        <option value="tutor">Tutor</option>
+                        <option value="admin">Admin</option>
                     </select>
                 </div>
             ` : ''}
@@ -298,9 +312,19 @@ async function handleAuth(event, endpoint, formType) {
                 localStorage.setItem('userType', result.userType);
                 
                 console.log('User logged in:', currentUsername, 'Type:', result.userType);
+                
+                // Check if user is admin and redirect to admin page
+                if (result.userType === 'admin') {
+                    setTimeout(() => {
+                        closeModal();
+                        updateLoginUI();
+                        window.location.href = "admin.html";
+                        return; // Stop further execution
+                    }, 300);
+                }
             }
             
-            // Close modal and update UI
+            // Close modal and update UI for non-admin users
             setTimeout(() => { 
                 closeModal(); 
                 updateLoginUI();
@@ -311,7 +335,7 @@ async function handleAuth(event, endpoint, formType) {
                         // After registration, show login form
                         showLogin('student');
                     } else {
-                        // After login, reload page
+                        // After login, reload page (for non-admin users)
                         location.reload();
                     }
                 }, 500);
