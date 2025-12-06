@@ -98,7 +98,7 @@ function getLoginForm(userType) {
         <span class="close-btn" onclick="closeModal()">&times;</span>
         <h2>${action} ${userType !== 'register' ? 'as ' + userType.charAt(0).toUpperCase() + userType.slice(1) : ''}</h2>
         <form onsubmit="event.preventDefault(); handleAuth(event, '${endpoint}', '${userType}')">
-            ${userType !== 'register' ? `<input type="hidden" name="userType" value="${userType}">` : ''}
+            ${userType !== 'register' ? `<input type="hidden" id="userTypeField" name="userType" value="${userType}">` : ''}
             <div class="form-group">
                 <label for="username">Username:</label>
                 <input type="text" id="username" name="username" required placeholder="Enter username">
@@ -113,8 +113,7 @@ function getLoginForm(userType) {
                     <select id="reg-usertype" name="userType" required>
                         <option value="">Select user type</option>
                         <option value="student">Student</option>
-                        <option value="tutor">Tutor</option>
-                        <option value="admin">Admin</option>
+                        <option value="tutor">Tutor</option>                        
                     </select>
                 </div>
             ` : ''}

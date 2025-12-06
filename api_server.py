@@ -122,27 +122,37 @@ def register():
         return jsonify({"success": False, "message": f"Server error: {e}"}), 500
 
 
-# --- Login Endpoint ---
+# --- Login Endpoint (FIXED with user type validation) ---
 @app.route('/login', methods=['POST'])
 def login():
-    """Handles user login authentication."""
+    """Handles user login authentication with user type validation."""
     data = request.get_json()
     username = data.get('username')
     password = data.get('password')
+    requested_user_type = data.get('userType')  # The type the user is trying to log in as
     
-    print(f"Login attempt for user: {username}")
+    print(f"Login attempt for user: {username}, requested type: {requested_user_type}")
 
-    if not all([username, password]):
-        print("Missing username or password")
-        return jsonify({"success": False, "message": "Missing username or password"}), 400
+    if not all([username, password, requested_user_type]):
+        print("Missing username, password, or user type")
+        return jsonify({"success": False, "message": "Missing username, password, or user type"}), 400
 
     user = get_user(username)
     
     if user:
-        print(f"User found in database: {username}")
+        print(f"User found in database: {username}, actual type: {user['userType']}")
+        
         # Check password against the stored hash
         if check_password_hash(user['password'], password):
-            print(f"Password correct for {username}")
+            # Verify the user is logging in with the correct user type
+            if user['userType'] != requested_user_type:
+                print(f"User type mismatch: {username} is a {user['userType']}, not {requested_user_type}")
+                return jsonify({
+                    "success": False, 
+                    "message": f"You are registered as a {user['userType']}. Please use the {user['userType']} login."
+                }), 403
+            
+            print(f"Login successful for {username} as {user['userType']}")
             return jsonify({
                 "success": True, 
                 "username": user['username'],
@@ -156,8 +166,8 @@ def login():
         print(f"User not found: {username}")
         return jsonify({"success": False, "message": "User not found"}), 404
 
-# --- Chat History Endpoint (FIXED) ---
-@app.route('/history', methods=['POST'])  # CHANGED to POST
+# --- Chat History Endpoint ---
+@app.route('/history', methods=['POST'])
 def get_history():
     """Retrieves the chat history for a specific user."""
     data = request.get_json()
@@ -189,7 +199,7 @@ def get_history():
         print(f"History Server Error: {e}")
         return jsonify({"success": False, "message": f"Server error: {e}"}), 500
 
-# --- Chat Endpoint (MODIFIED to save history) ---
+# --- Chat Endpoint ---
 @app.route('/chat', methods=['POST'])
 def chat():
     """Receives a prompt, gets a Gemini response, and saves the interaction."""
@@ -229,7 +239,7 @@ def chat():
         print(f"Gemini/Chat Server Error: {e}")
         return jsonify({"error": f"An error occurred with the AI service: {e}"}), 500
 
-# --- Test DB Endpoint (ADDED for debugging) ---
+# --- Test DB Endpoint ---
 @app.route('/test-db', methods=['GET'])
 def test_db():
     """Test MongoDB connection and collections."""
