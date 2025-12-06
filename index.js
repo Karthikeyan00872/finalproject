@@ -20,12 +20,54 @@ function addMessage(text, sender) {
     }
     messageDiv.appendChild(icon);
     
-    const textSpan = document.createElement('span');
-    textSpan.textContent = text;
-    messageDiv.appendChild(textSpan);
+    const textContainer = document.createElement('div');
+    textContainer.className = 'message-text';
+    
+    // Format the text for display
+    const formattedText = formatMessageText(text, sender);
+    textContainer.innerHTML = formattedText;
+    
+    messageDiv.appendChild(textContainer);
     
     chatBox.appendChild(messageDiv);
     chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+// Function to format message text
+function formatMessageText(text, sender) {
+    // For user messages, just escape HTML and preserve line breaks
+    if (sender === 'user') {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML.replace(/\n/g, '<br>');
+    }
+    
+    // For bot messages, do basic formatting
+    let formatted = text;
+    
+    // Escape HTML first
+    const tempDiv = document.createElement('div');
+    tempDiv.textContent = formatted;
+    formatted = tempDiv.innerHTML;
+    
+    // Convert markdown bold **text** to <strong>
+    formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    
+    // Convert markdown italic *text* to <em>
+    formatted = formatted.replace(/\*(.*?)\*/g, '<em>$1</em>');
+    
+    // Convert line breaks to <br>
+    formatted = formatted.replace(/\n/g, '<br>');
+    
+    // Add paragraph breaks for better spacing (double line breaks)
+    formatted = formatted.replace(/(<br>\s*){2,}/g, '</p><p>');
+    
+    // Wrap in paragraph tags if not already wrapped
+    if (!formatted.includes('<p>')) {
+        formatted = '<p>' + formatted + '</p>';
+    }
+    
+    return formatted;
 }
 
 // Function to load messages from MongoDB history
