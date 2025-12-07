@@ -1,12 +1,122 @@
+<!-- [file name]: questiontag.html -->
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Tutor - Question Bank</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Additional styles for question upload form */
+        .upload-form {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        
+        .tutor-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .file-preview {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f5f5f5;
+            border-radius: 5px;
+            border: 1px dashed #ccc;
+        }
+        
+        .file-preview img {
+            max-width: 100px;
+            max-height: 100px;
+            margin-right: 10px;
+        }
+        
+        .my-uploads {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .upload-item {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1rem;
+            position: relative;
+            min-width: 200px;
+        }
+        
+        .delete-upload {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .question-content {
+            max-height: 150px;
+            overflow-y: auto;
+            margin: 0.5rem 0;
+            padding: 0.5rem;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+        
+        .has-file {
+            color: #3498db;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+        
+        .file-upload-area {
+            border: 2px dashed #3498db;
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            margin: 1rem 0;
+            background: #f8fafc;
+        }
+        
+        .file-upload-area:hover {
+            background: #e8f4fd;
+        }
+        
+        .file-upload-area i {
+            font-size: 3rem;
+            color: #3498db;
+            margin-bottom: 1rem;
+        }
+        
+        #fileInput {
+            display: none;
+        }
+    </style>
 </head>
 
 <body>
@@ -16,14 +126,13 @@
             <ul class="menu">
                 <li><a href="index.html">Home</a></li>
                 <li><a href="course.html">Course</a></li>
-                <li><a href="questiontag.html" class="active">Question Tag</a></li>
+                <li><a href="questiontag.html" class="active">Question Bank</a></li>
                 <li class="dropdown" id="login-dropdown-li">
                     <a href="#" id="login-status-link">Login</a>
                     <div class="dropdown-content" id="auth-dropdown-content">
                         <a href="#" onclick="showLogin('student')">Student Login</a>
                         <a href="#" onclick="showLogin('tutor')">Tutor Login</a>
                         <a href="#" onclick="showLogin('admin')">Admin Login</a>
-                        <!-- ADD THIS LINE -->
                         <a href="#" onclick="showRegistration()">Register</a>
                     </div>
                 </li>
@@ -35,10 +144,104 @@
         <section id="questiontag">
             <div class="hero">
                 <h1>Question Bank</h1>
-                <p>Download individual questions or entire sets for practice. Questions are available in .txt format.
-                </p>
+                <p>Download individual questions or entire sets for practice. Questions are available in .txt format.</p>
             </div>
 
+            <!-- Tutor Upload Form (Visible only when tutor is logged in) -->
+            <div id="tutorUploadForm" class="upload-form" style="display: none;">
+                <div class="tutor-controls">
+                    <h2><i class="fas fa-upload"></i> Upload New Question</h2>
+                    <button class="cta-button" onclick="toggleQuestionUploadForm()">
+                        <i class="fas fa-times"></i> Close
+                    </button>
+                </div>
+                
+                <form id="questionUploadForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="questionTitle">Question Title*</label>
+                            <input type="text" id="questionTitle" required placeholder="e.g., Newton's Laws Problem">
+                        </div>
+                        <div class="form-group">
+                            <label for="questionSubject">Subject*</label>
+                            <select id="questionSubject" required>
+                                <option value="">Select Subject</option>
+                                <option value="physics">Physics</option>
+                                <option value="chemistry">Chemistry</option>
+                                <option value="math">Mathematics</option>
+                                <option value="biology">Biology</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="questionGrade">Grade*</label>
+                            <select id="questionGrade" required>
+                                <option value="">Select Grade</option>
+                                <option value="10th">10th Grade</option>
+                                <option value="12th">12th Grade</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="questionDifficulty">Difficulty*</label>
+                            <select id="questionDifficulty" required>
+                                <option value="">Select Difficulty</option>
+                                <option value="easy">Easy</option>
+                                <option value="medium">Medium</option>
+                                <option value="hard">Hard</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="questionChapter">Chapter</label>
+                            <input type="text" id="questionChapter" placeholder="e.g., Chapter 5">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="questionText">Question Text*</label>
+                        <textarea id="questionText" rows="4" required placeholder="Enter the question text here..."></textarea>
+                    </div>
+                    
+                    <!-- File Upload Area -->
+                    <div class="file-upload-area" onclick="document.getElementById('fileInput').click()">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <h3>Upload PDF/Image (Optional)</h3>
+                        <p>Click to browse or drag and drop</p>
+                        <p id="fileName" style="color: #666; margin-top: 10px;"></p>
+                        <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png,.txt" onchange="handleFileSelect(event)">
+                    </div>
+                    
+                    <div id="filePreview" class="file-preview" style="display: none;">
+                        <strong>Selected File:</strong> <span id="previewFileName"></span>
+                        <span id="fileSize" style="color: #666; margin-left: 10px;"></span>
+                        <button type="button" class="remove-btn" onclick="removeFile()" style="margin-left: 10px;">
+                            <i class="fas fa-times"></i> Remove
+                        </button>
+                    </div>
+                    
+                    <div style="margin-top: 2rem;">
+                        <button type="submit" class="cta-button login-btn">
+                            <i class="fas fa-upload"></i> Upload Question
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- My Uploads Section (for tutors) -->
+            <div id="myQuestionUploads" class="my-uploads" style="display: none;">
+                <h2><i class="fas fa-list"></i> My Uploaded Questions</h2>
+                <!-- Dynamic content will be loaded here -->
+            </div>
+
+            <!-- Tutor Upload Button -->
+            <div id="tutorQuestionUploadBtn" style="margin-bottom: 2rem; display: none;">
+                <button class="cta-button" onclick="toggleQuestionUploadForm()">
+                    <i class="fas fa-plus-circle"></i> Upload New Question
+                </button>
+            </div>
+
+            <!-- Search and Filter -->
             <div class="search-filter">
                 <input type="text" id="questionSearch" placeholder="Search questions...">
                 <select id="gradeSelect">
@@ -51,94 +254,23 @@
                     <option value="physics">Physics</option>
                     <option value="chemistry">Chemistry</option>
                     <option value="math">Mathematics</option>
+                    <option value="biology">Biology</option>
                 </select>
             </div>
 
-            <div class="grade-section">
-                <div class="grade-header">
-                    <h2><i class="fas fa-graduation-cap"></i> 10th Grade Questions</h2>
-                    <button class="cta-button" onclick="downloadAllQuestions('10th')">
-                        <i class="fas fa-download"></i> Download All 10th Grade
-                    </button>
-                </div>
-                <div class="questions-grid">
-                    <div class="question-card" data-subject="physics">
-                        <div class="question-header">
-                            <h4>Q1: Define Resistance</h4>
-                            <span class="difficulty easy">Easy</span>
-                        </div>
-                        <p>What is electrical resistance, and what factors does the resistance of a conductor depend on?</p>
-                        <div class="question-footer">
-                            <button class="download-btn" data-filename="10th_physics_q1.txt"
-                                data-content="What is electrical resistance, and what factors does the resistance of a conductor depend on?">
-                                <i class="fas fa-download"></i> Download
-                            </button>
-                            <span class="question-meta">Physics | Chapter 10</span>
-                        </div>
-                    </div>
-
-                    <div class="question-card" data-subject="chemistry">
-                        <div class="question-header">
-                            <h4>Q2: Acids and Bases</h4>
-                            <span class="difficulty medium">Medium</span>
-                        </div>
-                        <p>What is pH? Explain acidic, basic and neutral solutions.</p>
-                        <div class="question-footer">
-                            <button class="download-btn" data-filename="10th_chemistry_q2.txt"
-                                data-content="What is pH? Explain acidic, basic and neutral solutions.">
-                                <i class="fas fa-download"></i> Download
-                            </button>
-                            <span class="question-meta">Chemistry | Chapter 8</span>
-                        </div>
-                    </div>
-                </div>
+            <!-- Questions Container (Dynamic Content) -->
+            <div id="questionsContainer" class="questions-grid">
+                <!-- Dynamic questions will be loaded here -->
+                <p class="loading">Loading questions...</p>
             </div>
 
-            <div class="grade-section">
-                <div class="grade-header">
-                    <h2><i class="fas fa-graduation-cap"></i> 12th Grade Questions</h2>
-                    <button class="cta-button" onclick="downloadAllQuestions('12th')">
-                        <i class="fas fa-download"></i> Download All 12th Grade
-                    </button>
-                </div>
-                <div class="questions-grid">
-                    <div class="question-card" data-subject="math">
-                        <div class="question-header">
-                            <h4>Q3: Calculus Problem</h4>
-                            <span class="difficulty hard">Hard</span>
-                        </div>
-                        <p>Find the area under the curve y = x^2 from x = 1 to x = 3.</p>
-                        <div class="question-footer">
-                            <button class="download-btn" data-filename="12th_math_q3.txt"
-                                data-content="Find the area under the curve y = x^2 from x = 1 to x = 3.">
-                                <i class="fas fa-download"></i> Download
-                            </button>
-                            <span class="question-meta">Mathematics | Chapter 7</span>
-                        </div>
-                    </div>
-
-                    <div class="question-card" data-subject="chemistry">
-                        <div class="question-header">
-                            <h4>Q4: Isomerism</h4>
-                            <span class="difficulty medium">Medium</span>
-                        </div>
-                        <p>Discuss the types of isomerism with examples.</p>
-                        <div class="question-footer">
-                            <button class="download-btn" data-filename="12th_chemistry_q2.txt"
-                                data-content="Discuss the types of isomerism with examples.">
-                                <i class="fas fa-download"></i> Download
-                            </button>
-                            <span class="question-meta">Chemistry | Chapter 12</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+            <!-- Stats Section -->
             <div class="question-stats">
-                <p><i class="fas fa-info-circle"></i> Total Questions: 10 | Last Updated: Today</p>
+                <p><i class="fas fa-info-circle"></i> Total Questions: <span id="totalQuestions">0</span> | Last Updated: Today</p>
             </div>
         </section>
 
+        <!-- Login Modal -->
         <div id="loginModal" class="modal">
             <div class="modal-content">
                 <div id="login-form-container"></div>
@@ -159,6 +291,252 @@
 
     <script src="common.js"></script>
     <script src="questiontag.js"></script>
+    <script>
+        // New JavaScript for question management
+        let selectedFile = null;
+        
+        function toggleQuestionUploadForm() {
+            const form = document.getElementById('tutorUploadForm');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+            if (form.style.display === 'block') {
+                window.scrollTo({ top: form.offsetTop - 100, behavior: 'smooth' });
+            }
+        }
+        
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                selectedFile = file;
+                document.getElementById('fileName').textContent = file.name;
+                document.getElementById('previewFileName').textContent = file.name;
+                document.getElementById('fileSize').textContent = `(${(file.size / 1024).toFixed(2)} KB)`;
+                document.getElementById('filePreview').style.display = 'block';
+            }
+        }
+        
+        function removeFile() {
+            selectedFile = null;
+            document.getElementById('fileInput').value = '';
+            document.getElementById('fileName').textContent = '';
+            document.getElementById('filePreview').style.display = 'none';
+        }
+        
+        async function uploadQuestion(event) {
+            event.preventDefault();
+            
+            if (!window.currentUsername) {
+                alert("Please log in as tutor to upload questions");
+                return;
+            }
+            
+            // Collect form data
+            const title = document.getElementById('questionTitle').value;
+            const subject = document.getElementById('questionSubject').value;
+            const grade = document.getElementById('questionGrade').value;
+            const difficulty = document.getElementById('questionDifficulty').value;
+            const chapter = document.getElementById('questionChapter').value;
+            const questionText = document.getElementById('questionText').value;
+            
+            if (!title || !subject || !grade || !difficulty || !questionText) {
+                alert("Please fill all required fields");
+                return;
+            }
+            
+            const questionData = {
+                username: window.currentUsername,
+                question: questionText,
+                subject: subject,
+                grade: grade,
+                difficulty: difficulty,
+                chapter: chapter || '',
+                title: title
+            };
+            
+            // Handle file upload
+            if (selectedFile) {
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    questionData.file_data = e.target.result.split(',')[1]; // Base64 data
+                    questionData.file_name = selectedFile.name;
+                    questionData.file_type = selectedFile.type;
+                    
+                    await sendQuestionToServer(questionData);
+                };
+                reader.readAsDataURL(selectedFile);
+            } else {
+                await sendQuestionToServer(questionData);
+            }
+        }
+        
+        async function sendQuestionToServer(questionData) {
+            try {
+                const response = await fetch(window.BACKEND_URL + '/tutor/questions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(questionData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert("Question uploaded successfully!");
+                    // Reset form
+                    document.getElementById('questionUploadForm').reset();
+                    removeFile();
+                    toggleQuestionUploadForm();
+                    // Reload questions
+                    loadQuestions();
+                    loadMyQuestionUploads();
+                } else {
+                    alert("Error: " + result.message);
+                }
+            } catch (error) {
+                console.error("Upload error:", error);
+                alert("Failed to upload question. Please try again.");
+            }
+        }
+        
+        async function loadMyQuestionUploads() {
+            if (!window.currentUsername || window.userType !== 'tutor') return;
+            
+            try {
+                const response = await fetch(window.BACKEND_URL + '/questions');
+                const result = await response.json();
+                
+                if (result.success) {
+                    const myUploadsDiv = document.getElementById('myQuestionUploads');
+                    const myQuestions = result.questions.filter(question => 
+                        question.tutor_username === window.currentUsername
+                    );
+                    
+                    if (myQuestions.length > 0) {
+                        myUploadsDiv.style.display = 'block';
+                        let html = '<h2><i class="fas fa-list"></i> My Uploaded Questions</h2>';
+                        html += '<div style="display: flex; flex-wrap: wrap; gap: 1rem;">';
+                        
+                        myQuestions.forEach(question => {
+                            html += `
+                                <div class="upload-item">
+                                    <button class="delete-upload" onclick="deleteQuestion('${question._id}')">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                    <h4>${question.title || 'Untitled Question'}</h4>
+                                    <p>${question.subject} - ${question.grade}</p>
+                                    <div class="question-content">${question.question.substring(0, 100)}...</div>
+                                    ${question.has_file ? '<div class="has-file"><i class="fas fa-paperclip"></i> Has attached file</div>' : ''}
+                                    <small>Difficulty: <span class="difficulty ${question.difficulty}">${question.difficulty}</span></small>
+                                    <br>
+                                    <small>Uploaded: ${new Date(question.created_at).toLocaleDateString()}</small>
+                                </div>
+                            `;
+                        });
+                        
+                        html += '</div>';
+                        myUploadsDiv.innerHTML = html;
+                    } else {
+                        myUploadsDiv.style.display = 'none';
+                    }
+                }
+            } catch (error) {
+                console.error("Error loading my uploads:", error);
+            }
+        }
+        
+        async function deleteQuestion(questionId) {
+            if (!confirm("Are you sure you want to delete this question?")) return;
+            
+            try {
+                const response = await fetch(window.BACKEND_URL + `/tutor/questions/${questionId}`, {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: window.currentUsername })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert("Question deleted successfully!");
+                    loadQuestions();
+                    loadMyQuestionUploads();
+                } else {
+                    alert("Error: " + result.message);
+                }
+            } catch (error) {
+                console.error("Delete error:", error);
+                alert("Failed to delete question");
+            }
+        }
+        
+        async function downloadQuestionFile(questionId) {
+            if (!window.currentUsername) {
+                showLogin('student');
+                return;
+            }
+            
+            try {
+                const response = await fetch(window.BACKEND_URL + `/questions/download/${questionId}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    if (result.file_data) {
+                        // Download binary file
+                        const binaryString = window.atob(result.file_data);
+                        const bytes = new Uint8Array(binaryString.length);
+                        for (let i = 0; i < binaryString.length; i++) {
+                            bytes[i] = binaryString.charCodeAt(i);
+                        }
+                        const blob = new Blob([bytes], { type: result.file_type });
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = result.file_name;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        window.URL.revokeObjectURL(url);
+                    } else if (result.text_content) {
+                        // Download text content
+                        const element = document.createElement('a');
+                        const file = new Blob([result.text_content], {type: 'text/plain'});
+                        element.href = URL.createObjectURL(file);
+                        element.download = result.file_name;
+                        document.body.appendChild(element);
+                        element.click();
+                        document.body.removeChild(element);
+                    }
+                } else {
+                    alert("Error: " + result.message);
+                }
+            } catch (error) {
+                console.error("Download error:", error);
+                alert("Failed to download file");
+            }
+        }
+        
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up form submission
+            const form = document.getElementById('questionUploadForm');
+            if (form) {
+                form.addEventListener('submit', uploadQuestion);
+            }
+            
+            // Check if tutor is logged in
+            if (window.currentUsername && window.userType === 'tutor') {
+                document.getElementById('tutorQuestionUploadBtn').style.display = 'block';
+                loadMyQuestionUploads();
+            }
+            
+            // Load initial questions
+            loadQuestions();
+        });
+        
+        // Make functions globally available
+        window.toggleQuestionUploadForm = toggleQuestionUploadForm;
+        window.uploadQuestion = uploadQuestion;
+        window.deleteQuestion = deleteQuestion;
+        window.downloadQuestionFile = downloadQuestionFile;
+        window.loadMyQuestionUploads = loadMyQuestionUploads;
+    </script>
 </body>
-
 </html>

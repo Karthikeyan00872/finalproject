@@ -1,3 +1,4 @@
+// [file name]: common.js
 // common.js - Core functionalities shared across all pages
 
 // --- Global DOM Elements ---
@@ -6,10 +7,11 @@ const loginFormContainer = document.getElementById('login-form-container');
 
 // --- Global Variable for Logged-in User ---
 let currentUsername = localStorage.getItem('currentUsername') || null; 
+let userType = localStorage.getItem('userType') || null; // 添加 userType 变量
 
 const BACKEND_URL = 'http://localhost:5000'; // Define the backend base URL
 
-console.log('Common.js loaded. Current username:', currentUsername); // Debug log
+console.log('Common.js loaded. Current username:', currentUsername, 'User Type:', userType); // Debug log
 
 // --- Utility Functions ---
 
@@ -111,7 +113,7 @@ function clearLoginErrors() {
 
 // **Function to update the Login/Username UI**
 function updateLoginUI() {
-    console.log('Updating login UI. Current user:', currentUsername); // Debug log
+    console.log('Updating login UI. Current user:', currentUsername, 'Type:', userType); // Debug log
     
     // Re-fetch elements inside function to ensure they are available on all pages
     const loginStatusLink = document.getElementById('login-status-link');
@@ -122,9 +124,6 @@ function updateLoginUI() {
             // User is logged in: Show Username
             console.log('Setting UI to logged in state for:', currentUsername);
             loginStatusLink.innerHTML = `<i class="fas fa-user-circle"></i> ${currentUsername}`;
-            
-            // Get user type from localStorage
-            const userType = localStorage.getItem('userType');
             
             if (userType === 'admin') {
                 // Admin shows admin-specific options
@@ -308,10 +307,20 @@ async function handleAuth(event, endpoint, formType) {
             // Set user data on successful login (not on registration)
             if (formType !== 'register') {
                 currentUsername = result.username;
+                userType = result.userType;
                 localStorage.setItem('currentUsername', result.username);
                 localStorage.setItem('userType', result.userType);
                 
                 console.log('User logged in:', currentUsername, 'Type:', result.userType);
+                
+                // 触发登录状态变更事件
+                const loginEvent = new CustomEvent('loginStateChange', { 
+                    detail: { 
+                        username: result.username, 
+                        userType: result.userType 
+                    } 
+                });
+                window.dispatchEvent(loginEvent);
                 
                 // Check if user is admin and redirect to admin page
                 if (result.userType === 'admin') {
@@ -354,12 +363,25 @@ async function handleAuth(event, endpoint, formType) {
 
 function handleLogout() {
     console.log('Logging out user:', currentUsername);
-    const username = currentUsername;
+    const oldUsername = currentUsername;
+    const oldUserType = userType;
+    
     currentUsername = null;
+    userType = null;
     localStorage.removeItem('currentUsername');
     localStorage.removeItem('userType');
+    
+    // 触发登出事件
+    const logoutEvent = new CustomEvent('loginStateChange', { 
+        detail: { 
+            username: null, 
+            userType: null 
+        } 
+    });
+    window.dispatchEvent(logoutEvent);
+    
     updateLoginUI();
-    showNotification(`Goodbye ${username}! You have been logged out.`);
+    showNotification(`Goodbye ${oldUsername}! You have been logged out.`);
     
     // Clear chat on index page
     if (window.clearChat) {
@@ -370,9 +392,47 @@ function handleLogout() {
     setTimeout(() => location.reload(), 1000);
 }
 
+// 新增：检查并显示导师UI的函数
+function checkAndShowTutorUI() {
+    console.log('Checking tutor UI - currentUsername:', currentUsername, 'userType:', userType);
+    
+    if (currentUsername && userType === 'tutor') {
+        console.log('Tutor detected, showing upload button');
+        const uploadBtn = document.getElementById('tutorUploadBtn');
+        if (uploadBtn) {
+            uploadBtn.style.display = 'block';
+        }
+        
+        const myUploads = document.getElementById('myUploads');
+        if (myUploads) {
+            myUploads.style.display = 'block';
+        }
+    } else {
+        console.log('Not a tutor or not logged in');
+        const uploadBtn = document.getElementById('tutorUploadBtn');
+        if (uploadBtn) {
+            uploadBtn.style.display = 'none';
+        }
+        
+        const uploadForm = document.getElementById('tutorUploadForm');
+        if (uploadForm) {
+            uploadForm.style.display = 'none';
+        }
+        
+        const myUploads = document.getElementById('myUploads');
+        if (myUploads) {
+            myUploads.style.display = 'none';
+        }
+    }
+}
+
 // --- Initialization ---
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM loaded. Initializing common.js');
+    
+    // 确保从 localStorage 读取最新状态
+    currentUsername = localStorage.getItem('currentUsername') || null;
+    userType = localStorage.getItem('userType') || null;
     
     // Expose functions globally
     window.showLogin = showLogin;
@@ -381,10 +441,15 @@ document.addEventListener('DOMContentLoaded', () => {
     window.handleLogout = handleLogout;
     window.showRegistration = showRegistration;
     window.currentUsername = currentUsername;
+    window.userType = userType;
     window.BACKEND_URL = BACKEND_URL;
+    window.checkAndShowTutorUI = checkAndShowTutorUI;
 
     // Initialize the Login UI
     updateLoginUI();
+    
+    // 立即检查并显示导师UI（如果适用）
+    checkAndShowTutorUI();
     
     // Check if backend is reachable
     fetch(BACKEND_URL + '/test')

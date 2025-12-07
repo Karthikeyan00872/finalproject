@@ -1,12 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Tutor - Courses</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Additional styles for tutor upload form */
+        .upload-form {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .chapter-section {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background: #f9f9f9;
+        }
+        
+        .video-input {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+            align-items: center;
+        }
+        
+        .video-input input {
+            flex: 1;
+        }
+        
+        .remove-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 0.5rem;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+        }
+        
+        .add-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            margin-top: 0.5rem;
+        }
+        
+        .tutor-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .my-uploads {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .upload-item {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1rem;
+            position: relative;
+            min-width: 200px;
+        }
+        
+        .delete-upload {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .rating-stars {
+            color: #ffd700;
+            margin: 0.5rem 0;
+        }
+        
+        .chapter-list {
+            margin-top: 1rem;
+        }
+        
+        .chapter-item {
+            background: #f5f5f5;
+            border-radius: 5px;
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            border-left: 3px solid #4CAF50;
+        }
+        
+        .video-list {
+            margin-left: 1rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+    </style>
 </head>
 
 <body>
@@ -23,7 +142,6 @@
                         <a href="#" onclick="showLogin('student')">Student Login</a>
                         <a href="#" onclick="showLogin('tutor')">Tutor Login</a>
                         <a href="#" onclick="showLogin('admin')">Admin Login</a>
-                        <!-- ADD THIS LINE -->
                         <a href="#" onclick="showRegistration()">Register</a>
                     </div>
                 </li>
@@ -35,9 +153,96 @@
         <section id="course">
             <div class="hero">
                 <h1>Courses</h1>
-                <p>Select your class and subject to explore courses tailored for your success.</p>
+                <p>Explore courses uploaded by our expert tutors.</p>
             </div>
 
+            <!-- Tutor Upload Form (Visible only when tutor is logged in) -->
+            <div id="tutorUploadForm" class="upload-form" style="display: none;">
+                <div class="tutor-controls">
+                    <h2><i class="fas fa-upload"></i> Upload New Course</h2>
+                    <button class="cta-button" onclick="toggleUploadForm()">
+                        <i class="fas fa-times"></i> Close
+                    </button>
+                </div>
+                
+                <form id="courseUploadForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="courseTitle">Course Title*</label>
+                            <input type="text" id="courseTitle" required placeholder="e.g., Advanced Physics">
+                        </div>
+                        <div class="form-group">
+                            <label for="courseSubject">Subject*</label>
+                            <select id="courseSubject" required>
+                                <option value="">Select Subject</option>
+                                <option value="physics">Physics</option>
+                                <option value="chemistry">Chemistry</option>
+                                <option value="math">Mathematics</option>
+                                <option value="biology">Biology</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="courseGrade">Grade*</label>
+                            <select id="courseGrade" required>
+                                <option value="">Select Grade</option>
+                                <option value="10th">10th Grade</option>
+                                <option value="12th">12th Grade</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="courseDescription">Description</label>
+                        <textarea id="courseDescription" rows="3" placeholder="Describe your course..."></textarea>
+                    </div>
+                    
+                    <div id="chaptersContainer">
+                        <h3>Chapters & Videos</h3>
+                        <div class="chapter-section" data-chapter="1">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Chapter 1 Title*</label>
+                                    <input type="text" class="chapter-title" required placeholder="e.g., Newton's Laws">
+                                </div>
+                                <button type="button" class="remove-btn" onclick="removeChapter(1)">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="video-section">
+                                <label>Video Links</label>
+                                <div class="video-input">
+                                    <input type="text" class="video-url" placeholder="Video URL (YouTube/Vimeo/etc)">
+                                    <button type="button" class="remove-btn" onclick="removeVideo(this)">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                <button type="button" class="add-btn" onclick="addVideo(this)">
+                                    <i class="fas fa-plus"></i> Add Another Video
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="button" class="cta-button" onclick="addChapter()">
+                        <i class="fas fa-plus"></i> Add Another Chapter
+                    </button>
+                    
+                    <div style="margin-top: 2rem;">
+                        <button type="submit" class="cta-button login-btn">
+                            <i class="fas fa-upload"></i> Upload Course
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- My Uploads Section (for tutors) -->
+            <div id="myUploads" class="my-uploads" style="display: none;">
+                <h2><i class="fas fa-list"></i> My Uploaded Courses</h2>
+                <!-- Dynamic content will be loaded here -->
+            </div>
+
+            <!-- Course Filter -->
             <div class="search-filter">
                 <select id="gradeFilter">
                     <option value="all">All Grades</option>
@@ -51,66 +256,41 @@
                     <option value="math">Mathematics</option>
                     <option value="biology">Biology</option>
                 </select>
+                <button class="cta-button" onclick="loadCourses()">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
             </div>
 
-            <div class="courses-container">
-                <div class="course-card" data-grade="10th" data-subject="physics">
-                    <h3>10th Grade Physics</h3>
-                    <p>A comprehensive course on Newtonian mechanics and electricity basics.</p>
-                    <div class="course-meta">
-                        <span><i class="fas fa-book"></i> 40 Lessons</span>
-                        <span><i class="fas fa-clock"></i> 60 Hours</span>
-                    </div>
-                    <button class="course-btn" onclick="enrollCourse('10th Grade Physics')">Enroll Now</button>
-                </div>
-                
-                <div class="course-card" data-grade="10th" data-subject="chemistry">
-                    <h3>10th Grade Chemistry</h3>
-                    <p>Fundamentals of chemical reactions, acids, bases, and salts.</p>
-                    <div class="course-meta">
-                        <span><i class="fas fa-book"></i> 30 Lessons</span>
-                        <span><i class="fas fa-clock"></i> 45 Hours</span>
-                    </div>
-                    <button class="course-btn" onclick="enrollCourse('10th Grade Chemistry')">Enroll Now</button>
-                </div>
-                
-                <div class="course-card" data-grade="12th" data-subject="physics">
-                    <h3>12th Grade Advanced Physics</h3>
-                    <p>Dive into electromagnetism, optics, and modern physics concepts.</p>
-                    <div class="course-meta">
-                        <span><i class="fas fa-book"></i> 60 Lessons</span>
-                        <span><i class="fas fa-clock"></i> 90 Hours</span>
-                    </div>
-                    <button class="course-btn" onclick="enrollCourse('12th Grade Advanced Physics')">Enroll Now</button>
-                </div>
-
-                <div class="course-card" data-grade="12th" data-subject="math">
-                    <h3>12th Grade Mathematics</h3>
-                    <p>Calculus, vectors, and three-dimensional geometry for exam preparation.</p>
-                    <div class="course-meta">
-                        <span><i class="fas fa-book"></i> 50 Lessons</span>
-                        <span><i class="fas fa-clock"></i> 70 Hours</span>
-                    </div>
-                    <button class="course-btn" onclick="enrollCourse('12th Mathematics')">Enroll Now</button>
-                </div>
+            <!-- Tutor Upload Button -->
+            <div id="tutorUploadBtn" style="margin-bottom: 2rem; display: none;">
+                <button class="cta-button" onclick="toggleUploadForm()">
+                    <i class="fas fa-plus-circle"></i> Upload New Course
+                </button>
             </div>
 
+            <!-- Courses Container (Dynamic Content) -->
+            <div id="coursesContainer" class="courses-container">
+                <p class="loading">Loading courses...</p>
+            </div>
+
+            <!-- Stats Section -->
             <div class="stats">
                 <div class="stat-item">
-                    <h3>500+</h3>
-                    <p>Students Enrolled</p>
+                    <h3 id="totalCourses">0</h3>
+                    <p>Courses Available</p>
                 </div>
                 <div class="stat-item">
-                    <h3>50+</h3>
+                    <h3 id="totalTutors">0</h3>
                     <p>Expert Tutors</p>
                 </div>
                 <div class="stat-item">
-                    <h3>95%</h3>
-                    <p>Success Rate</p>
+                    <h3 id="totalVideos">0</h3>
+                    <p>Video Lessons</p>
                 </div>
             </div>
         </section>
 
+        <!-- Login Modal -->
         <div id="loginModal" class="modal">
             <div class="modal-content">
                 <div id="login-form-container"></div>
@@ -131,6 +311,237 @@
 
     <script src="common.js"></script>
     <script src="course.js"></script>
+    <script>
+        // JavaScript for course management
+        let chapterCounter = 1;
+        
+        function toggleUploadForm() {
+            const form = document.getElementById('tutorUploadForm');
+            if (form) {
+                form.style.display = form.style.display === 'none' ? 'block' : 'none';
+            }
+        }
+        
+        function addChapter() {
+            chapterCounter++;
+            const chaptersContainer = document.getElementById('chaptersContainer');
+            
+            const chapterDiv = document.createElement('div');
+            chapterDiv.className = 'chapter-section';
+            chapterDiv.setAttribute('data-chapter', chapterCounter);
+            chapterDiv.innerHTML = `
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Chapter ${chapterCounter} Title*</label>
+                        <input type="text" class="chapter-title" required placeholder="e.g., Newton's Laws">
+                    </div>
+                    <button type="button" class="remove-btn" onclick="removeChapter(${chapterCounter})">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="video-section">
+                    <label>Video Links</label>
+                    <div class="video-input">
+                        <input type="text" class="video-url" placeholder="Video URL (YouTube/Vimeo/etc)">
+                        <button type="button" class="remove-btn" onclick="removeVideo(this)">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <button type="button" class="add-btn" onclick="addVideo(this)">
+                        <i class="fas fa-plus"></i> Add Another Video
+                    </button>
+                </div>
+            `;
+            
+            chaptersContainer.appendChild(chapterDiv);
+        }
+        
+        function removeChapter(chapterNum) {
+            if (chapterCounter > 1) {
+                const chapter = document.querySelector(`[data-chapter="${chapterNum}"]`);
+                if (chapter) {
+                    chapter.remove();
+                    // Re-number remaining chapters
+                    const chapters = document.querySelectorAll('.chapter-section');
+                    chapters.forEach((chap, index) => {
+                        chap.setAttribute('data-chapter', index + 1);
+                        const label = chap.querySelector('label');
+                        if (label) {
+                            label.textContent = `Chapter ${index + 1} Title*`;
+                        }
+                    });
+                    chapterCounter = chapters.length;
+                }
+            }
+        }
+        
+        function addVideo(button) {
+            const videoSection = button.parentElement;
+            const videoDiv = document.createElement('div');
+            videoDiv.className = 'video-input';
+            videoDiv.innerHTML = `
+                <input type="text" class="video-url" placeholder="Video URL (YouTube/Vimeo/etc)">
+                <button type="button" class="remove-btn" onclick="removeVideo(this)">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            videoSection.insertBefore(videoDiv, button);
+        }
+        
+        function removeVideo(button) {
+            const videoDiv = button.parentElement;
+            if (videoDiv.parentElement.querySelectorAll('.video-input').length > 1) {
+                videoDiv.remove();
+            }
+        }
+        
+        async function uploadCourse(event) {
+            event.preventDefault();
+            
+            if (!window.currentUsername) {
+                alert("Please log in as tutor to upload courses");
+                return;
+            }
+            
+            // Collect form data
+            const title = document.getElementById('courseTitle').value;
+            const subject = document.getElementById('courseSubject').value;
+            const grade = document.getElementById('courseGrade').value;
+            const description = document.getElementById('courseDescription').value;
+            
+            // Collect chapters and videos
+            const chapters = [];
+            const chapterSections = document.querySelectorAll('.chapter-section');
+            
+            chapterSections.forEach((section, index) => {
+                const chapterTitle = section.querySelector('.chapter-title').value;
+                const videoUrls = Array.from(section.querySelectorAll('.video-url'))
+                    .map(input => input.value)
+                    .filter(url => url.trim() !== '');
+                
+                if (chapterTitle && videoUrls.length > 0) {
+                    chapters.push({
+                        title: chapterTitle,
+                        videos: videoUrls
+                    });
+                }
+            });
+            
+            if (!title || !subject || !grade || chapters.length === 0) {
+                alert("Please fill all required fields and add at least one chapter with videos");
+                return;
+            }
+            
+            const courseData = {
+                username: window.currentUsername,
+                title: title,
+                subject: subject,
+                grade: grade,
+                description: description,
+                chapters: chapters
+            };
+            
+            try {
+                const response = await fetch(window.BACKEND_URL + '/tutor/courses', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(courseData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert("Course uploaded successfully!");
+                    // Reset form
+                    document.getElementById('courseUploadForm').reset();
+                    // Remove extra chapters
+                    while (chapterCounter > 1) {
+                        removeChapter(chapterCounter);
+                    }
+                    toggleUploadForm();
+                    // Reload courses
+                    loadCourses();
+                    if (window.loadMyUploads) {
+                        window.loadMyUploads();
+                    }
+                } else {
+                    alert("Error: " + result.message);
+                }
+            } catch (error) {
+                console.error("Upload error:", error);
+                alert("Failed to upload course. Please try again.");
+            }
+        }
+        
+        // 初始化函数
+        function initCoursePage() {
+            console.log('Initializing course page');
+            
+            // Set up form submission
+            const form = document.getElementById('courseUploadForm');
+            if (form) {
+                form.addEventListener('submit', uploadCourse);
+            }
+            
+            // 检查导师登录状态
+            checkTutorLoginStatus();
+            
+            // 监听登录状态变化
+            window.addEventListener('loginStateChange', function(event) {
+                console.log('Course page: Login state changed');
+                checkTutorLoginStatus();
+                if (window.loadCourses) {
+                    window.loadCourses();
+                }
+            });
+        }
+        
+        // 检查导师登录状态
+        function checkTutorLoginStatus() {
+            const isTutor = window.currentUsername && window.userType === 'tutor';
+            console.log('Checking tutor status:', {
+                username: window.currentUsername,
+                userType: window.userType,
+                isTutor: isTutor
+            });
+            
+            const uploadBtn = document.getElementById('tutorUploadBtn');
+            const myUploads = document.getElementById('myUploads');
+            
+            if (isTutor) {
+                console.log('Showing tutor controls');
+                if (uploadBtn) uploadBtn.style.display = 'block';
+                if (myUploads) myUploads.style.display = 'block';
+                // 加载导师的课程
+                if (window.loadMyUploads) {
+                    setTimeout(() => window.loadMyUploads(), 100);
+                }
+            } else {
+                console.log('Hiding tutor controls');
+                if (uploadBtn) uploadBtn.style.display = 'none';
+                if (myUploads) myUploads.style.display = 'none';
+                
+                const uploadForm = document.getElementById('tutorUploadForm');
+                if (uploadForm) uploadForm.style.display = 'none';
+            }
+        }
+        
+        // Make functions globally available
+        window.toggleUploadForm = toggleUploadForm;
+        window.addChapter = addChapter;
+        window.removeChapter = removeChapter;
+        window.addVideo = addVideo;
+        window.removeVideo = removeVideo;
+        window.uploadCourse = uploadCourse;
+        
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 确保 common.js 已加载
+            setTimeout(() => {
+                initCoursePage();
+            }, 100);
+        });
+    </script>
 </body>
-
 </html>
