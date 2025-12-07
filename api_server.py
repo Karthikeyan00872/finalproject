@@ -1,3 +1,4 @@
+# [file name]: api_server.py
 # api_server.py - Flask Server for Gemini Chat and MongoDB Login with Tutor Content Management
 
 import os
@@ -466,29 +467,45 @@ def enroll_in_course():
         print(f"Enrollment error: {e}")
         return jsonify({"success": False, "message": str(e)}), 500
 
+# --- FIXED: Rate Course Endpoint ---
 @app.route('/courses/rate', methods=['POST'])
 def rate_course():
     """Student rates a course chapter."""
     data = request.get_json()
+    
+    # Debug log
+    print(f"Rating data received: {data}")
+    
     username = data.get('username')
     course_id = data.get('course_id')
-    rating = data.get('rating')
-    chapter = data.get('chapter')  # Which chapter is being rated
+    rating_value = data.get('rating')
+    chapter_index = data.get('chapter')  # Which chapter is being rated
     
-    if not all([username, course_id, rating, chapter]):
-        return jsonify({"success": False, "message": "Missing required fields"}), 400
+    # Check all required fields
+    if not username:
+        return jsonify({"success": False, "message": "Username is required"}), 400
+    if not course_id:
+        return jsonify({"success": False, "message": "Course ID is required"}), 400
+    if rating_value is None:
+        return jsonify({"success": False, "message": "Rating value is required"}), 400
+    if chapter_index is None:
+        return jsonify({"success": False, "message": "Chapter index is required"}), 400
     
     try:
-        rating = float(rating)
+        rating = float(rating_value)
         if rating < 1 or rating > 5:
             return jsonify({"success": False, "message": "Rating must be between 1-5"}), 400
         
-        chapter = int(chapter)
+        chapter = int(chapter_index)
         
         courses_col = mongo_db[COURSE_COLLECTION]
         
         # Check if course exists
-        course = courses_col.find_one({"_id": ObjectId(course_id)})
+        try:
+            course = courses_col.find_one({"_id": ObjectId(course_id)})
+        except:
+            return jsonify({"success": False, "message": "Invalid course ID format"}), 400
+            
         if not course:
             return jsonify({"success": False, "message": "Course not found"}), 404
         
@@ -503,7 +520,7 @@ def rate_course():
         )
         
         # Add new rating
-        courses_col.update_one(
+        result = courses_col.update_one(
             {"_id": ObjectId(course_id)},
             {"$push": {"ratings": {
                 "student": username,
@@ -514,11 +531,19 @@ def rate_course():
         )
         
         print(f"Rating added: {username} rated {course_id} chapter {chapter}: {rating} stars")
-        return jsonify({"success": True, "message": "Rating submitted successfully"})
+        return jsonify({
+            "success": True, 
+            "message": "Rating submitted successfully",
+            "rating": rating,
+            "chapter": chapter
+        })
         
+    except ValueError as e:
+        print(f"Rating value error: {e}")
+        return jsonify({"success": False, "message": "Invalid rating value"}), 400
     except Exception as e:
         print(f"Rating error: {e}")
-        return jsonify({"success": False, "message": str(e)}), 500
+        return jsonify({"success": False, "message": f"Server error: {str(e)}"}), 500
 
 # --- Question Management Endpoints ---
 
@@ -1091,14 +1116,14 @@ if __name__ == '__main__':
                     {
                         "title": "Motion and Forces",
                         "videos": [
-                            "https://www.youtube.com/watch?v=sample1",
-                            "https://www.youtube.com/watch?v=sample2"
+                            "https://www.youtube.com/watch?v=W1hYBxMuT8s",
+                            "https://www.youtube.com/watch?v=Kv5i7IqZ8-8"
                         ]
                     },
                     {
                         "title": "Energy and Work",
                         "videos": [
-                            "https://www.youtube.com/watch?v=sample3"
+                            "https://www.youtube.com/watch?v=9gUdDM6LZGo"
                         ]
                     }
                 ],

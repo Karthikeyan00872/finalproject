@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,19 +14,19 @@
             padding: 1.5rem;
             border-radius: 10px;
             margin-bottom: 2rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
         }
-        
+
         .form-row {
             display: flex;
             gap: 1rem;
             margin-bottom: 1rem;
         }
-        
+
         .form-row .form-group {
             flex: 1;
         }
-        
+
         .chapter-section {
             border: 1px solid #e0e0e0;
             border-radius: 8px;
@@ -33,18 +34,22 @@
             margin-bottom: 1rem;
             background: #f9f9f9;
         }
-        
+
         .video-input {
             display: flex;
             gap: 1rem;
             margin-bottom: 0.5rem;
             align-items: center;
         }
-        
-        .video-input input {
+
+        .video-input input,
+        .video-input select {
             flex: 1;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
         }
-        
+
         .remove-btn {
             background: #ff4757;
             color: white;
@@ -55,7 +60,7 @@
             width: 30px;
             height: 30px;
         }
-        
+
         .add-btn {
             background: #4CAF50;
             color: white;
@@ -65,21 +70,21 @@
             cursor: pointer;
             margin-top: 0.5rem;
         }
-        
+
         .tutor-controls {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1rem;
         }
-        
+
         .my-uploads {
             display: flex;
             flex-wrap: wrap;
             gap: 1rem;
             margin-bottom: 2rem;
         }
-        
+
         .upload-item {
             background: white;
             border: 1px solid #e0e0e0;
@@ -88,7 +93,7 @@
             position: relative;
             min-width: 200px;
         }
-        
+
         .delete-upload {
             position: absolute;
             top: 5px;
@@ -102,16 +107,16 @@
             cursor: pointer;
             font-size: 12px;
         }
-        
+
         .rating-stars {
             color: #ffd700;
             margin: 0.5rem 0;
         }
-        
+
         .chapter-list {
             margin-top: 1rem;
         }
-        
+
         .chapter-item {
             background: #f5f5f5;
             border-radius: 5px;
@@ -119,11 +124,119 @@
             margin-bottom: 0.5rem;
             border-left: 3px solid #4CAF50;
         }
-        
+
         .video-list {
             margin-left: 1rem;
             font-size: 0.9rem;
             color: #666;
+        }
+
+        /* Star rating dialog styles */
+        .star-rating-dialog {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .star-rating-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            min-width: 300px;
+        }
+
+        .star-container {
+            font-size: 2rem;
+            color: #ddd;
+            margin: 1rem 0;
+            cursor: pointer;
+        }
+
+        .star {
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .star:hover,
+        .star:hover~.star {
+            color: #ffd700 !important;
+        }
+
+        /* Video modal styles */
+        .video-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .video-modal-content {
+            background-color: #fff;
+            padding: 0;
+            border-radius: 10px;
+            max-width: 90%;
+            max-height: 90%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .video-close-btn {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            font-size: 28px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            z-index: 2001;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .video-close-btn:hover {
+            background: rgba(255, 71, 87, 0.8);
+        }
+
+        #videoPlayerContainer {
+            width: 100%;
+            height: 450px;
+        }
+
+        .play-video-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-right: 10px;
+        }
+
+        .play-video-btn:hover {
+            background: #45a049;
         }
     </style>
 </head>
@@ -164,7 +277,7 @@
                         <i class="fas fa-times"></i> Close
                     </button>
                 </div>
-                
+
                 <form id="courseUploadForm">
                     <div class="form-row">
                         <div class="form-group">
@@ -190,12 +303,12 @@
                             </select>
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="courseDescription">Description</label>
                         <textarea id="courseDescription" rows="3" placeholder="Describe your course..."></textarea>
                     </div>
-                    
+
                     <div id="chaptersContainer">
                         <h3>Chapters & Videos</h3>
                         <div class="chapter-section" data-chapter="1">
@@ -208,11 +321,16 @@
                                     <i class="fas fa-times"></i>
                                 </button>
                             </div>
-                            
+
                             <div class="video-section">
                                 <label>Video Links</label>
                                 <div class="video-input">
+                                    <select class="video-type" onchange="changeVideoType(this)">
+                                        <option value="link">Video Link</option>
+                                        <option value="upload">Upload Video</option>
+                                    </select>
                                     <input type="text" class="video-url" placeholder="Video URL (YouTube/Vimeo/etc)">
+                                    <input type="file" class="video-file" accept="video/*" style="display: none;">
                                     <button type="button" class="remove-btn" onclick="removeVideo(this)">
                                         <i class="fas fa-times"></i>
                                     </button>
@@ -223,11 +341,11 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <button type="button" class="cta-button" onclick="addChapter()">
                         <i class="fas fa-plus"></i> Add Another Chapter
                     </button>
-                    
+
                     <div style="margin-top: 2rem;">
                         <button type="submit" class="cta-button login-btn">
                             <i class="fas fa-upload"></i> Upload Course
@@ -290,6 +408,14 @@
             </div>
         </section>
 
+        <!-- Video Modal -->
+        <div id="videoModal" class="video-modal">
+            <div class="video-modal-content">
+                <span class="video-close-btn" onclick="closeVideoModal()">&times;</span>
+                <div id="videoPlayerContainer"></div>
+            </div>
+        </div>
+
         <!-- Login Modal -->
         <div id="loginModal" class="modal">
             <div class="modal-content">
@@ -312,20 +438,81 @@
     <script src="common.js"></script>
     <script src="course.js"></script>
     <script>
+        // Update the submitRating function in course.html
+        async function submitRating(rating, courseId, chapterIndex) {
+            console.log("Submitting rating from course.html:", {
+                rating,
+                courseId,
+                chapterIndex,
+                username: window.currentUsername
+            });
+
+            if (rating < 1 || rating > 5) {
+                alert("Please select a rating between 1 and 5 stars");
+                return;
+            }
+
+            if (!window.currentUsername) {
+                alert("Please log in to rate courses");
+                showLogin('student');
+                return;
+            }
+
+            try {
+                const response = await fetch(window.BACKEND_URL + '/courses/rate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: window.currentUsername,
+                        course_id: courseId,
+                        chapter: chapterIndex,
+                        rating: rating
+                    })
+                });
+
+                console.log("Rating response status:", response.status);
+                const result = await response.json();
+                console.log("Rating response data:", result);
+
+                // Remove rating dialog
+                const dialog = document.querySelector('.star-rating-dialog');
+                if (dialog) dialog.remove();
+
+                if (result.success) {
+                    alert("Thank you for your rating!");
+                    // Refresh to show updated ratings
+                    if (window.loadCourses) {
+                        window.loadCourses();
+                    }
+                } else {
+                    alert("Error: " + (result.message || 'Failed to submit rating'));
+                }
+            } catch (error) {
+                console.error("Rating error:", error);
+                alert("Failed to submit rating: " + error.message);
+
+                // Remove rating dialog on error too
+                const dialog = document.querySelector('.star-rating-dialog');
+                if (dialog) dialog.remove();
+            }
+        }
         // JavaScript for course management
         let chapterCounter = 1;
-        
+
         function toggleUploadForm() {
             const form = document.getElementById('tutorUploadForm');
             if (form) {
                 form.style.display = form.style.display === 'none' ? 'block' : 'none';
             }
         }
-        
+
         function addChapter() {
             chapterCounter++;
             const chaptersContainer = document.getElementById('chaptersContainer');
-            
+
             const chapterDiv = document.createElement('div');
             chapterDiv.className = 'chapter-section';
             chapterDiv.setAttribute('data-chapter', chapterCounter);
@@ -343,7 +530,12 @@
                 <div class="video-section">
                     <label>Video Links</label>
                     <div class="video-input">
+                        <select class="video-type" onchange="changeVideoType(this)">
+                            <option value="link">Video Link</option>
+                            <option value="upload">Upload Video</option>
+                        </select>
                         <input type="text" class="video-url" placeholder="Video URL (YouTube/Vimeo/etc)">
+                        <input type="file" class="video-file" accept="video/*" style="display: none;">
                         <button type="button" class="remove-btn" onclick="removeVideo(this)">
                             <i class="fas fa-times"></i>
                         </button>
@@ -353,10 +545,10 @@
                     </button>
                 </div>
             `;
-            
+
             chaptersContainer.appendChild(chapterDiv);
         }
-        
+
         function removeChapter(chapterNum) {
             if (chapterCounter > 1) {
                 const chapter = document.querySelector(`[data-chapter="${chapterNum}"]`);
@@ -375,64 +567,118 @@
                 }
             }
         }
-        
+
         function addVideo(button) {
             const videoSection = button.parentElement;
             const videoDiv = document.createElement('div');
             videoDiv.className = 'video-input';
             videoDiv.innerHTML = `
+                <select class="video-type" onchange="changeVideoType(this)">
+                    <option value="link">Video Link</option>
+                    <option value="upload">Upload Video</option>
+                </select>
                 <input type="text" class="video-url" placeholder="Video URL (YouTube/Vimeo/etc)">
+                <input type="file" class="video-file" accept="video/*" style="display: none;">
                 <button type="button" class="remove-btn" onclick="removeVideo(this)">
                     <i class="fas fa-times"></i>
                 </button>
             `;
             videoSection.insertBefore(videoDiv, button);
         }
-        
+
         function removeVideo(button) {
             const videoDiv = button.parentElement;
             if (videoDiv.parentElement.querySelectorAll('.video-input').length > 1) {
                 videoDiv.remove();
             }
         }
-        
+
+        function changeVideoType(selectElement) {
+            const videoInputDiv = selectElement.parentElement;
+            const urlInput = videoInputDiv.querySelector('.video-url');
+            const fileInput = videoInputDiv.querySelector('.video-file');
+
+            if (selectElement.value === 'link') {
+                urlInput.style.display = 'block';
+                fileInput.style.display = 'none';
+                fileInput.value = ''; // Clear file input
+            } else {
+                urlInput.style.display = 'none';
+                fileInput.style.display = 'block';
+                urlInput.value = ''; // Clear URL input
+            }
+        }
+
+        // Helper function to convert file to base64
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
         async function uploadCourse(event) {
             event.preventDefault();
-            
+
             if (!window.currentUsername) {
                 alert("Please log in as tutor to upload courses");
                 return;
             }
-            
+
             // Collect form data
             const title = document.getElementById('courseTitle').value;
             const subject = document.getElementById('courseSubject').value;
             const grade = document.getElementById('courseGrade').value;
             const description = document.getElementById('courseDescription').value;
-            
+
             // Collect chapters and videos
             const chapters = [];
             const chapterSections = document.querySelectorAll('.chapter-section');
-            
-            chapterSections.forEach((section, index) => {
+
+            for (const section of chapterSections) {
                 const chapterTitle = section.querySelector('.chapter-title').value;
-                const videoUrls = Array.from(section.querySelectorAll('.video-url'))
-                    .map(input => input.value)
-                    .filter(url => url.trim() !== '');
-                
+                const videoInputs = section.querySelectorAll('.video-input');
+                const videoUrls = [];
+
+                for (const videoInput of videoInputs) {
+                    const videoType = videoInput.querySelector('.video-type').value;
+
+                    if (videoType === 'link') {
+                        const url = videoInput.querySelector('.video-url').value;
+                        if (url.trim() !== '') {
+                            videoUrls.push(url);
+                        }
+                    } else {
+                        const fileInput = videoInput.querySelector('.video-file');
+                        if (fileInput.files.length > 0) {
+                            const file = fileInput.files[0];
+                            // Check file size (limit to 50MB for demo)
+                            if (file.size > 50 * 1024 * 1024) {
+                                alert(`File ${file.name} is too large. Maximum size is 50MB.`);
+                                return;
+                            }
+                            // Convert file to base64 for storage
+                            const base64 = await fileToBase64(file);
+                            videoUrls.push(base64);
+                        }
+                    }
+                }
+
                 if (chapterTitle && videoUrls.length > 0) {
                     chapters.push({
                         title: chapterTitle,
                         videos: videoUrls
                     });
                 }
-            });
-            
+            }
+
             if (!title || !subject || !grade || chapters.length === 0) {
                 alert("Please fill all required fields and add at least one chapter with videos");
                 return;
             }
-            
+
             const courseData = {
                 username: window.currentUsername,
                 title: title,
@@ -441,16 +687,16 @@
                 description: description,
                 chapters: chapters
             };
-            
+
             try {
                 const response = await fetch(window.BACKEND_URL + '/tutor/courses', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(courseData)
                 });
-                
+
                 const result = await response.json();
-                
+
                 if (result.success) {
                     alert("Course uploaded successfully!");
                     // Reset form
@@ -461,7 +707,9 @@
                     }
                     toggleUploadForm();
                     // Reload courses
-                    loadCourses();
+                    if (window.loadCourses) {
+                        window.loadCourses();
+                    }
                     if (window.loadMyUploads) {
                         window.loadMyUploads();
                     }
@@ -473,31 +721,164 @@
                 alert("Failed to upload course. Please try again.");
             }
         }
-        
-        // 初始化函数
+
+        // Video modal functions
+        function openVideoModal(videoUrl) {
+            const videoModal = document.getElementById('videoModal');
+            const videoPlayerContainer = document.getElementById('videoPlayerContainer');
+
+            if (!videoModal || !videoPlayerContainer) return;
+
+            videoPlayerContainer.innerHTML = '';
+
+            // Check video type and create appropriate player
+            if (isYouTubeUrl(videoUrl)) {
+                const videoId = getYouTubeId(videoUrl);
+                const iframe = document.createElement('iframe');
+                iframe.width = '100%';
+                iframe.height = '100%';
+                iframe.src = `https://www.youtube.com/embed/${videoId}`;
+                iframe.frameBorder = '0';
+                iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+                iframe.allowFullscreen = true;
+                videoPlayerContainer.appendChild(iframe);
+            } else if (isVimeoUrl(videoUrl)) {
+                const videoId = getVimeoId(videoUrl);
+                const iframe = document.createElement('iframe');
+                iframe.src = `https://player.vimeo.com/video/${videoId}`;
+                iframe.width = '100%';
+                iframe.height = '100%';
+                iframe.frameBorder = '0';
+                iframe.allow = 'autoplay; fullscreen; picture-in-picture';
+                iframe.allowFullscreen = true;
+                videoPlayerContainer.appendChild(iframe);
+            } else if (videoUrl.startsWith('data:video/') || videoUrl.startsWith('blob:')) {
+                const video = document.createElement('video');
+                video.controls = true;
+                video.style.width = '100%';
+                video.style.height = '100%';
+                video.style.background = '#000';
+
+                const source = document.createElement('source');
+                source.src = videoUrl;
+
+                // Try to detect video type
+                if (videoUrl.startsWith('data:video/mp4')) {
+                    source.type = 'video/mp4';
+                } else if (videoUrl.startsWith('data:video/webm')) {
+                    source.type = 'video/webm';
+                } else if (videoUrl.startsWith('data:video/ogg')) {
+                    source.type = 'video/ogg';
+                } else {
+                    source.type = 'video/mp4';
+                }
+
+                video.appendChild(source);
+                video.appendChild(document.createTextNode('Your browser does not support the video tag.'));
+                videoPlayerContainer.appendChild(video);
+            } else {
+                // Generic video player
+                const video = document.createElement('video');
+                video.controls = true;
+                video.style.width = '100%';
+                video.style.height = '100%';
+                video.style.background = '#000';
+
+                const source = document.createElement('source');
+                source.src = videoUrl;
+                source.type = 'video/mp4';
+
+                video.appendChild(source);
+                video.appendChild(document.createTextNode('Your browser does not support the video tag.'));
+                videoPlayerContainer.appendChild(video);
+            }
+
+            videoModal.style.display = 'flex';
+        }
+
+        function closeVideoModal() {
+            const videoModal = document.getElementById('videoModal');
+            const videoPlayerContainer = document.getElementById('videoPlayerContainer');
+
+            if (videoModal) {
+                videoModal.style.display = 'none';
+                if (videoPlayerContainer) {
+                    // Stop all videos
+                    const videos = videoPlayerContainer.querySelectorAll('video, iframe');
+                    videos.forEach(video => {
+                        if (video.tagName === 'VIDEO') {
+                            video.pause();
+                            video.currentTime = 0;
+                        } else if (video.tagName === 'IFRAME') {
+                            video.src = video.src; // Reset iframe source
+                        }
+                    });
+                    videoPlayerContainer.innerHTML = '';
+                }
+            }
+        }
+
+        // Helper functions for video URL detection
+        function isYouTubeUrl(url) {
+            return url.includes('youtube.com') || url.includes('youtu.be');
+        }
+
+        function getYouTubeId(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
+        function isVimeoUrl(url) {
+            return url.includes('vimeo.com');
+        }
+
+        function getVimeoId(url) {
+            const regExp = /vimeo.com\/(\d+)/;
+            const match = url.match(regExp);
+            return match ? match[1] : null;
+        }
+
         function initCoursePage() {
             console.log('Initializing course page');
-            
-            // Set up form submission
+
+            // Add event listener to upload form
             const form = document.getElementById('courseUploadForm');
             if (form) {
                 form.addEventListener('submit', uploadCourse);
             }
-            
-            // 检查导师登录状态
+
+            // Check tutor login status
             checkTutorLoginStatus();
-            
-            // 监听登录状态变化
-            window.addEventListener('loginStateChange', function(event) {
+
+            // Listen for login state changes
+            window.addEventListener('loginStateChange', function (event) {
                 console.log('Course page: Login state changed');
                 checkTutorLoginStatus();
                 if (window.loadCourses) {
                     window.loadCourses();
                 }
             });
+
+            // Close video modal when clicking outside
+            const videoModal = document.getElementById('videoModal');
+            if (videoModal) {
+                videoModal.addEventListener('click', function (event) {
+                    if (event.target === videoModal) {
+                        closeVideoModal();
+                    }
+                });
+            }
+
+            // Close video modal with Escape key
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape') {
+                    closeVideoModal();
+                }
+            });
         }
-        
-        // 检查导师登录状态
+
+        // Check tutor login status
         function checkTutorLoginStatus() {
             const isTutor = window.currentUsername && window.userType === 'tutor';
             console.log('Checking tutor status:', {
@@ -505,15 +886,15 @@
                 userType: window.userType,
                 isTutor: isTutor
             });
-            
+
             const uploadBtn = document.getElementById('tutorUploadBtn');
             const myUploads = document.getElementById('myUploads');
-            
+
             if (isTutor) {
                 console.log('Showing tutor controls');
                 if (uploadBtn) uploadBtn.style.display = 'block';
                 if (myUploads) myUploads.style.display = 'block';
-                // 加载导师的课程
+                // Load tutor's courses
                 if (window.loadMyUploads) {
                     setTimeout(() => window.loadMyUploads(), 100);
                 }
@@ -521,22 +902,29 @@
                 console.log('Hiding tutor controls');
                 if (uploadBtn) uploadBtn.style.display = 'none';
                 if (myUploads) myUploads.style.display = 'none';
-                
+
                 const uploadForm = document.getElementById('tutorUploadForm');
                 if (uploadForm) uploadForm.style.display = 'none';
             }
         }
-        
+
         // Make functions globally available
         window.toggleUploadForm = toggleUploadForm;
         window.addChapter = addChapter;
         window.removeChapter = removeChapter;
         window.addVideo = addVideo;
         window.removeVideo = removeVideo;
+        window.changeVideoType = changeVideoType;
         window.uploadCourse = uploadCourse;
-        
+        window.openVideoModal = openVideoModal;
+        window.closeVideoModal = closeVideoModal;
+        window.isYouTubeUrl = isYouTubeUrl;
+        window.getYouTubeId = getYouTubeId;
+        window.isVimeoUrl = isVimeoUrl;
+        window.getVimeoId = getVimeoId;
+
         // 页面加载时初始化
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // 确保 common.js 已加载
             setTimeout(() => {
                 initCoursePage();
@@ -544,4 +932,5 @@
         });
     </script>
 </body>
+
 </html>
