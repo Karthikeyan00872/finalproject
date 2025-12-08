@@ -7,6 +7,225 @@
     <title>AI Tutor - Admin Dashboard</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Admin User Details Styles */
+.user-info-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.user-info-card h4 {
+    color: #333;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #4CAF50;
+    padding-bottom: 10px;
+}
+
+.user-info-card p {
+    margin: 8px 0;
+    color: #555;
+}
+
+.no-data-card {
+    text-align: center;
+    padding: 40px 20px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    border: 2px dashed #ddd;
+}
+
+.no-data-card i {
+    font-size: 48px;
+    color: #999;
+    margin-bottom: 15px;
+}
+
+.no-data-card h4 {
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.error-card {
+    background: #ffebee;
+    border-left: 4px solid #c62828;
+    padding: 15px;
+    border-radius: 4px;
+    color: #c62828;
+}
+
+.courses-list, .questions-list, .enrolled-students {
+    margin-top: 20px;
+}
+
+.courses-list h4, .questions-list h4, .enrolled-students h4 {
+    color: #333;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.admin-permissions {
+    background: #f0f7ff;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.admin-permissions h4 {
+    color: #1976d2;
+    margin-bottom: 15px;
+}
+
+.admin-permissions ul {
+    list-style: none;
+    padding: 0;
+}
+
+.admin-permissions li {
+    padding: 8px 0;
+    color: #555;
+}
+
+.admin-permissions li i {
+    color: #4CAF50;
+    margin-right: 10px;
+}
+
+.rating-stars {
+    color: #ff9800;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+/* Status badges */
+.status {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: white;
+}
+
+.status.active {
+    background-color: #4CAF50;
+}
+
+.status.admin {
+    background-color: #2196F3;
+}
+
+.status.offline {
+    background-color: #f44336;
+}
+
+.status.online {
+    background-color: #4CAF50;
+}
+
+.user-type-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.user-type-badge.student {
+    background-color: #E3F2FD;
+    color: #1976D2;
+}
+
+.user-type-badge.tutor {
+    background-color: #F3E5F5;
+    color: #7B1FA2;
+}
+
+.user-type-badge.admin {
+    background-color: #FFF3E0;
+    color: #EF6C00;
+}
+
+/* Action buttons */
+.action-btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 0 3px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.action-btn.view-btn {
+    background-color: #2196F3;
+    color: white;
+}
+
+.action-btn.view-btn:hover {
+    background-color: #1976D2;
+}
+
+.action-btn.delete-btn {
+    background-color: #f44336;
+    color: white;
+}
+
+.action-btn.delete-btn:hover {
+    background-color: #d32f2f;
+}
+
+/* Section header button */
+.cta-button.secondary {
+    background-color: #6c757d;
+    border: none;
+}
+
+.cta-button.secondary:hover {
+    background-color: #5a6268;
+}
+
+/* Modal styles for course details */
+.modal .modal-content {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Table improvements */
+.admin-table tbody tr:hover {
+    background-color: #f5f5f5;
+}
+
+.admin-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+.loading {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+}
+
+.no-data {
+    text-align: center;
+    color: #999;
+    padding: 20px;
+}
+    </style>
 </head>
 
 <body>
@@ -97,6 +316,20 @@
                             </tr>
                         </tbody>
                     </table>
+                </div>
+            </div>
+
+            <!-- User Details Section -->
+            <div class="admin-section" id="user-details-section" style="display: none;">
+                <div class="section-header">
+                    <h2><i class="fas fa-user-circle"></i> User Details: <span id="viewed-username"></span></h2>
+                    <button class="cta-button secondary" onclick="closeUserDetails()">
+                        <i class="fas fa-times"></i> Close
+                    </button>
+                </div>
+                
+                <div id="user-details-content">
+                    <!-- Content will be loaded here -->
                 </div>
             </div>
 
