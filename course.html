@@ -192,6 +192,8 @@
             max-height: 90%;
             overflow: hidden;
             position: relative;
+            width: 800px;
+            height: 450px;
         }
 
         .video-close-btn {
@@ -218,7 +220,8 @@
 
         #videoPlayerContainer {
             width: 100%;
-            height: 450px;
+            height: 100%;
+            background-color: #000;
         }
 
         .play-video-btn {
@@ -499,6 +502,7 @@
                 if (dialog) dialog.remove();
             }
         }
+        
         // JavaScript for course management
         let chapterCounter = 1;
 
@@ -722,52 +726,173 @@
             }
         }
 
-        // Video modal functions
+        // ==================== FIXED VIDEO PLAYER FUNCTIONS ====================
+        
+        // Improved YouTube URL detection and extraction
+        function isYouTubeUrl(url) {
+            if (!url) return false;
+            const cleanUrl = url.trim().toLowerCase();
+            return cleanUrl.includes('youtube.com') || 
+                   cleanUrl.includes('youtu.be') || 
+                   cleanUrl.includes('youtube-nocookie.com');
+        }
+
+        function getYouTubeId(url) {
+            if (!url) return null;
+            
+            let videoId = null;
+            const cleanUrl = url.trim();
+            
+            // Try different patterns
+            // Pattern 1: youtu.be/VIDEO_ID
+            if (cleanUrl.includes('youtu.be/')) {
+                videoId = cleanUrl.split('youtu.be/')[1];
+                if (videoId.includes('?')) {
+                    videoId = videoId.split('?')[0];
+                }
+            }
+            // Pattern 2: youtube.com/watch?v=VIDEO_ID
+            else if (cleanUrl.includes('youtube.com/watch?v=')) {
+                videoId = cleanUrl.split('v=')[1];
+                const ampersandPosition = videoId.indexOf('&');
+                if (ampersandPosition !== -1) {
+                    videoId = videoId.substring(0, ampersandPosition);
+                }
+            }
+            // Pattern 3: youtube.com/embed/VIDEO_ID
+            else if (cleanUrl.includes('youtube.com/embed/')) {
+                videoId = cleanUrl.split('embed/')[1];
+                if (videoId.includes('?')) {
+                    videoId = videoId.split('?')[0];
+                }
+            }
+            // Pattern 4: youtube.com/v/VIDEO_ID
+            else if (cleanUrl.includes('youtube.com/v/')) {
+                videoId = cleanUrl.split('v/')[1];
+                if (videoId.includes('?')) {
+                    videoId = videoId.split('?')[0];
+                }
+            }
+            
+            // Validate video ID format (should be 11 characters)
+            if (videoId && /^[a-zA-Z0-9_-]{11}$/.test(videoId)) {
+                return videoId;
+            }
+            
+            return null;
+        }
+
+        function isVimeoUrl(url) {
+            if (!url) return false;
+            return url.trim().toLowerCase().includes('vimeo.com');
+        }
+
+        function getVimeoId(url) {
+            if (!url) return null;
+            
+            const cleanUrl = url.trim();
+            const patterns = [
+                /vimeo\.com\/(\d+)/,
+                /vimeo\.com\/video\/(\d+)/,
+                /vimeo\.com\/channels\/[^/]+\/(\d+)/,
+                /vimeo\.com\/groups\/[^/]+\/videos\/(\d+)/
+            ];
+            
+            for (const pattern of patterns) {
+                const match = cleanUrl.match(pattern);
+                if (match && match[1]) {
+                    return match[1];
+                }
+            }
+            
+            return null;
+        }
+
+        // Improved video modal function
         function openVideoModal(videoUrl) {
             const videoModal = document.getElementById('videoModal');
             const videoPlayerContainer = document.getElementById('videoPlayerContainer');
 
-            if (!videoModal || !videoPlayerContainer) return;
+            if (!videoModal || !videoPlayerContainer) {
+                console.error("Video modal elements not found");
+                return;
+            }
 
+            // Clear previous content
             videoPlayerContainer.innerHTML = '';
+            
+            // Clean the URL
+            let cleanUrl = videoUrl ? videoUrl.trim() : '';
+            
+            if (!cleanUrl) {
+                videoPlayerContainer.innerHTML = '<div style="color: white; padding: 20px; text-align: center;">No video URL provided</div>';
+                videoModal.style.display = 'flex';
+                return;
+            }
+            
+            console.log("Playing video:", cleanUrl);
 
             // Check video type and create appropriate player
-            if (isYouTubeUrl(videoUrl)) {
-                const videoId = getYouTubeId(videoUrl);
+            if (isYouTubeUrl(cleanUrl)) {
+                const videoId = getYouTubeId(cleanUrl);
+                if (!videoId) {
+                    videoPlayerContainer.innerHTML = '<div style="color: white; padding: 20px; text-align: center;">Invalid YouTube URL format</div>';
+                    videoModal.style.display = 'flex';
+                    return;
+                }
+                
+                // Create YouTube iframe with proper attributes
                 const iframe = document.createElement('iframe');
                 iframe.width = '100%';
                 iframe.height = '100%';
-                iframe.src = `https://www.youtube.com/embed/${videoId}`;
+                iframe.src = `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&autoplay=1`;
                 iframe.frameBorder = '0';
-                iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+                iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
                 iframe.allowFullscreen = true;
+                iframe.title = 'YouTube video player';
+                iframe.setAttribute('loading', 'lazy');
+                
                 videoPlayerContainer.appendChild(iframe);
-            } else if (isVimeoUrl(videoUrl)) {
-                const videoId = getVimeoId(videoUrl);
+                console.log("YouTube iframe created with video ID:", videoId);
+                
+            } else if (isVimeoUrl(cleanUrl)) {
+                const videoId = getVimeoId(cleanUrl);
+                if (!videoId) {
+                    videoPlayerContainer.innerHTML = '<div style="color: white; padding: 20px; text-align: center;">Invalid Vimeo URL format</div>';
+                    videoModal.style.display = 'flex';
+                    return;
+                }
+                
                 const iframe = document.createElement('iframe');
-                iframe.src = `https://player.vimeo.com/video/${videoId}`;
+                iframe.src = `https://player.vimeo.com/video/${videoId}?autoplay=1`;
                 iframe.width = '100%';
                 iframe.height = '100%';
                 iframe.frameBorder = '0';
                 iframe.allow = 'autoplay; fullscreen; picture-in-picture';
                 iframe.allowFullscreen = true;
+                iframe.title = 'Vimeo video player';
+                
                 videoPlayerContainer.appendChild(iframe);
-            } else if (videoUrl.startsWith('data:video/') || videoUrl.startsWith('blob:')) {
+                console.log("Vimeo iframe created with video ID:", videoId);
+                
+            } else if (cleanUrl.startsWith('data:video/') || cleanUrl.startsWith('blob:')) {
+                // For base64 encoded videos
                 const video = document.createElement('video');
                 video.controls = true;
+                video.autoplay = true;
                 video.style.width = '100%';
                 video.style.height = '100%';
-                video.style.background = '#000';
+                video.style.backgroundColor = '#000';
 
                 const source = document.createElement('source');
-                source.src = videoUrl;
+                source.src = cleanUrl;
 
-                // Try to detect video type
-                if (videoUrl.startsWith('data:video/mp4')) {
+                // Detect video type from data URL
+                if (cleanUrl.startsWith('data:video/mp4')) {
                     source.type = 'video/mp4';
-                } else if (videoUrl.startsWith('data:video/webm')) {
+                } else if (cleanUrl.startsWith('data:video/webm')) {
                     source.type = 'video/webm';
-                } else if (videoUrl.startsWith('data:video/ogg')) {
+                } else if (cleanUrl.startsWith('data:video/ogg')) {
                     source.type = 'video/ogg';
                 } else {
                     source.type = 'video/mp4';
@@ -776,21 +901,50 @@
                 video.appendChild(source);
                 video.appendChild(document.createTextNode('Your browser does not support the video tag.'));
                 videoPlayerContainer.appendChild(video);
-            } else {
-                // Generic video player
+                console.log("Base64 video player created");
+                
+            } else if (cleanUrl.startsWith('http')) {
+                // Generic video player for direct video URLs
                 const video = document.createElement('video');
                 video.controls = true;
+                video.autoplay = true;
                 video.style.width = '100%';
                 video.style.height = '100%';
-                video.style.background = '#000';
+                video.style.backgroundColor = '#000';
 
                 const source = document.createElement('source');
-                source.src = videoUrl;
-                source.type = 'video/mp4';
+                source.src = cleanUrl;
+                
+                // Try to detect video type from URL extension
+                const urlLower = cleanUrl.toLowerCase();
+                if (urlLower.endsWith('.mp4')) {
+                    source.type = 'video/mp4';
+                } else if (urlLower.endsWith('.webm')) {
+                    source.type = 'video/webm';
+                } else if (urlLower.endsWith('.ogg') || urlLower.endsWith('.ogv')) {
+                    source.type = 'video/ogg';
+                } else if (urlLower.endsWith('.mov')) {
+                    source.type = 'video/quicktime';
+                } else if (urlLower.endsWith('.avi')) {
+                    source.type = 'video/x-msvideo';
+                } else {
+                    source.type = 'video/mp4';
+                }
 
                 video.appendChild(source);
                 video.appendChild(document.createTextNode('Your browser does not support the video tag.'));
                 videoPlayerContainer.appendChild(video);
+                console.log("Direct video player created");
+                
+            } else {
+                // Unknown video format
+                videoPlayerContainer.innerHTML = `
+                    <div style="color: white; padding: 20px; text-align: center;">
+                        <p>Cannot play this video format</p>
+                        <p><a href="${cleanUrl}" target="_blank" style="color: #4CAF50;">Open video in new tab</a></p>
+                    </div>
+                `;
+                console.log("Unknown video format:", cleanUrl);
             }
 
             videoModal.style.display = 'flex';
@@ -810,33 +964,14 @@
                             video.pause();
                             video.currentTime = 0;
                         } else if (video.tagName === 'IFRAME') {
-                            video.src = video.src; // Reset iframe source
+                            // Stop YouTube/Vimeo videos by removing the src
+                            video.src = '';
                         }
                     });
+                    // Clear container
                     videoPlayerContainer.innerHTML = '';
                 }
             }
-        }
-
-        // Helper functions for video URL detection
-        function isYouTubeUrl(url) {
-            return url.includes('youtube.com') || url.includes('youtu.be');
-        }
-
-        function getYouTubeId(url) {
-            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-            const match = url.match(regExp);
-            return (match && match[2].length === 11) ? match[2] : null;
-        }
-
-        function isVimeoUrl(url) {
-            return url.includes('vimeo.com');
-        }
-
-        function getVimeoId(url) {
-            const regExp = /vimeo.com\/(\d+)/;
-            const match = url.match(regExp);
-            return match ? match[1] : null;
         }
 
         function initCoursePage() {

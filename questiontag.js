@@ -64,9 +64,7 @@ function displayQuestions(questions) {
             <div class="grade-section">
                 <div class="grade-header">
                     <h2><i class="fas fa-graduation-cap"></i> 10th Grade Questions</h2>
-                    <button class="cta-button" onclick="downloadAllQuestions('10th')">
-                        <i class="fas fa-download"></i> Download All 10th Grade
-                    </button>
+                   
                 </div>
                 <div class="questions-grid">
         `;
@@ -87,9 +85,7 @@ function displayQuestions(questions) {
             <div class="grade-section">
                 <div class="grade-header">
                     <h2><i class="fas fa-graduation-cap"></i> 12th Grade Questions</h2>
-                    <button class="cta-button" onclick="downloadAllQuestions('12th')">
-                        <i class="fas fa-download"></i> Download All 12th Grade
-                    </button>
+                   
                 </div>
                 <div class="questions-grid">
         `;

@@ -196,7 +196,7 @@ function getLoginForm(userType) {
                         <option value="">Select user type</option>
                         <option value="student">Student</option>
                         <option value="tutor">Tutor</option>
-                        <option value="admin">Admin</option>
+                        
                     </select>
                 </div>
             ` : ''}
