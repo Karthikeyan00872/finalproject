@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms of Service - AI Tutor E-Learning</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 1.5rem 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo span {
+            color: #ffde59;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            font-size: 2rem;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav ul li {
+            margin-left: 1.5rem;
+        }
+        
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        nav ul li a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .active {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        .page-header {
+            padding: 3rem 0 1.5rem;
+            text-align: center;
+        }
+        
+        .page-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+        
+        .page-header p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+        
+        .content-section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        h2 {
+            color: #3498db;
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        h3 {
+            color: #2c3e50;
+            margin: 1.5rem 0 0.8rem;
+        }
+        
+        p {
+            margin-bottom: 1rem;
+        }
+        
+        ul, ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .highlight {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-left: 4px solid #e74c3c;
+            margin: 1.5rem 0;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .warning {
+            background-color: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 1rem;
+            margin: 1.5rem 0;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        footer {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 2.5rem 0;
+            margin-top: 3rem;
+        }
+        
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        
+        .footer-section {
+            flex: 1;
+            min-width: 250px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .footer-section h3 {
+            color: #ecf0f1;
+            margin-bottom: 1.2rem;
+            font-size: 1.3rem;
+        }
+        
+        .footer-section p, .footer-section a {
+            color: #bdc3c7;
+            margin-bottom: 0.8rem;
+            display: block;
+            text-decoration: none;
+        }
+        
+        .footer-section a:hover {
+            color: #3498db;
+        }
+        
+        .contact-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.8rem;
+        }
+        
+        .contact-info i {
+            margin-right: 10px;
+            color: #3498db;
+            width: 20px;
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 1.5rem;
+            border-top: 1px solid #34495e;
+            margin-top: 1rem;
+            color: #95a5a6;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            nav ul {
+                margin-top: 1rem;
+                justify-content: center;
+            }
+            
+            nav ul li {
+                margin: 0 0.5rem;
+            }
+            
+            .page-header h1 {
+                font-size: 2rem;
+            }
+            
+            .content-section {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <i class="fas fa-robot"></i>
+                AI <span>Tutor</span>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
+                    <li><a href="terms.html" class="active">Terms of Service</a></li>
+                    <li><a href="privacy.html">Privacy Policy</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="page-header">
+            <h1>Terms of Service</h1>
+            <p>Last Updated: October 15, 2023</p>
+        </div>
+        
+        <div class="content-section">
+            <h2>Agreement to Terms</h2>
+            <p>These Terms of Service ("Terms") govern your access to and use of the AI Tutor E-Learning website, services, and applications (collectively, the "Service"). By accessing or using our Service, you agree to be bound by these Terms. If you disagree with any part of the Terms, you may not access the Service.</p>
+            
+            <div class="highlight">
+                <p><strong>Important:</strong> These Terms constitute a legally binding agreement between you and AI Tutor E-Learning. Please read them carefully before using our services.</p>
+            </div>
+            
+            <h3>Eligibility</h3>
+            <p>To use our Service, you must:</p>
+            <ul>
+                <li>Be at least 13 years of age (or the age of legal consent in your jurisdiction)</li>
+                <li>Have the legal capacity to enter into a binding agreement</li>
+                <li>Provide accurate and complete registration information</li>
+                <li>Be responsible for maintaining the confidentiality of your account credentials</li>
+            </ul>
+            
+            <h3>User Accounts</h3>
+            <p>When you create an account with us, you must provide information that is accurate, complete, and current at all times. Failure to do so constitutes a breach of the Terms, which may result in immediate termination of your account.</p>
+            <p>You are responsible for safeguarding the password that you use to access the Service and for any activities or actions under your password. You agree not to disclose your password to any third party.</p>
+            
+            <h3>Subscription and Payments</h3>
+            <p>Some parts of the Service are billed on a subscription basis ("Subscription(s)"). You will be billed in advance on a recurring and periodic basis ("Billing Cycle"). Billing cycles are set either on a monthly or annual basis, depending on the type of subscription plan you select.</p>
+            <p>At the end of each Billing Cycle, your Subscription will automatically renew under the exact same conditions unless you cancel it or AI Tutor E-Learning cancels it.</p>
+            
+            <div class="warning">
+                <p><strong>Refund Policy:</strong> We offer a 14-day money-back guarantee for new subscriptions. After 14 days, subscriptions are non-refundable, except where required by law.</p>
+            </div>
+            
+            <h3>Intellectual Property</h3>
+            <p>The Service and its original content, features, and functionality are and will remain the exclusive property of AI Tutor E-Learning and its licensors. The Service is protected by copyright, trademark, and other laws of both the India and foreign countries.</p>
+            <p>Our trademarks and trade dress may not be used in connection with any product or service without the prior written consent of AI Tutor E-Learning.</p>
+            
+            <h3>User Content</h3>
+            <p>Our Service allows you to post, link, store, share and otherwise make available certain information, text, graphics, videos, or other material ("User Content"). You are responsible for the User Content that you post on or through the Service, including its legality, reliability, and appropriateness.</p>
+            <p>By posting User Content on or through the Service, you grant us the right to use, modify, publicly perform, publicly display, reproduce, and distribute such Content on and through the Service for the purpose of providing and improving our educational services.</p>
+            
+            <h3>Prohibited Activities</h3>
+            <p>You agree not to use the Service to:</p>
+            <ol>
+                <li>Violate any applicable laws or regulations</li>
+                <li>Infringe upon or violate our intellectual property rights or the intellectual property rights of others</li>
+                <li>Harass, abuse, insult, harm, defame, slander, disparage, intimidate, or discriminate based on gender, sexual orientation, religion, ethnicity, race, age, national origin, or disability</li>
+                <li>Submit false or misleading information</li>
+                <li>Upload or transmit viruses or any other type of malicious code</li>
+                <li>Attempt to gain unauthorized access to or impair any aspect of the Service</li>
+                <li>Interfere with or disrupt the Service or servers or networks connected to the Service</li>
+            </ol>
+            
+            <h3>Termination</h3>
+            <p>We may terminate or suspend your account immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach the Terms.</p>
+            <p>Upon termination, your right to use the Service will immediately cease. If you wish to terminate your account, you may simply discontinue using the Service or contact us to request account deletion.</p>
+            
+            <h3>Limitation of Liability</h3>
+            <p>In no event shall AI Tutor E-Learning, nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your access to or use of or inability to access or use the Service.</p>
+            
+            <h3>Changes to Terms</h3>
+            <p>We reserve the right, at our sole discretion, to modify or replace these Terms at any time. If a revision is material, we will provide at least 30 days' notice prior to any new terms taking effect. What constitutes a material change will be determined at our sole discretion.</p>
+            
+            <h3>Contact Us</h3>
+            <p>If you have any questions about these Terms, please contact us using the information provided on our <a href="contact.html">Contact Us</a> page.</p>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>AI Tutor E-Learning</h3>
+                    <p>Revolutionizing education through artificial intelligence. Personalized learning paths for every student.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <a href="index.html">Home</a>
+                    <a href="contact.html">Contact Us</a>
+                    <a href="terms.html">Terms of Service</a>
+                    <a href="privacy.html">Privacy Policy</a>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Contact Information</h3>
+                    <div class="contact-info">
+                        <i class="fas fa-phone-alt"></i>
+                        <a href="tel:+917806921382">+91 7806921382</a>
+                    </div>
+                    <div class="contact-info">
+                        <i class="fas fa-envelope"></i>
+                        <a href="mailto:karthikeyan07820@gmail.com">karthikeyan07820@gmail.com</a>
+                    </div>
+                    <div class="contact-info">
+                        <i class="fab fa-whatsapp"></i>
+                        <a href="https://wa.me/917806921382" target="_blank">WhatsApp: +91 7806921382</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>&copy; 2023 AI Tutor E-Learning. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
