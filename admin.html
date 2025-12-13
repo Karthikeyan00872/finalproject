@@ -1,3 +1,5 @@
+[file name]: admin.html (modified section only - add tutor management tab)
+[file content begin]
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,222 +11,364 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Admin User Details Styles */
-.user-info-card {
-    background: white;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
+        .user-info-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
 
-.user-info-card h4 {
-    color: #333;
-    margin-bottom: 15px;
-    border-bottom: 2px solid #4CAF50;
-    padding-bottom: 10px;
-}
+        .user-info-card h4 {
+            color: #333;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
 
-.user-info-card p {
-    margin: 8px 0;
-    color: #555;
-}
+        .user-info-card p {
+            margin: 8px 0;
+            color: #555;
+        }
 
-.no-data-card {
-    text-align: center;
-    padding: 40px 20px;
-    background: #f9f9f9;
-    border-radius: 8px;
-    border: 2px dashed #ddd;
-}
+        .no-data-card {
+            text-align: center;
+            padding: 40px 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border: 2px dashed #ddd;
+        }
 
-.no-data-card i {
-    font-size: 48px;
-    color: #999;
-    margin-bottom: 15px;
-}
+        .no-data-card i {
+            font-size: 48px;
+            color: #999;
+            margin-bottom: 15px;
+        }
 
-.no-data-card h4 {
-    color: #666;
-    margin-bottom: 10px;
-}
+        .no-data-card h4 {
+            color: #666;
+            margin-bottom: 10px;
+        }
 
-.error-card {
-    background: #ffebee;
-    border-left: 4px solid #c62828;
-    padding: 15px;
-    border-radius: 4px;
-    color: #c62828;
-}
+        .error-card {
+            background: #ffebee;
+            border-left: 4px solid #c62828;
+            padding: 15px;
+            border-radius: 4px;
+            color: #c62828;
+        }
 
-.courses-list, .questions-list, .enrolled-students {
-    margin-top: 20px;
-}
+        .courses-list, .questions-list, .enrolled-students {
+            margin-top: 20px;
+        }
 
-.courses-list h4, .questions-list h4, .enrolled-students h4 {
-    color: #333;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #eee;
-}
+        .courses-list h4, .questions-list h4, .enrolled-students h4 {
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
 
-.admin-permissions {
-    background: #f0f7ff;
-    border-radius: 8px;
-    padding: 20px;
-    margin-top: 20px;
-}
+        .admin-permissions {
+            background: #f0f7ff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
 
-.admin-permissions h4 {
-    color: #1976d2;
-    margin-bottom: 15px;
-}
+        .admin-permissions h4 {
+            color: #1976d2;
+            margin-bottom: 15px;
+        }
 
-.admin-permissions ul {
-    list-style: none;
-    padding: 0;
-}
+        .admin-permissions ul {
+            list-style: none;
+            padding: 0;
+        }
 
-.admin-permissions li {
-    padding: 8px 0;
-    color: #555;
-}
+        .admin-permissions li {
+            padding: 8px 0;
+            color: #555;
+        }
 
-.admin-permissions li i {
-    color: #4CAF50;
-    margin-right: 10px;
-}
+        .admin-permissions li i {
+            color: #4CAF50;
+            margin-right: 10px;
+        }
 
-.rating-stars {
-    color: #ff9800;
-    font-weight: bold;
-    font-size: 1.1rem;
-}
+        .rating-stars {
+            color: #ff9800;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
 
-/* Status badges */
-.status {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: white;
-}
+        /* Status badges */
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: white;
+        }
 
-.status.active {
-    background-color: #4CAF50;
-}
+        .status.active {
+            background-color: #4CAF50;
+        }
 
-.status.admin {
-    background-color: #2196F3;
-}
+        .status.admin {
+            background-color: #2196F3;
+        }
 
-.status.offline {
-    background-color: #f44336;
-}
+        .status.offline {
+            background-color: #f44336;
+        }
 
-.status.online {
-    background-color: #4CAF50;
-}
+        .status.online {
+            background-color: #4CAF50;
+        }
+        
+        .status.pending {
+            background-color: #ff9800;
+        }
+        
+        .status.rejected {
+            background-color: #f44336;
+        }
 
-.user-type-badge {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 500;
-}
+        .user-type-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
 
-.user-type-badge.student {
-    background-color: #E3F2FD;
-    color: #1976D2;
-}
+        .user-type-badge.student {
+            background-color: #E3F2FD;
+            color: #1976D2;
+        }
 
-.user-type-badge.tutor {
-    background-color: #F3E5F5;
-    color: #7B1FA2;
-}
+        .user-type-badge.tutor {
+            background-color: #F3E5F5;
+            color: #7B1FA2;
+        }
 
-.user-type-badge.admin {
-    background-color: #FFF3E0;
-    color: #EF6C00;
-}
+        .user-type-badge.admin {
+            background-color: #FFF3E0;
+            color: #EF6C00;
+        }
 
-/* Action buttons */
-.action-btn {
-    padding: 6px 12px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin: 0 3px;
-    font-size: 0.9rem;
-    transition: all 0.3s ease;
-}
+        /* Action buttons */
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 0 3px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
 
-.action-btn.view-btn {
-    background-color: #2196F3;
-    color: white;
-}
+        .action-btn.view-btn {
+            background-color: #2196F3;
+            color: white;
+        }
 
-.action-btn.view-btn:hover {
-    background-color: #1976D2;
-}
+        .action-btn.view-btn:hover {
+            background-color: #1976D2;
+        }
 
-.action-btn.delete-btn {
-    background-color: #f44336;
-    color: white;
-}
+        .action-btn.approve-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
 
-.action-btn.delete-btn:hover {
-    background-color: #d32f2f;
-}
+        .action-btn.approve-btn:hover {
+            background-color: #388E3C;
+        }
 
-/* Section header button */
-.cta-button.secondary {
-    background-color: #6c757d;
-    border: none;
-}
+        .action-btn.reject-btn {
+            background-color: #f44336;
+            color: white;
+        }
 
-.cta-button.secondary:hover {
-    background-color: #5a6268;
-}
+        .action-btn.reject-btn:hover {
+            background-color: #d32f2f;
+        }
 
-/* Modal styles for course details */
-.modal .modal-content {
-    animation: slideIn 0.3s ease-out;
-}
+        .action-btn.delete-btn {
+            background-color: #757575;
+            color: white;
+        }
 
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateY(-50px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
+        .action-btn.delete-btn:hover {
+            background-color: #616161;
+        }
 
-/* Table improvements */
-.admin-table tbody tr:hover {
-    background-color: #f5f5f5;
-}
+        /* Section header button */
+        .cta-button.secondary {
+            background-color: #6c757d;
+            border: none;
+        }
 
-.admin-table th {
-    background-color: #f8f9fa;
-    font-weight: 600;
-}
+        .cta-button.secondary:hover {
+            background-color: #5a6268;
+        }
 
-.loading {
-    text-align: center;
-    color: #666;
-    font-style: italic;
-}
+        /* Modal styles for course details */
+        .modal .modal-content {
+            animation: slideIn 0.3s ease-out;
+        }
 
-.no-data {
-    text-align: center;
-    color: #999;
-    padding: 20px;
-}
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Table improvements */
+        .admin-table tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .admin-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .loading {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+
+        .no-data {
+            text-align: center;
+            color: #999;
+            padding: 20px;
+        }
+        
+        /* Tab styles */
+        .admin-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-radius: 8px 8px 0 0;
+            overflow: hidden;
+            margin-bottom: 0;
+        }
+        
+        .admin-tab {
+            padding: 15px 30px;
+            background: #e9ecef;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: #495057;
+            transition: all 0.3s;
+            flex: 1;
+            text-align: center;
+        }
+        
+        .admin-tab:hover {
+            background: #dee2e6;
+        }
+        
+        .admin-tab.active {
+            background: white;
+            color: #4CAF50;
+            border-bottom: 3px solid #4CAF50;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background: white;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .rejection-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .rejection-modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 400px;
+            max-width: 90%;
+        }
+        
+        .rejection-modal-content h3 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .rejection-modal-content textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .rejection-modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        .tutor-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .tutor-info-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .tutor-info-card h5 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        
+        .tutor-info-card p {
+            margin: 5px 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .application-date {
+            font-size: 0.8rem;
+            color: #999;
+            margin-top: 10px;
+        }
     </style>
 </head>
 
@@ -282,40 +426,153 @@
 
                 <div class="stat-card">
                     <div class="stat-icon">
-                        <i class="fas fa-comments"></i>
+                        <i class="fas fa-clock"></i>
                     </div>
-                    <h3 id="total-chats">0</h3>
-                    <p>Chat Sessions</p>
+                    <h3 id="pending-tutors">0</h3>
+                    <p>Pending Tutors</p>
                 </div>
             </div>
 
-            <!-- User Management Table -->
+            <!-- Admin Tabs -->
             <div class="admin-section">
-                <div class="section-header">
-                    <h2><i class="fas fa-users-cog"></i> User Management</h2>
-                    <button class="cta-button" onclick="refreshUsers()">
-                        <i class="fas fa-sync-alt"></i> Refresh
+                <div class="admin-tabs">
+                    <button class="admin-tab active" onclick="switchTab('users')">
+                        <i class="fas fa-users"></i> User Management
+                    </button>
+                    <button class="admin-tab" onclick="switchTab('tutor-applications')">
+                        <i class="fas fa-user-clock"></i> Tutor Applications
+                        <span id="pending-count-badge" class="badge" style="background: #ff9800; color: white; padding: 2px 8px; border-radius: 10px; margin-left: 5px; font-size: 0.8rem;">0</span>
+                    </button>
+                    <button class="admin-tab" onclick="switchTab('approved-tutors')">
+                        <i class="fas fa-user-check"></i> Approved Tutors
+                    </button>
+                    <button class="admin-tab" onclick="switchTab('rejected-tutors')">
+                        <i class="fas fa-user-times"></i> Rejected Tutors
                     </button>
                 </div>
+                
+                <!-- User Management Tab -->
+                <div id="users-tab" class="tab-content active">
+                    <div class="section-header">
+                        <h2><i class="fas fa-users-cog"></i> User Management</h2>
+                        <button class="cta-button" onclick="refreshUsers()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
 
-                <div class="table-container">
-                    <table class="admin-table">
-                        <thead>
-                            <tr>
-                                <th>Username</th>
-                                <th>User Type</th>
-                                <th>Registration Date</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="users-table-body">
-                            <!-- Users will be loaded here -->
-                            <tr>
-                                <td colspan="5" class="loading">Loading users...</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>User Type</th>
+                                    <th>Registration Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-table-body">
+                                <!-- Users will be loaded here -->
+                                <tr>
+                                    <td colspan="5" class="loading">Loading users...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Tutor Applications Tab -->
+                <div id="tutor-applications-tab" class="tab-content">
+                    <div class="section-header">
+                        <h2><i class="fas fa-user-clock"></i> Pending Tutor Applications</h2>
+                        <button class="cta-button" onclick="refreshPendingTutors()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Full Name</th>
+                                    <th>Email</th>
+                                    <th>Qualification</th>
+                                    <th>Applied Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pending-tutors-table-body">
+                                <!-- Pending tutors will be loaded here -->
+                                <tr>
+                                    <td colspan="6" class="loading">Loading pending tutor applications...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Approved Tutors Tab -->
+                <div id="approved-tutors-tab" class="tab-content">
+                    <div class="section-header">
+                        <h2><i class="fas fa-user-check"></i> Approved Tutors</h2>
+                        <button class="cta-button" onclick="refreshApprovedTutors()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Full Name</th>
+                                    <th>Email</th>
+                                    <th>Qualification</th>
+                                    <th>Approved Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="approved-tutors-table-body">
+                                <!-- Approved tutors will be loaded here -->
+                                <tr>
+                                    <td colspan="6" class="loading">Loading approved tutors...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Rejected Tutors Tab -->
+                <div id="rejected-tutors-tab" class="tab-content">
+                    <div class="section-header">
+                        <h2><i class="fas fa-user-times"></i> Rejected Tutors</h2>
+                        <button class="cta-button" onclick="refreshRejectedTutors()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Full Name</th>
+                                    <th>Email</th>
+                                    <th>Qualification</th>
+                                    <th>Rejected Date</th>
+                                    <th>Reason</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rejected-tutors-table-body">
+                                <!-- Rejected tutors will be loaded here -->
+                                <tr>
+                                    <td colspan="7" class="loading">Loading rejected tutors...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 

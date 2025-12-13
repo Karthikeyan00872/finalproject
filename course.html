@@ -15,6 +15,8 @@
             border-radius: 10px;
             margin-bottom: 2rem;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            max-height: 80vh;
+            overflow-y: auto;
         }
 
         .form-row {
@@ -83,6 +85,8 @@
             flex-wrap: wrap;
             gap: 1rem;
             margin-bottom: 2rem;
+            max-height: 60vh;
+            overflow-y: auto;
         }
 
         .upload-item {
@@ -241,6 +245,89 @@
         .play-video-btn:hover {
             background: #45a049;
         }
+        
+        /* Approval message styles */
+        .approval-message {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            border-left: 5px solid #f39c12;
+        }
+        
+        .approval-message i {
+            font-size: 3rem;
+            color: #f39c12;
+            margin-bottom: 1rem;
+        }
+        
+        .approval-message h3 {
+            color: #333;
+            margin-bottom: 1rem;
+        }
+        
+        .approval-message p {
+            color: #666;
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+        
+        .status.pending {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .status.rejected {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status.approved {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .pending-approval, .rejected-approval {
+            width: 100%;
+        }
+        
+        /* Scroll container for main content */
+        .scroll-container {
+            max-height: 80vh;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        .scroll-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .scroll-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        .scroll-container::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        
+        .scroll-container::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
     </style>
 </head>
 
@@ -272,7 +359,12 @@
                 <p>Explore courses uploaded by our expert tutors.</p>
             </div>
 
-            <!-- Tutor Upload Form (Visible only when tutor is logged in) -->
+            <!-- Tutor Approval Message -->
+            <div id="tutorApprovalMessage" class="approval-message" style="display: none;">
+                <!-- Content will be populated by JavaScript -->
+            </div>
+
+            <!-- Tutor Upload Form (Visible only when tutor is logged in and approved) -->
             <div id="tutorUploadForm" class="upload-form" style="display: none;">
                 <div class="tutor-controls">
                     <h2><i class="fas fa-upload"></i> Upload New Course</h2>
@@ -630,6 +722,12 @@
                 alert("Please log in as tutor to upload courses");
                 return;
             }
+            
+            // Check if tutor is approved
+            if (window.tutorApprovalStatus !== 'approved') {
+                alert("Only approved tutors can upload courses. Please wait for admin approval.");
+                return;
+            }
 
             // Collect form data
             const title = document.getElementById('courseTitle').value;
@@ -983,13 +1081,9 @@
                 form.addEventListener('submit', uploadCourse);
             }
 
-            // Check tutor login status
-            checkTutorLoginStatus();
-
             // Listen for login state changes
             window.addEventListener('loginStateChange', function (event) {
                 console.log('Course page: Login state changed');
-                checkTutorLoginStatus();
                 if (window.loadCourses) {
                     window.loadCourses();
                 }
@@ -1011,36 +1105,6 @@
                     closeVideoModal();
                 }
             });
-        }
-
-        // Check tutor login status
-        function checkTutorLoginStatus() {
-            const isTutor = window.currentUsername && window.userType === 'tutor';
-            console.log('Checking tutor status:', {
-                username: window.currentUsername,
-                userType: window.userType,
-                isTutor: isTutor
-            });
-
-            const uploadBtn = document.getElementById('tutorUploadBtn');
-            const myUploads = document.getElementById('myUploads');
-
-            if (isTutor) {
-                console.log('Showing tutor controls');
-                if (uploadBtn) uploadBtn.style.display = 'block';
-                if (myUploads) myUploads.style.display = 'block';
-                // Load tutor's courses
-                if (window.loadMyUploads) {
-                    setTimeout(() => window.loadMyUploads(), 100);
-                }
-            } else {
-                console.log('Hiding tutor controls');
-                if (uploadBtn) uploadBtn.style.display = 'none';
-                if (myUploads) myUploads.style.display = 'none';
-
-                const uploadForm = document.getElementById('tutorUploadForm');
-                if (uploadForm) uploadForm.style.display = 'none';
-            }
         }
 
         // Make functions globally available
@@ -1066,6 +1130,8 @@
             }, 100);
         });
     </script>
+    <script src="common.js"></script>
+    <script src="course.js"></script>
 </body>
 
 </html>

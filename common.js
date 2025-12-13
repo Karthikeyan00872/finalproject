@@ -1,17 +1,14 @@
-// [file name]: common.js
-// common.js - Core functionalities shared across all pages
-
-// --- Global DOM Elements ---
 const modal = document.getElementById('loginModal');
 const loginFormContainer = document.getElementById('login-form-container');
 
 // --- Global Variable for Logged-in User ---
 let currentUsername = localStorage.getItem('currentUsername') || null; 
-let userType = localStorage.getItem('userType') || null; // 添加 userType 变量
+let userType = localStorage.getItem('userType') || null; // Add userType variable
+let tutorApprovalStatus = localStorage.getItem('tutorApprovalStatus') || null; // Add tutor approval status
 
 const BACKEND_URL = 'http://localhost:5000'; // Define the backend base URL
 
-console.log('Common.js loaded. Current username:', currentUsername, 'User Type:', userType); // Debug log
+console.log('Common.js loaded. Current username:', currentUsername, 'User Type:', userType, 'Tutor Approval:', tutorApprovalStatus); // Debug log
 
 // --- Utility Functions ---
 
@@ -98,7 +95,7 @@ function clearLoginErrors() {
     // Reset input borders
     const loginContainer = document.getElementById('login-form-container');
     if (loginContainer) {
-        loginContainer.querySelectorAll('input, select').forEach(input => {
+        loginContainer.querySelectorAll('input, select, textarea').forEach(input => {
             input.style.borderColor = '';
         });
     }
@@ -113,7 +110,7 @@ function clearLoginErrors() {
 
 // **Function to update the Login/Username UI**
 function updateLoginUI() {
-    console.log('Updating login UI. Current user:', currentUsername, 'Type:', userType); // Debug log
+    console.log('Updating login UI. Current user:', currentUsername, 'Type:', userType, 'Approval:', tutorApprovalStatus); // Debug log
     
     // Re-fetch elements inside function to ensure they are available on all pages
     const loginStatusLink = document.getElementById('login-status-link');
@@ -181,49 +178,111 @@ function getLoginForm(userType) {
         <h2>${action} ${userType !== 'register' ? 'as ' + userType.charAt(0).toUpperCase() + userType.slice(1) : ''}</h2>
         <form onsubmit="event.preventDefault(); handleAuth(event, '${endpoint}', '${userType}')">
             ${userType !== 'register' ? `<input type="hidden" id="userTypeField" name="userType" value="${userType}">` : ''}
-            <div class="form-group">
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="username" required placeholder="Enter username">
-            </div>
-            <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required placeholder="Enter password">
-            </div>
-            ${userType === 'register' ? `
+            <div class="form-content-wrapper" id="${userType === 'register' ? 'form-content-scrollable' : 'form-content-normal'}">
                 <div class="form-group">
-                    <label for="reg-usertype">I am a:</label>
-                    <select id="reg-usertype" name="userType" required>
-                        <option value="">Select user type</option>
-                        <option value="student">Student</option>
-                        <option value="tutor">Tutor</option>
-                        
-                    </select>
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" name="username" required placeholder="Enter username">
                 </div>
-            ` : ''}
-            <button type="submit" class="cta-button login-btn">
-                <i class="fas ${userType === 'register' ? 'fa-user-plus' : 'fa-sign-in-alt'}"></i> ${action}
-            </button>
-            ${userType !== 'register' ? `
-                <p style="margin-top: 15px; text-align: center; font-size: 14px;">
-                    Don't have an account? <a href="#" onclick="showRegistration()" style="color: #4CAF50;">Register here</a>
-                </p>
-            ` : `
-                <p style="margin-top: 15px; text-align: center; font-size: 14px;">
-                    Already have an account? <a href="#" onclick="showLogin('student')" style="color: #4CAF50;">Login here</a>
-                </p>
-            `}
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required placeholder="Enter password">
+                </div>
+                ${userType === 'register' ? `
+                    <div class="form-group">
+                        <label for="reg-usertype">I am a:</label>
+                        <select id="reg-usertype" name="userType" required onchange="toggleTutorRegistrationFields(this.value)">
+                            <option value="">Select user type</option>
+                            <option value="student">Student</option>
+                            <option value="tutor">Tutor</option>
+                        </select>
+                    </div>
+                    <div id="tutor-registration-fields" style="display: none;">
+                        <div class="form-group">
+                            <label for="fullName">Full Name*</label>
+                            <input type="text" id="fullName" name="fullName" placeholder="Enter your full name">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address*</label>
+                            <input type="email" id="email" name="email" placeholder="Enter your email">
+                        </div>
+                        <div class="form-group">
+                            <label for="qualification">Educational Qualification*</label>
+                            <textarea id="qualification" name="qualification" rows="3" placeholder="Enter your educational qualifications (e.g., M.Sc Physics, B.Ed)"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="experience">Teaching Experience (Optional)</label>
+                            <textarea id="experience" name="experience" rows="2" placeholder="Describe your teaching experience"></textarea>
+                        </div>
+                    </div>
+                ` : ''}
+            </div>
+            <div class="form-footer">
+                <button type="submit" class="cta-button login-btn">
+                    <i class="fas ${userType === 'register' ? 'fa-user-plus' : 'fa-sign-in-alt'}"></i> ${action}
+                </button>
+                ${userType !== 'register' ? `
+                    <p style="margin-top: 15px; text-align: center; font-size: 14px;">
+                        Don't have an account? <a href="#" onclick="showRegistration()" style="color: #4CAF50;">Register here</a>
+                    </p>
+                ` : `
+                    <p style="margin-top: 15px; text-align: center; font-size: 14px;">
+                        Already have an account? <a href="#" onclick="showLogin('student')" style="color: #4CAF50;">Login here</a>
+                    </p>
+                `}
+            </div>
         </form>
     `;
     return formHtml;
+}
+
+// Toggle tutor registration fields
+function toggleTutorRegistrationFields(userType) {
+    const tutorFields = document.getElementById('tutor-registration-fields');
+    if (tutorFields) {
+        if (userType === 'tutor') {
+            tutorFields.style.display = 'block';
+            
+            // Adjust scrollable area when tutor fields are shown
+            setTimeout(() => {
+                const scrollableDiv = document.getElementById('form-content-scrollable');
+                if (scrollableDiv) {
+                    // Ensure it's scrollable with fixed height
+                    scrollableDiv.style.maxHeight = '300px';
+                    scrollableDiv.style.overflowY = 'auto';
+                    scrollableDiv.style.paddingRight = '10px';
+                    
+                    // Custom scrollbar styling
+                    scrollableDiv.style.scrollbarWidth = 'thin';
+                    scrollableDiv.style.scrollbarColor = '#888 #f1f1f1';
+                }
+            }, 10);
+        } else {
+            tutorFields.style.display = 'none';
+            
+            // Reset scrollable area for student registration
+            const scrollableDiv = document.getElementById('form-content-scrollable');
+            if (scrollableDiv) {
+                scrollableDiv.style.maxHeight = 'none';
+                scrollableDiv.style.overflowY = 'visible';
+                scrollableDiv.style.paddingRight = '0';
+            }
+        }
+    }
 }
 
 function showLogin(userType) {
     console.log('Showing login form for:', userType);
     if (loginFormContainer && modal) {
         loginFormContainer.innerHTML = getLoginForm(userType);
-        modal.style.display = 'flex';
+        
+        // Ensure modal has proper styling
+        if (modal.style.display !== 'flex') {
+            modal.style.display = 'flex';
+        }
+        
         // Clear any previous errors
         clearLoginErrors();
+        
         // Focus on username field
         setTimeout(() => {
             const usernameField = document.getElementById('username');
@@ -236,9 +295,51 @@ function showRegistration() {
     console.log('Showing registration form');
     if (loginFormContainer && modal) {
         loginFormContainer.innerHTML = getLoginForm('register');
-        modal.style.display = 'flex';
+        
+        // Ensure modal has proper styling
+        if (modal.style.display !== 'flex') {
+            modal.style.display = 'flex';
+        }
+        
+        // Set scrollable container styling for registration form
+        setTimeout(() => {
+            const scrollableDiv = document.getElementById('form-content-scrollable');
+            if (scrollableDiv) {
+                scrollableDiv.style.maxHeight = '300px';
+                scrollableDiv.style.overflowY = 'auto';
+                scrollableDiv.style.paddingRight = '10px';
+                scrollableDiv.style.marginBottom = '20px';
+                
+                // Custom scrollbar styling
+                scrollableDiv.style.scrollbarWidth = 'thin';
+                scrollableDiv.style.scrollbarColor = '#888 #f1f1f1';
+                
+                // For webkit browsers
+                const style = document.createElement('style');
+                style.textContent = `
+                    #form-content-scrollable::-webkit-scrollbar {
+                        width: 6px;
+                    }
+                    #form-content-scrollable::-webkit-scrollbar-track {
+                        background: #f1f1f1;
+                        border-radius: 10px;
+                    }
+                    #form-content-scrollable::-webkit-scrollbar-thumb {
+                        background: #888;
+                        border-radius: 10px;
+                    }
+                    #form-content-scrollable::-webkit-scrollbar-thumb:hover {
+                        background: #555;
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }, 10);
+        
         // Clear any previous errors
         clearLoginErrors();
+        
+        // Focus on username field
         setTimeout(() => {
             const usernameField = document.getElementById('username');
             if (usernameField) usernameField.focus();
@@ -269,20 +370,37 @@ async function handleAuth(event, endpoint, formType) {
         hasError = true;
     }
     
-    if (hasError) return;
-
-    // For login, the userType is from the hidden field
-    if (formType !== 'register') {
-        data.userType = form.querySelector('input[name="userType"]').value;
-    } else {
-        // For registration, get userType from the select box
+    if (formType === 'register') {
         data.userType = document.getElementById('reg-usertype').value;
         if (!data.userType) {
             showLoginError('reg-usertype', 'Please select a user type');
             return;
         }
+        
+        // Validate tutor-specific fields
+        if (data.userType === 'tutor') {
+            if (!data.fullName || data.fullName.trim() === '') {
+                showLoginError('fullName', 'Please enter your full name');
+                hasError = true;
+            }
+            
+            if (!data.email || data.email.trim() === '' || !data.email.includes('@')) {
+                showLoginError('email', 'Please enter a valid email address');
+                hasError = true;
+            }
+            
+            if (!data.qualification || data.qualification.trim() === '') {
+                showLoginError('qualification', 'Please enter your educational qualification');
+                hasError = true;
+            }
+        }
+    } else {
+        // For login, the userType is from the hidden field
+        data.userType = form.querySelector('input[name="userType"]').value;
     }
     
+    if (hasError) return;
+
     console.log('Sending auth request to:', BACKEND_URL + endpoint);
     console.log('Request data:', { ...data, password: '***' }); // Hide password in logs
     
@@ -299,7 +417,7 @@ async function handleAuth(event, endpoint, formType) {
 
         if (result.success) {
             const successMessage = formType === 'register' 
-                ? `Registration successful! Welcome ${data.username}!`
+                ? `Registration successful! ${data.userType === 'tutor' ? 'Your tutor application is pending admin approval.' : 'Welcome ' + data.username + '!'}`
                 : `Login successful! Welcome back ${result.username}!`;
             
             showNotification(successMessage);
@@ -308,16 +426,20 @@ async function handleAuth(event, endpoint, formType) {
             if (formType !== 'register') {
                 currentUsername = result.username;
                 userType = result.userType;
+                tutorApprovalStatus = result.approval_status || null;
+                
                 localStorage.setItem('currentUsername', result.username);
                 localStorage.setItem('userType', result.userType);
+                localStorage.setItem('tutorApprovalStatus', tutorApprovalStatus || '');
                 
-                console.log('User logged in:', currentUsername, 'Type:', result.userType);
+                console.log('User logged in:', currentUsername, 'Type:', result.userType, 'Approval:', tutorApprovalStatus);
                 
-                // 触发登录状态变更事件
+                // Trigger login state change event
                 const loginEvent = new CustomEvent('loginStateChange', { 
                     detail: { 
                         username: result.username, 
-                        userType: result.userType 
+                        userType: result.userType,
+                        approvalStatus: tutorApprovalStatus
                     } 
                 });
                 window.dispatchEvent(loginEvent);
@@ -342,6 +464,9 @@ async function handleAuth(event, endpoint, formType) {
                 setTimeout(() => {
                     if (formType === 'register') {
                         // After registration, show login form
+                        if (data.userType === 'tutor') {
+                            showNotification("Tutor registration successful! Please wait for admin approval.");
+                        }
                         showLogin('student');
                     } else {
                         // After login, reload page (for non-admin users)
@@ -368,14 +493,17 @@ function handleLogout() {
     
     currentUsername = null;
     userType = null;
+    tutorApprovalStatus = null;
     localStorage.removeItem('currentUsername');
     localStorage.removeItem('userType');
+    localStorage.removeItem('tutorApprovalStatus');
     
-    // 触发登出事件
+    // Trigger logout event
     const logoutEvent = new CustomEvent('loginStateChange', { 
         detail: { 
             username: null, 
-            userType: null 
+            userType: null,
+            approvalStatus: null
         } 
     });
     window.dispatchEvent(logoutEvent);
@@ -392,36 +520,66 @@ function handleLogout() {
     setTimeout(() => location.reload(), 1000);
 }
 
-// 新增：检查并显示导师UI的函数
+// New: Check and show tutor UI based on approval status
 function checkAndShowTutorUI() {
-    console.log('Checking tutor UI - currentUsername:', currentUsername, 'userType:', userType);
+    console.log('Checking tutor UI - currentUsername:', currentUsername, 'userType:', userType, 'approvalStatus:', tutorApprovalStatus);
     
-    if (currentUsername && userType === 'tutor') {
-        console.log('Tutor detected, showing upload button');
-        const uploadBtn = document.getElementById('tutorUploadBtn');
-        if (uploadBtn) {
-            uploadBtn.style.display = 'block';
-        }
-        
-        const myUploads = document.getElementById('myUploads');
-        if (myUploads) {
-            myUploads.style.display = 'block';
-        }
-    } else {
-        console.log('Not a tutor or not logged in');
-        const uploadBtn = document.getElementById('tutorUploadBtn');
-        if (uploadBtn) {
-            uploadBtn.style.display = 'none';
-        }
-        
-        const uploadForm = document.getElementById('tutorUploadForm');
-        if (uploadForm) {
-            uploadForm.style.display = 'none';
-        }
-        
-        const myUploads = document.getElementById('myUploads');
-        if (myUploads) {
-            myUploads.style.display = 'none';
+    // Show/hide approval message for tutors
+    const approvalMessage = document.getElementById('tutorApprovalMessage');
+    if (approvalMessage) {
+        if (currentUsername && userType === 'tutor') {
+            if (tutorApprovalStatus === 'pending') {
+                approvalMessage.style.display = 'block';
+                approvalMessage.innerHTML = `
+                    <div class="pending-approval">
+                        <i class="fas fa-clock"></i>
+                        <h3>Your Tutor Application is Pending Approval</h3>
+                        <p>Please wait while our admin reviews your application. You will receive an email once approved.</p>
+                        <p><strong>Status:</strong> <span class="status pending">Pending Review</span></p>
+                    </div>
+                `;
+            } else if (tutorApprovalStatus === 'rejected') {
+                approvalMessage.style.display = 'block';
+                approvalMessage.innerHTML = `
+                    <div class="rejected-approval">
+                        <i class="fas fa-times-circle"></i>
+                        <h3>Tutor Application Rejected</h3>
+                        <p>Your tutor application has been reviewed and rejected by the admin.</p>
+                        <p>If you believe this is a mistake, please contact support.</p>
+                        <p><strong>Status:</strong> <span class="status rejected">Rejected</span></p>
+                    </div>
+                `;
+            } else if (tutorApprovalStatus === 'approved') {
+                approvalMessage.style.display = 'none';
+                
+                // Show tutor controls
+                const uploadBtn = document.getElementById('tutorUploadBtn');
+                const questionUploadBtn = document.getElementById('tutorQuestionUploadBtn');
+                const myUploads = document.getElementById('myUploads');
+                const myQuestionUploads = document.getElementById('myQuestionUploads');
+                
+                if (uploadBtn) uploadBtn.style.display = 'block';
+                if (questionUploadBtn) questionUploadBtn.style.display = 'block';
+                if (myUploads) myUploads.style.display = 'block';
+                if (myQuestionUploads) myQuestionUploads.style.display = 'block';
+            }
+        } else {
+            if (approvalMessage) approvalMessage.style.display = 'none';
+            
+            // Hide all tutor controls
+            const uploadBtn = document.getElementById('tutorUploadBtn');
+            const questionUploadBtn = document.getElementById('tutorQuestionUploadBtn');
+            const myUploads = document.getElementById('myUploads');
+            const myQuestionUploads = document.getElementById('myQuestionUploads');
+            const uploadForm = document.getElementById('tutorUploadForm');
+            const questionUploadForm = document.getElementById('tutorQuestionUploadForm');
+            
+            if (uploadBtn) uploadBtn.style.display = 'none';
+            if (questionUploadBtn) questionUploadBtn.style.display = 'none';
+            if (myUploads) myUploads.style.display = 'none';
+            if (myQuestionUploads) myQuestionUploads.style.display = 'none';
+            if (uploadForm) uploadForm.style.display = 'none';
+            if (questionUploadForm) questionUploadForm.style.display = 'none';
         }
     }
 }
@@ -430,9 +588,10 @@ function checkAndShowTutorUI() {
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM loaded. Initializing common.js');
     
-    // 确保从 localStorage 读取最新状态
+    // Ensure we read from localStorage
     currentUsername = localStorage.getItem('currentUsername') || null;
     userType = localStorage.getItem('userType') || null;
+    tutorApprovalStatus = localStorage.getItem('tutorApprovalStatus') || null;
     
     // Expose functions globally
     window.showLogin = showLogin;
@@ -440,15 +599,17 @@ document.addEventListener('DOMContentLoaded', () => {
     window.handleAuth = handleAuth;
     window.handleLogout = handleLogout;
     window.showRegistration = showRegistration;
+    window.toggleTutorRegistrationFields = toggleTutorRegistrationFields;
     window.currentUsername = currentUsername;
     window.userType = userType;
+    window.tutorApprovalStatus = tutorApprovalStatus;
     window.BACKEND_URL = BACKEND_URL;
     window.checkAndShowTutorUI = checkAndShowTutorUI;
 
     // Initialize the Login UI
     updateLoginUI();
     
-    // 立即检查并显示导师UI（如果适用）
+    // Immediately check and show tutor UI (if applicable)
     checkAndShowTutorUI();
     
     // Check if backend is reachable
@@ -484,6 +645,45 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.course-card, .feature-card, .question-card').forEach(card => {
         observer.observe(card);
     });
+    
+    // Listen for login state changes
+    window.addEventListener('loginStateChange', function(event) {
+        console.log('Login state changed in common.js:', event.detail);
+        checkAndShowTutorUI();
+    });
+    
+    // Apply modal styling dynamically
+    setTimeout(() => {
+        if (modal) {
+            // Ensure modal has proper styling
+            modal.style.cssText = `
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.7);
+                z-index: 1000;
+                justify-content: center;
+                align-items: center;
+            `;
+            
+            const modalContent = modal.querySelector('.modal-content');
+            if (modalContent) {
+                modalContent.style.cssText = `
+                    background-color: white;
+                    border-radius: 10px;
+                    width: 90%;
+                    max-width: 500px;
+                    max-height: 85vh;
+                    overflow: hidden;
+                    position: relative;
+                    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+                `;
+            }
+        }
+    }, 100);
     
     console.log('Common.js initialization complete');
 });

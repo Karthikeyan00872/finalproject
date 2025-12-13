@@ -1,6 +1,3 @@
-# [file name]: api_server.py
-# api_server.py - Flask Server for Gemini Chat and MongoDB Login with Tutor Content Management
-
 import os
 import datetime 
 from dotenv import load_dotenv
@@ -14,6 +11,7 @@ import base64
 import mimetypes
 from bson import ObjectId
 import json
+import re
 
 # Load environment variables
 load_dotenv()
@@ -32,6 +30,7 @@ USER_COLLECTION = "users"
 CHAT_COLLECTION = "chat_history"
 COURSE_COLLECTION = "courses"
 QUESTION_COLLECTION = "questions"
+PENDING_TUTOR_COLLECTION = "pending_tutors"
 # ------------------------------------
 
 # Initialize Flask App
@@ -66,6 +65,9 @@ try:
     mongo_db[QUESTION_COLLECTION].create_index([("grade", 1)])
     mongo_db[QUESTION_COLLECTION].create_index([("subject", 1)])
     
+    # Create index for pending tutors
+    mongo_db[PENDING_TUTOR_COLLECTION].create_index([("username", 1)], unique=True)
+    
     print("Database indexes created successfully")
     
 except ServerSelectionTimeoutError as e:
@@ -83,10 +85,30 @@ def get_user(username):
     user_col = mongo_db[USER_COLLECTION]
     return user_col.find_one({"username": username})
 
+def get_pending_tutor(username):
+    """Fetches a pending tutor document."""
+    pending_col = mongo_db[PENDING_TUTOR_COLLECTION]
+    return pending_col.find_one({"username": username})
+
 def validate_tutor(username):
-    """Validate if user is a tutor."""
+    """Validate if user is an approved tutor."""
     user = get_user(username)
-    return user and user['userType'] == 'tutor'
+    if not user:
+        return False
+    
+    # Check if user is a tutor and approved
+    if user['userType'] == 'tutor':
+        # Check approval status
+        if 'approval_status' not in user or user['approval_status'] == 'approved':
+            return True
+        elif user.get('approval_status') == 'pending':
+            return False  # Pending tutors cannot access tutor features
+    return False
+
+def validate_email(email):
+    """Validate email format."""
+    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    return re.match(pattern, email) is not None
 
 # --- Test Endpoint ---
 @app.route('/test', methods=['GET'])
@@ -99,43 +121,93 @@ def test():
         "gemini_connected": True
     }), 200
 
-# --- Registration Endpoint ---
+# --- Registration Endpoint (UPDATED for tutor approval system) ---
 @app.route('/register', methods=['POST'])
 def register():
-    """Handles user registration by hashing the password and storing in MongoDB."""
+    """Handles user registration with tutor approval system."""
     data = request.get_json()
     username = data.get('username')
     password = data.get('password')
-    user_type = data.get('userType') # student, tutor, admin
-
+    user_type = data.get('userType')  # student, tutor
+    
     print(f"Registration attempt for user: {username}, type: {user_type}")
 
     if not all([username, password, user_type]):
         print("Missing registration fields")
         return jsonify({"success": False, "message": "Missing username, password, or user type"}), 400
 
+    # Check if user already exists
     if get_user(username):
         print(f"User already exists: {username}")
         return jsonify({"success": False, "message": "User already exists"}), 409
 
+    # Check if user is in pending tutors
+    if get_pending_tutor(username):
+        print(f"User already has pending tutor application: {username}")
+        return jsonify({"success": False, "message": "You already have a pending tutor application"}), 409
+
     try:
-        # Hash the password before saving
+        # Hash the password
         hashed_password = generate_password_hash(password)
         
-        user_col = mongo_db[USER_COLLECTION]
-        user_col.insert_one({
-            "username": username,
-            "password": hashed_password,
-            "userType": user_type,
-            "createdAt": datetime.datetime.now()
-        })
-
-        print(f"User registered successfully: {username}")
-        return jsonify({
-            "success": True, 
-            "message": f"User {username} registered successfully as {user_type}",
-            "username": username
-        }), 201
+        if user_type == 'student':
+            # For students, create account immediately
+            user_col = mongo_db[USER_COLLECTION]
+            user_col.insert_one({
+                "username": username,
+                "password": hashed_password,
+                "userType": user_type,
+                "createdAt": datetime.datetime.now(),
+                "approval_status": "approved"  # Students are auto-approved
+            })
+            
+            print(f"Student registered successfully: {username}")
+            return jsonify({
+                "success": True, 
+                "message": f"Student {username} registered successfully",
+                "username": username
+            }), 201
+            
+        elif user_type == 'tutor':
+            # For tutors, collect additional information and put in pending queue
+            full_name = data.get('fullName', '')
+            email = data.get('email', '')
+            qualification = data.get('qualification', '')
+            experience = data.get('experience', '')
+            
+            # Validate tutor-specific fields
+            if not full_name or not email or not qualification:
+                return jsonify({"success": False, "message": "Missing required tutor information"}), 400
+            
+            if not validate_email(email):
+                return jsonify({"success": False, "message": "Invalid email format"}), 400
+            
+            # Store in pending tutors collection
+            pending_col = mongo_db[PENDING_TUTOR_COLLECTION]
+            pending_col.insert_one({
+                "username": username,
+                "password": hashed_password,
+                "full_name": full_name,
+                "email": email,
+                "qualification": qualification,
+                "experience": experience,
+                "applied_at": datetime.datetime.now(),
+                "status": "pending",
+                "reviewed_by": None,
+                "reviewed_at": None,
+                "rejection_reason": None
+            })
+            
+            print(f"Tutor application submitted for review: {username}")
+            return jsonify({
+                "success": True, 
+                "message": "Tutor application submitted successfully. Please wait for admin approval.",
+                "username": username,
+                "requires_approval": True
+            }), 201
+            
+        else:
+            return jsonify({"success": False, "message": "Invalid user type"}), 400
 
     except DuplicateKeyError:
         print(f"Duplicate key error for user: {username}")
@@ -144,15 +216,14 @@ def register():
         print(f"Registration Server Error: {e}")
         return jsonify({"success": False, "message": f"Server error: {e}"}), 500
 
-
-# --- Login Endpoint (FIXED with user type validation) ---
+# --- Login Endpoint (UPDATED for tutor approval system) ---
 @app.route('/login', methods=['POST'])
 def login():
-    """Handles user login authentication with user type validation."""
+    """Handles user login authentication with tutor approval checks."""
     data = request.get_json()
     username = data.get('username')
     password = data.get('password')
-    requested_user_type = data.get('userType')  # The type the user is trying to log in as
+    requested_user_type = data.get('userType')
     
     print(f"Login attempt for user: {username}, requested type: {requested_user_type}")
 
@@ -160,6 +231,7 @@ def login():
         print("Missing username, password, or user type")
         return jsonify({"success": False, "message": "Missing username, password, or user type"}), 400
 
+    # First check if user exists in main users collection
     user = get_user(username)
     
     if user:
@@ -175,19 +247,297 @@ def login():
                     "message": f"You are registered as a {user['userType']}. Please use the {user['userType']} login."
                 }), 403
             
+            # For tutors, check approval status
+            if user['userType'] == 'tutor':
+                approval_status = user.get('approval_status', 'pending')
+                
+                if approval_status == 'pending':
+                    return jsonify({
+                        "success": False,
+                        "message": "Your tutor application is still pending admin approval. Please wait for approval email.",
+                        "approval_status": "pending"
+                    }), 403
+                elif approval_status == 'rejected':
+                    rejection_reason = user.get('rejection_reason', 'No reason provided')
+                    return jsonify({
+                        "success": False,
+                        "message": f"Your tutor application has been rejected. Reason: {rejection_reason}",
+                        "approval_status": "rejected"
+                    }), 403
+            
             print(f"Login successful for {username} as {user['userType']}")
             return jsonify({
                 "success": True, 
                 "username": user['username'],
                 "userType": user['userType'],
+                "approval_status": user.get('approval_status', 'approved'),
                 "message": "Login successful"
             })
         else:
             print(f"Invalid password for {username}")
             return jsonify({"success": False, "message": "Invalid password"}), 401
     else:
-        print(f"User not found: {username}")
-        return jsonify({"success": False, "message": "User not found"}), 404
+        # Check if user is in pending tutors
+        pending_tutor = get_pending_tutor(username)
+        if pending_tutor:
+            # Check password
+            if check_password_hash(pending_tutor['password'], password):
+                # User is a pending tutor
+                return jsonify({
+                    "success": False,
+                    "message": "Your tutor application is still pending admin approval. Please wait for approval email.",
+                    "approval_status": "pending"
+                }), 403
+            else:
+                return jsonify({"success": False, "message": "Invalid password"}), 401
+        else:
+            print(f"User not found: {username}")
+            return jsonify({"success": False, "message": "User not found"}), 404
+
+# --- Admin Endpoints for Tutor Management ---
+
+@app.route('/admin/pending-tutors', methods=['GET'])
+def get_pending_tutors():
+    """Get all pending tutor applications (admin only)."""
+    try:
+        pending_col = mongo_db[PENDING_TUTOR_COLLECTION]
+        pending_tutors = list(pending_col.find({"status": "pending"}).sort("applied_at", 1))
+        
+        # Convert ObjectId and datetime for JSON serialization
+        for tutor in pending_tutors:
+            tutor['_id'] = str(tutor['_id'])
+            tutor['applied_at'] = tutor['applied_at'].isoformat()
+            if 'reviewed_at' in tutor and tutor['reviewed_at']:
+                tutor['reviewed_at'] = tutor['reviewed_at'].isoformat()
+            # Remove password for security
+            if 'password' in tutor:
+                del tutor['password']
+        
+        return jsonify({
+            "success": True,
+            "pending_tutors": pending_tutors,
+            "count": len(pending_tutors)
+        })
+    except Exception as e:
+        print(f"Get pending tutors error: {e}")
+        return jsonify({"success": False, "message": str(e)}), 500
+
+@app.route('/admin/approve-tutor', methods=['POST'])
+def approve_tutor():
+    """Approve a pending tutor application (admin only)."""
+    data = request.get_json()
+    username = data.get('username')
+    admin_username = data.get('admin_username')
+    
+    if not username or not admin_username:
+        return jsonify({"success": False, "message": "Missing required fields"}), 400
+    
+    try:
+        pending_col = mongo_db[PENDING_TUTOR_COLLECTION]
+        user_col = mongo_db[USER_COLLECTION]
+        
+        # Find the pending tutor
+        pending_tutor = pending_col.find_one({"username": username, "status": "pending"})
+        if not pending_tutor:
+            return jsonify({"success": False, "message": "Pending tutor not found"}), 404
+        
+        # Create user account from pending tutor data
+        user_data = {
+            "username": pending_tutor['username'],
+            "password": pending_tutor['password'],
+            "userType": "tutor",
+            "full_name": pending_tutor['full_name'],
+            "email": pending_tutor['email'],
+            "qualification": pending_tutor['qualification'],
+            "experience": pending_tutor.get('experience', ''),
+            "createdAt": datetime.datetime.now(),
+            "approval_status": "approved",
+            "approved_by": admin_username,
+            "approved_at": datetime.datetime.now()
+        }
+        
+        # Insert into users collection
+        user_col.insert_one(user_data)
+        
+        # Update pending tutor status
+        pending_col.update_one(
+            {"username": username},
+            {
+                "$set": {
+                    "status": "approved",
+                    "reviewed_by": admin_username,
+                    "reviewed_at": datetime.datetime.now()
+                }
+            }
+        )
+        
+        print(f"Tutor {username} approved by {admin_username}")
+        return jsonify({
+            "success": True,
+            "message": f"Tutor {username} approved successfully"
+        })
+        
+    except Exception as e:
+        print(f"Approve tutor error: {e}")
+        return jsonify({"success": False, "message": str(e)}), 500
+
+@app.route('/admin/reject-tutor', methods=['POST'])
+def reject_tutor():
+    """Reject a pending tutor application (admin only)."""
+    data = request.get_json()
+    username = data.get('username')
+    admin_username = data.get('admin_username')
+    rejection_reason = data.get('rejection_reason', 'Application rejected by admin')
+    
+    if not username or not admin_username:
+        return jsonify({"success": False, "message": "Missing required fields"}), 400
+    
+    try:
+        pending_col = mongo_db[PENDING_TUTOR_COLLECTION]
+        user_col = mongo_db[USER_COLLECTION]
+        
+        # Find the pending tutor
+        pending_tutor = pending_col.find_one({"username": username, "status": "pending"})
+        if not pending_tutor:
+            return jsonify({"success": False, "message": "Pending tutor not found"}), 404
+        
+        # Create user account with rejected status (for tracking)
+        user_data = {
+            "username": pending_tutor['username'],
+            "password": pending_tutor['password'],
+            "userType": "tutor",
+            "full_name": pending_tutor['full_name'],
+            "email": pending_tutor['email'],
+            "qualification": pending_tutor['qualification'],
+            "experience": pending_tutor.get('experience', ''),
+            "createdAt": datetime.datetime.now(),
+            "approval_status": "rejected",
+            "rejected_by": admin_username,
+            "rejected_at": datetime.datetime.now(),
+            "rejection_reason": rejection_reason
+        }
+        
+        # Insert into users collection
+        user_col.insert_one(user_data)
+        
+        # Update pending tutor status
+        pending_col.update_one(
+            {"username": username},
+            {
+                "$set": {
+                    "status": "rejected",
+                    "reviewed_by": admin_username,
+                    "reviewed_at": datetime.datetime.now(),
+                    "rejection_reason": rejection_reason
+                }
+            }
+        )
+        
+        print(f"Tutor {username} rejected by {admin_username}. Reason: {rejection_reason}")
+        return jsonify({
+            "success": True,
+            "message": f"Tutor {username} rejected successfully"
+        })
+        
+    except Exception as e:
+        print(f"Reject tutor error: {e}")
+        return jsonify({"success": False, "message": str(e)}), 500
+
+@app.route('/admin/approved-tutors', methods=['GET'])
+def get_approved_tutors():
+    """Get all approved tutors (admin only)."""
+    try:
+        user_col = mongo_db[USER_COLLECTION]
+        approved_tutors = list(user_col.find({
+            "userType": "tutor",
+            "approval_status": "approved"
+        }).sort("approved_at", -1))
+        
+        # Convert ObjectId and datetime for JSON serialization
+        for tutor in approved_tutors:
+            tutor['_id'] = str(tutor['_id'])
+            if 'createdAt' in tutor:
+                tutor['createdAt'] = tutor['createdAt'].isoformat()
+            if 'approved_at' in tutor:
+                tutor['approved_at'] = tutor['approved_at'].isoformat()
+            # Remove password for security
+            if 'password' in tutor:
+                del tutor['password']
+        
+        return jsonify({
+            "success": True,
+            "approved_tutors": approved_tutors,
+            "count": len(approved_tutors)
+        })
+    except Exception as e:
+        print(f"Get approved tutors error: {e}")
+        return jsonify({"success": False, "message": str(e)}), 500
+
+@app.route('/admin/rejected-tutors', methods=['GET'])
+def get_rejected_tutors():
+    """Get all rejected tutors (admin only)."""
+    try:
+        user_col = mongo_db[USER_COLLECTION]
+        rejected_tutors = list(user_col.find({
+            "userType": "tutor",
+            "approval_status": "rejected"
+        }).sort("rejected_at", -1))
+        
+        # Convert ObjectId and datetime for JSON serialization
+        for tutor in rejected_tutors:
+            tutor['_id'] = str(tutor['_id'])
+            if 'createdAt' in tutor:
+                tutor['createdAt'] = tutor['createdAt'].isoformat()
+            if 'rejected_at' in tutor:
+                tutor['rejected_at'] = tutor['rejected_at'].isoformat()
+            # Remove password for security
+            if 'password' in tutor:
+                del tutor['password']
+        
+        return jsonify({
+            "success": True,
+            "rejected_tutors": rejected_tutors,
+            "count": len(rejected_tutors)
+        })
+    except Exception as e:
+        print(f"Get rejected tutors error: {e}")
+        return jsonify({"success": False, "message": str(e)}), 500
+
+# --- Get Tutor Status Endpoint ---
+@app.route('/tutor/status/<username>', methods=['GET'])
+def get_tutor_status(username):
+    """Get tutor approval status."""
+    try:
+        user = get_user(username)
+        if user and user['userType'] == 'tutor':
+            return jsonify({
+                "success": True,
+                "username": username,
+                "approval_status": user.get('approval_status', 'pending'),
+                "full_name": user.get('full_name', ''),
+                "email": user.get('email', ''),
+                "qualification": user.get('qualification', '')
+            })
+        else:
+            # Check pending tutors
+            pending_tutor = get_pending_tutor(username)
+            if pending_tutor:
+                return jsonify({
+                    "success": True,
+                    "username": username,
+                    "approval_status": "pending",
+                    "full_name": pending_tutor.get('full_name', ''),
+                    "email": pending_tutor.get('email', ''),
+                    "qualification": pending_tutor.get('qualification', '')
+                })
+            else:
+                return jsonify({
+                    "success": False,
+                    "message": "User not found"
+                }), 404
+    except Exception as e:
+        print(f"Get tutor status error: {e}")
+        return jsonify({"success": False, "message": str(e)}), 500
 
 # --- Chat History Endpoint ---
 @app.route('/history', methods=['POST'])
@@ -272,6 +622,7 @@ def test_db():
         chat_count = mongo_db[CHAT_COLLECTION].count_documents({})
         courses_count = mongo_db[COURSE_COLLECTION].count_documents({})
         questions_count = mongo_db[QUESTION_COLLECTION].count_documents({})
+        pending_tutors_count = mongo_db[PENDING_TUTOR_COLLECTION].count_documents({})
         
         return jsonify({
             "success": True,
@@ -280,6 +631,7 @@ def test_db():
             "chat_count": chat_count,
             "courses_count": courses_count,
             "questions_count": questions_count,
+            "pending_tutors_count": pending_tutors_count,
             "database": DB_NAME
         }), 200
     except Exception as e:
@@ -303,9 +655,9 @@ def add_course():
     if not all([username, title, subject, grade]):
         return jsonify({"success": False, "message": "Missing required fields"}), 400
     
-    # Verify user is a tutor
+    # Verify user is an approved tutor
     if not validate_tutor(username):
-        return jsonify({"success": False, "message": "Only tutors can add courses"}), 403
+        return jsonify({"success": False, "message": "Only approved tutors can add courses"}), 403
     
     # Validate chapters
     if not chapters or len(chapters) == 0:
@@ -565,9 +917,9 @@ def add_question():
     if not all([username, question_text, subject, grade]):
         return jsonify({"success": False, "message": "Missing required fields"}), 400
     
-    # Verify user is a tutor
+    # Verify user is an approved tutor
     if not validate_tutor(username):
-        return jsonify({"success": False, "message": "Only tutors can add questions"}), 403
+        return jsonify({"success": False, "message": "Only approved tutors can add questions"}), 403
     
     try:
         questions_col = mongo_db[QUESTION_COLLECTION]
@@ -729,7 +1081,7 @@ def tutor_dashboard(username):
     """Get tutor dashboard statistics."""
     try:
         if not validate_tutor(username):
-            return jsonify({"success": False, "message": "User is not a tutor"}), 403
+            return jsonify({"success": False, "message": "User is not an approved tutor"}), 403
         
         courses_col = mongo_db[COURSE_COLLECTION]
         questions_col = mongo_db[QUESTION_COLLECTION]
@@ -832,7 +1184,11 @@ def delete_user(username):
             questions_col = mongo_db[QUESTION_COLLECTION]
             questions_deleted = questions_col.delete_many({"tutor_username": username})
             
-            print(f"Deleted user {username}: {chat_deleted.deleted_count} chats, {courses_deleted.deleted_count} courses, {questions_deleted.deleted_count} questions")
+            # Delete from pending tutors if exists
+            pending_col = mongo_db[PENDING_TUTOR_COLLECTION]
+            pending_deleted = pending_col.delete_many({"username": username})
+            
+            print(f"Deleted user {username}: {chat_deleted.deleted_count} chats, {courses_deleted.deleted_count} courses, {questions_deleted.deleted_count} questions, {pending_deleted.deleted_count} pending applications")
             
             return jsonify({
                 "success": True,
@@ -870,12 +1226,15 @@ def get_admin_stats():
         chat_col = mongo_db[CHAT_COLLECTION]
         courses_col = mongo_db[COURSE_COLLECTION]
         questions_col = mongo_db[QUESTION_COLLECTION]
+        pending_col = mongo_db[PENDING_TUTOR_COLLECTION]
         
         # User counts by type
         total_users = user_col.count_documents({})
         students = user_col.count_documents({"userType": "student"})
-        tutors = user_col.count_documents({"userType": "tutor"})
+        tutors = user_col.count_documents({"userType": "tutor", "approval_status": "approved"})
         admins = user_col.count_documents({"userType": "admin"})
+        pending_tutors = pending_col.count_documents({"status": "pending"})
+        rejected_tutors = user_col.count_documents({"userType": "tutor", "approval_status": "rejected"})
         
         # Chat stats
         total_chats = chat_col.count_documents({})
@@ -907,6 +1266,8 @@ def get_admin_stats():
                 "students": students,
                 "tutors": tutors,
                 "admins": admins,
+                "pending_tutors": pending_tutors,
+                "rejected_tutors": rejected_tutors,
                 "total_chats": total_chats,
                 "total_courses": total_courses,
                 "total_enrollments": total_enrollments,
@@ -963,7 +1324,8 @@ def create_default_admin():
             "username": "admin",
             "password": hashed_password,
             "userType": "admin",
-            "createdAt": datetime.datetime.now()
+            "createdAt": datetime.datetime.now(),
+            "approval_status": "approved"
         })
         
         return jsonify({
@@ -1082,7 +1444,8 @@ if __name__ == '__main__':
                 "username": "admin",
                 "password": hashed_password,
                 "userType": "admin",
-                "createdAt": datetime.datetime.now()
+                "createdAt": datetime.datetime.now(),
+                "approval_status": "approved"
             })
             print("Default admin user created: admin / admin123")
     except Exception as e:
