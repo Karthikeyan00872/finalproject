@@ -1,6 +1,7 @@
 <!-- [file name]: questiontag.html -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,28 +15,28 @@
             padding: 1.5rem;
             border-radius: 10px;
             margin-bottom: 2rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
             max-height: 80vh;
             overflow-y: auto;
         }
-        
+
         .tutor-controls {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1rem;
         }
-        
+
         .form-row {
             display: flex;
             gap: 1rem;
             margin-bottom: 1rem;
         }
-        
+
         .form-row .form-group {
             flex: 1;
         }
-        
+
         .file-preview {
             margin-top: 1rem;
             padding: 1rem;
@@ -43,13 +44,13 @@
             border-radius: 5px;
             border: 1px dashed #ccc;
         }
-        
+
         .file-preview img {
             max-width: 100px;
             max-height: 100px;
             margin-right: 10px;
         }
-        
+
         .my-uploads {
             display: flex;
             flex-wrap: wrap;
@@ -58,7 +59,7 @@
             max-height: 60vh;
             overflow-y: auto;
         }
-        
+
         .upload-item {
             background: white;
             border: 1px solid #e0e0e0;
@@ -67,7 +68,7 @@
             position: relative;
             min-width: 200px;
         }
-        
+
         .delete-upload {
             position: absolute;
             top: 5px;
@@ -81,7 +82,7 @@
             cursor: pointer;
             font-size: 12px;
         }
-        
+
         .question-content {
             max-height: 150px;
             overflow-y: auto;
@@ -90,13 +91,13 @@
             background: #f9f9f9;
             border-radius: 5px;
         }
-        
+
         .has-file {
             color: #3498db;
             font-size: 0.8rem;
             margin-top: 0.5rem;
         }
-        
+
         .file-upload-area {
             border: 2px dashed #3498db;
             border-radius: 10px;
@@ -106,49 +107,49 @@
             margin: 1rem 0;
             background: #f8fafc;
         }
-        
+
         .file-upload-area:hover {
             background: #e8f4fd;
         }
-        
+
         .file-upload-area i {
             font-size: 3rem;
             color: #3498db;
             margin-bottom: 1rem;
         }
-        
+
         #fileInput {
             display: none;
         }
-        
+
         /* Approval message styles */
         .approval-message {
             background: white;
             border-radius: 10px;
             padding: 2rem;
             margin-bottom: 2rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             text-align: center;
             border-left: 5px solid #f39c12;
         }
-        
+
         .approval-message i {
             font-size: 3rem;
             color: #f39c12;
             margin-bottom: 1rem;
         }
-        
+
         .approval-message h3 {
             color: #333;
             margin-bottom: 1rem;
         }
-        
+
         .approval-message p {
             color: #666;
             margin-bottom: 0.5rem;
             line-height: 1.6;
         }
-        
+
         .status {
             display: inline-block;
             padding: 0.3rem 1rem;
@@ -156,50 +157,51 @@
             font-weight: 600;
             margin-top: 1rem;
         }
-        
+
         .status.pending {
             background-color: #fff3cd;
             color: #856404;
             border: 1px solid #ffeaa7;
         }
-        
+
         .status.rejected {
             background-color: #f8d7da;
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
-        
+
         .status.approved {
             background-color: #d4edda;
             color: #155724;
             border: 1px solid #c3e6cb;
         }
-        
-        .pending-approval, .rejected-approval {
+
+        .pending-approval,
+        .rejected-approval {
             width: 100%;
         }
-        
+
         /* Scroll container for main content */
         .scroll-container {
             max-height: 80vh;
             overflow-y: auto;
             padding-right: 10px;
         }
-        
+
         .scroll-container::-webkit-scrollbar {
             width: 8px;
         }
-        
+
         .scroll-container::-webkit-scrollbar-track {
             background: #f1f1f1;
             border-radius: 10px;
         }
-        
+
         .scroll-container::-webkit-scrollbar-thumb {
             background: #888;
             border-radius: 10px;
         }
-        
+
         .scroll-container::-webkit-scrollbar-thumb:hover {
             background: #555;
         }
@@ -231,7 +233,8 @@
         <section id="questiontag">
             <div class="hero">
                 <h1>Question Bank</h1>
-                <p>Download individual questions or entire sets for practice. Questions are available in .txt format.</p>
+                <p>Download individual questions or entire sets for practice. Questions are available in .txt format.
+                </p>
             </div>
 
             <!-- Tutor Approval Message -->
@@ -247,7 +250,7 @@
                         <i class="fas fa-times"></i> Close
                     </button>
                 </div>
-                
+
                 <form id="questionUploadForm">
                     <div class="form-row">
                         <div class="form-group">
@@ -273,7 +276,7 @@
                             </select>
                         </div>
                     </div>
-                    
+
                     <div class="form-row">
                         <div class="form-group">
                             <label for="questionDifficulty">Difficulty*</label>
@@ -289,21 +292,23 @@
                             <input type="text" id="questionChapter" placeholder="e.g., Chapter 5">
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="questionText">Question Text*</label>
-                        <textarea id="questionText" rows="4" required placeholder="Enter the question text here..."></textarea>
+                        <textarea id="questionText" rows="4" required
+                            placeholder="Enter the question text here..."></textarea>
                     </div>
-                    
+
                     <!-- File Upload Area -->
                     <div class="file-upload-area" onclick="document.getElementById('fileInput').click()">
                         <i class="fas fa-cloud-upload-alt"></i>
                         <h3>Upload PDF/Image (Optional)</h3>
                         <p>Click to browse or drag and drop</p>
                         <p id="fileName" style="color: #666; margin-top: 10px;"></p>
-                        <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png,.txt" onchange="handleFileSelect(event)">
+                        <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png,.txt"
+                            onchange="handleFileSelect(event)">
                     </div>
-                    
+
                     <div id="filePreview" class="file-preview" style="display: none;">
                         <strong>Selected File:</strong> <span id="previewFileName"></span>
                         <span id="fileSize" style="color: #666; margin-left: 10px;"></span>
@@ -311,7 +316,7 @@
                             <i class="fas fa-times"></i> Remove
                         </button>
                     </div>
-                    
+
                     <div style="margin-top: 2rem;">
                         <button type="submit" class="cta-button login-btn">
                             <i class="fas fa-upload"></i> Upload Question
@@ -358,7 +363,8 @@
 
             <!-- Stats Section -->
             <div class="question-stats">
-                <p><i class="fas fa-info-circle"></i> Total Questions: <span id="totalQuestions">0</span> | Last Updated: Today</p>
+                <p><i class="fas fa-info-circle"></i> Total Questions: <span id="totalQuestions">0</span> | Last
+                    Updated: Today</p>
             </div>
         </section>
 
@@ -386,7 +392,7 @@
     <script>
         // New JavaScript for question management
         let selectedFile = null;
-        
+
         function toggleQuestionUploadForm() {
             const form = document.getElementById('tutorUploadForm');
             form.style.display = form.style.display === 'none' ? 'block' : 'none';
@@ -394,7 +400,7 @@
                 window.scrollTo({ top: form.offsetTop - 100, behavior: 'smooth' });
             }
         }
-        
+
         function handleFileSelect(event) {
             const file = event.target.files[0];
             if (file) {
@@ -405,28 +411,28 @@
                 document.getElementById('filePreview').style.display = 'block';
             }
         }
-        
+
         function removeFile() {
             selectedFile = null;
             document.getElementById('fileInput').value = '';
             document.getElementById('fileName').textContent = '';
             document.getElementById('filePreview').style.display = 'none';
         }
-        
+
         async function uploadQuestion(event) {
             event.preventDefault();
-            
+
             if (!window.currentUsername) {
-                alert("Please log in as tutor to upload questions");
+                showNotification("Please log in as tutor to upload questions", "error");
                 return;
             }
-            
+
             // Check if tutor is approved
             if (window.tutorApprovalStatus !== 'approved') {
-                alert("Only approved tutors can upload questions. Please wait for admin approval.");
+                showNotification("Only approved tutors can upload questions. Please wait for admin approval.", "warning");
                 return;
             }
-            
+
             // Collect form data
             const title = document.getElementById('questionTitle').value;
             const subject = document.getElementById('questionSubject').value;
@@ -434,12 +440,12 @@
             const difficulty = document.getElementById('questionDifficulty').value;
             const chapter = document.getElementById('questionChapter').value;
             const questionText = document.getElementById('questionText').value;
-            
+
             if (!title || !subject || !grade || !difficulty || !questionText) {
-                alert("Please fill all required fields");
+                showNotification("Please fill all required fields", "warning");
                 return;
             }
-            
+
             const questionData = {
                 username: window.currentUsername,
                 question: questionText,
@@ -449,75 +455,163 @@
                 chapter: chapter || '',
                 title: title
             };
-            
+
             // Handle file upload
             if (selectedFile) {
                 const reader = new FileReader();
-                reader.onload = async function(e) {
+                reader.onload = async function (e) {
                     questionData.file_data = e.target.result.split(',')[1]; // Base64 data
                     questionData.file_name = selectedFile.name;
                     questionData.file_type = selectedFile.type;
-                    
+
                     await sendQuestionToServer(questionData);
                 };
                 reader.readAsDataURL(selectedFile);
             } else {
+                // If editing and no new file selected, we just send metadata. 
+                // However, backend might wipe file if we don't handle it.
+                // api_server.py update_question checks if 'file_data' is present to update.
+                // So if we don't send it, it keeps existing.
+                // But we must NOT send empty file_data if we want to keep existing.
                 await sendQuestionToServer(questionData);
             }
         }
-        
+
         async function sendQuestionToServer(questionData) {
             try {
-                const response = await fetch(window.BACKEND_URL + '/tutor/questions', {
-                    method: 'POST',
+                let url = window.BACKEND_URL + '/tutor/questions';
+                let method = 'POST';
+                let successMsg = "Question uploaded successfully!";
+
+                if (window.isEditingQuestion && window.editingQuestionId) {
+                    url = window.BACKEND_URL + `/tutor/questions/${window.editingQuestionId}`;
+                    method = 'PUT';
+                    successMsg = "Question updated successfully!";
+                }
+
+                const response = await fetch(url, {
+                    method: method,
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(questionData)
                 });
-                
+
                 const result = await response.json();
-                
+
                 if (result.success) {
-                    alert("Question uploaded successfully!");
-                    // Reset form
-                    document.getElementById('questionUploadForm').reset();
-                    removeFile();
-                    toggleQuestionUploadForm();
+                    showNotification(successMsg, "success");
+                    resetQuestionForm();
                     // Reload questions
                     loadQuestions();
                     loadMyQuestionUploads();
                 } else {
-                    alert("Error: " + result.message);
+                    showNotification("Error: " + result.message, "error");
                 }
             } catch (error) {
                 console.error("Upload error:", error);
-                alert("Failed to upload question. Please try again.");
+                showNotification("Failed to upload/update question. Please try again.", "error");
             }
         }
-        
+
+        function resetQuestionForm() {
+            document.getElementById('questionUploadForm').reset();
+            removeFile();
+            // Reset edit state
+            window.isEditingQuestion = false;
+            window.editingQuestionId = null;
+            // Reset button
+            const btn = document.querySelector('#questionUploadForm button[type="submit"]');
+            btn.innerHTML = '<i class="fas fa-upload"></i> Upload Question';
+            // Hide form if it was toggle-based, essentially we just scroll away or keep open?
+            // Let's toggle it off to be clean
+            toggleQuestionUploadForm();
+            // But if it's already hidden, toggle toggles it on. 
+            // toggleQuestionUploadForm just flips display.
+            // We should force close or check state.
+            const form = document.getElementById('tutorUploadForm');
+            if (form.style.display === 'block') {
+                form.style.display = 'none';
+            }
+        }
+
+        async function editQuestion(questionId) {
+            try {
+                // We need to fetch the question details.
+                // Since we don't have a direct get-one endpoint exposed easily, we can find it in the loaded questions list usually.
+                // But safer to fetch all and find, or assume we have them.
+                // Let's look at loadMyQuestionUploads, it fetches '/questions'.
+                const response = await fetch(window.BACKEND_URL + '/questions');
+                const result = await response.json();
+
+                if (result.success) {
+                    const question = result.questions.find(q => q._id === questionId);
+                    if (!question) {
+                        showNotification("Question not found", "error");
+                        return;
+                    }
+
+                    // Populate
+                    window.isEditingQuestion = true;
+                    window.editingQuestionId = questionId;
+
+                    document.getElementById('questionTitle').value = question.title || '';
+                    document.getElementById('questionSubject').value = question.subject;
+                    document.getElementById('questionGrade').value = question.grade;
+                    document.getElementById('questionDifficulty').value = question.difficulty;
+                    document.getElementById('questionChapter').value = question.chapter || '';
+                    document.getElementById('questionText').value = question.question;
+
+                    // Handle file existing display
+                    if (question.has_file) {
+                        document.getElementById('fileName').textContent = "Existing file attached (Upload new to replace)";
+                        document.getElementById('previewFileName').textContent = "Existing File";
+                        document.getElementById('filePreview').style.display = 'block';
+                    } else {
+                        removeFile();
+                    }
+
+                    // Change button
+                    const btn = document.querySelector('#questionUploadForm button[type="submit"]');
+                    btn.innerHTML = '<i class="fas fa-save"></i> Update Question';
+
+                    // Show form
+                    const form = document.getElementById('tutorUploadForm');
+                    form.style.display = 'block';
+                    window.scrollTo({ top: form.offsetTop - 100, behavior: 'smooth' });
+                }
+            } catch (e) {
+                console.error(e);
+                showNotification("Error loading question", "error");
+            }
+        }
+
         async function loadMyQuestionUploads() {
             if (!window.currentUsername || window.userType !== 'tutor' || window.tutorApprovalStatus !== 'approved') return;
-            
+
             try {
                 const response = await fetch(window.BACKEND_URL + '/questions');
                 const result = await response.json();
-                
+
                 if (result.success) {
                     const myUploadsDiv = document.getElementById('myQuestionUploads');
-                    const myQuestions = result.questions.filter(question => 
+                    const myQuestions = result.questions.filter(question =>
                         question.tutor_username === window.currentUsername
                     );
-                    
+
                     if (myQuestions.length > 0) {
                         myUploadsDiv.style.display = 'block';
                         let html = '<h2><i class="fas fa-list"></i> My Uploaded Questions</h2>';
                         html += '<div style="display: flex; flex-wrap: wrap; gap: 1rem;">';
-                        
+
                         myQuestions.forEach(question => {
                             html += `
-                                <div class="upload-item">
-                                    <button class="delete-upload" onclick="deleteQuestion('${question._id}')">
-                                        <i class="fas fa-times"></i>
-                                    </button>
+                                    <div class="upload-actions">
+                                        <button class="edit-btn" onclick="editQuestion('${question._id}')" style="background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; padding: 5px 10px; margin-right: 5px;">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+                                        <button class="delete-upload" onclick="deleteQuestion('${question._id}')" style="position: static; border-radius: 5px; padding: 5px 10px; width: auto; height: auto;">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </div>
                                     <h4>${question.title || 'Untitled Question'}</h4>
                                     <p>${question.subject} - ${question.grade}</p>
                                     <div class="question-content">${question.question.substring(0, 100)}...</div>
@@ -528,7 +622,7 @@
                                 </div>
                             `;
                         });
-                        
+
                         html += '</div>';
                         myUploadsDiv.innerHTML = html;
                     } else {
@@ -539,42 +633,42 @@
                 console.error("Error loading my uploads:", error);
             }
         }
-        
+
         async function deleteQuestion(questionId) {
-            if (!confirm("Are you sure you want to delete this question?")) return;
-            
+            if (!await showConfirmModal('Delete Question', 'Are you sure you want to delete this question?', 'delete')) return;
+
             try {
                 const response = await fetch(window.BACKEND_URL + `/tutor/questions/${questionId}`, {
                     method: 'DELETE',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username: window.currentUsername })
                 });
-                
+
                 const result = await response.json();
-                
+
                 if (result.success) {
-                    alert("Question deleted successfully!");
+                    showNotification("Question deleted successfully!", "success");
                     loadQuestions();
                     loadMyQuestionUploads();
                 } else {
-                    alert("Error: " + result.message);
+                    showNotification("Error: " + result.message, "error");
                 }
             } catch (error) {
                 console.error("Delete error:", error);
-                alert("Failed to delete question");
+                showNotification("Failed to delete question", "error");
             }
         }
-        
+
         async function downloadQuestionFile(questionId) {
             if (!window.currentUsername) {
                 showLogin('student');
                 return;
             }
-            
+
             try {
                 const response = await fetch(window.BACKEND_URL + `/questions/download/${questionId}`);
                 const result = await response.json();
-                
+
                 if (result.success) {
                     if (result.file_data) {
                         // Download binary file
@@ -595,7 +689,7 @@
                     } else if (result.text_content) {
                         // Download text content
                         const element = document.createElement('a');
-                        const file = new Blob([result.text_content], {type: 'text/plain'});
+                        const file = new Blob([result.text_content], { type: 'text/plain' });
                         element.href = URL.createObjectURL(file);
                         element.download = result.file_name;
                         document.body.appendChild(element);
@@ -603,32 +697,32 @@
                         document.body.removeChild(element);
                     }
                 } else {
-                    alert("Error: " + result.message);
+                    showNotification("Error: " + result.message, "error");
                 }
             } catch (error) {
                 console.error("Download error:", error);
-                alert("Failed to download file");
+                showNotification("Failed to download file", "error");
             }
         }
-        
+
         // Initialize when DOM is loaded
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Set up form submission
             const form = document.getElementById('questionUploadForm');
             if (form) {
                 form.addEventListener('submit', uploadQuestion);
             }
-            
+
             // Check if tutor is logged in and approved
             if (window.currentUsername && window.userType === 'tutor' && window.tutorApprovalStatus === 'approved') {
                 document.getElementById('tutorQuestionUploadBtn').style.display = 'block';
                 loadMyQuestionUploads();
             }
-            
+
             // Load initial questions
             loadQuestions();
         });
-        
+
         // Make functions globally available
         window.toggleQuestionUploadForm = toggleQuestionUploadForm;
         window.uploadQuestion = uploadQuestion;
@@ -639,4 +733,5 @@
     <script src="common.js"></script>
     <script src="questiontag.js"></script>
 </body>
+
 </html>

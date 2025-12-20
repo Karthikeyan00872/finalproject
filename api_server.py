@@ -174,9 +174,10 @@ def register():
             email = data.get('email', '')
             qualification = data.get('qualification', '')
             experience = data.get('experience', '')
+            years_of_experience = data.get('yearsOfExperience', '')
             
             # Validate tutor-specific fields
-            if not full_name or not email or not qualification:
+            if not full_name or not email or not qualification or not years_of_experience:
                 return jsonify({"success": False, "message": "Missing required tutor information"}), 400
             
             if not validate_email(email):
@@ -191,6 +192,7 @@ def register():
                 "email": email,
                 "qualification": qualification,
                 "experience": experience,
+                "years_of_experience": years_of_experience,
                 "applied_at": datetime.datetime.now(),
                 "status": "pending",
                 "reviewed_by": None,
@@ -350,6 +352,7 @@ def approve_tutor():
             "email": pending_tutor['email'],
             "qualification": pending_tutor['qualification'],
             "experience": pending_tutor.get('experience', ''),
+            "years_of_experience": pending_tutor.get('years_of_experience', ''),
             "createdAt": datetime.datetime.now(),
             "approval_status": "approved",
             "approved_by": admin_username,
@@ -1335,6 +1338,103 @@ def create_default_admin():
         
     except Exception as e:
         print(f"Create default admin error: {e}")
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
+# --- Update Endpoints ---
+
+@app.route('/tutor/courses/<course_id>', methods=['PUT'])
+def update_course(course_id):
+    """Update an existing course."""
+    data = request.get_json()
+    username = data.get('username')
+    
+    if not username:
+        return jsonify({"success": False, "message": "Username is required"}), 400
+        
+    try:
+        courses_col = mongo_db[COURSE_COLLECTION]
+        
+        # Verify ownership
+        course = courses_col.find_one({"_id": ObjectId(course_id)})
+        if not course:
+            return jsonify({"success": False, "message": "Course not found"}), 404
+            
+        if course['tutor_username'] != username:
+            return jsonify({"success": False, "message": "Unauthorized: You can only edit your own courses"}), 403
+            
+        # Fields to update
+        update_fields = {}
+        if 'title' in data: update_fields['title'] = data['title']
+        if 'description' in data: update_fields['description'] = data['description']
+        if 'subject' in data: update_fields['subject'] = data['subject']
+        if 'grade' in data: update_fields['grade'] = data['grade']
+        if 'difficulty' in data: update_fields['difficulty'] = data['difficulty']
+        
+        # Update timestamp
+        update_fields['updated_at'] = datetime.datetime.now()
+        
+        courses_col.update_one(
+            {"_id": ObjectId(course_id)},
+            {"$set": update_fields}
+        )
+        
+        return jsonify({"success": True, "message": "Course updated successfully"})
+        
+    except Exception as e:
+        print(f"Update course error: {e}")
+        return jsonify({"success": False, "message": str(e)}), 500
+
+@app.route('/tutor/questions/<question_id>', methods=['PUT'])
+def update_question(question_id):
+    """Update an existing question."""
+    data = request.get_json()
+    username = data.get('username')
+    
+    if not username:
+        return jsonify({"success": False, "message": "Username is required"}), 400
+        
+    try:
+        questions_col = mongo_db[QUESTION_COLLECTION]
+        
+        # Verify ownership
+        question = questions_col.find_one({"_id": ObjectId(question_id)})
+        if not question:
+            return jsonify({"success": False, "message": "Question not found"}), 404
+            
+        if question['tutor_username'] != username:
+            return jsonify({"success": False, "message": "Unauthorized: You can only edit your own questions"}), 403
+            
+        # Fields to update
+        update_fields = {}
+        if 'title' in data: update_fields['title'] = data['title']
+        if 'question' in data: update_fields['question'] = data['question']
+        if 'subject' in data: update_fields['subject'] = data['subject']
+        if 'grade' in data: update_fields['grade'] = data['grade']
+        if 'difficulty' in data: update_fields['difficulty'] = data['difficulty']
+        if 'chapter' in data: update_fields['chapter'] = data['chapter']
+        
+        # Handle file update if provided
+        if 'file_data' in data and data['file_data']:
+            update_fields['file_data'] = data['file_data']
+            update_fields['file_name'] = data.get('file_name', 'updated_file')
+            update_fields['file_type'] = data.get('file_type', 'application/octet-stream')
+            update_fields['has_file'] = True
+        elif data.get('remove_file'):
+            update_fields['file_data'] = None
+            update_fields['file_name'] = None
+            update_fields['file_type'] = None
+            update_fields['has_file'] = False
+            
+        questions_col.update_one(
+            {"_id": ObjectId(question_id)},
+            {"$set": update_fields}
+        )
+        
+        return jsonify({"success": True, "message": "Question updated successfully"})
+        
+    except Exception as e:
+        print(f"Update question error: {e}")
         return jsonify({"success": False, "message": str(e)}), 500
 
 # --- Search Endpoints ---

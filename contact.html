@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,57 +12,57 @@
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
+
         body {
             background-color: #f8f9fa;
             color: #333;
             line-height: 1.6;
         }
-        
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
         }
-        
+
         header {
             background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
             color: white;
             padding: 1.5rem 0;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
-        
+
         .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .logo {
             font-size: 1.8rem;
             font-weight: 700;
             display: flex;
             align-items: center;
         }
-        
+
         .logo span {
             color: #ffde59;
         }
-        
+
         .logo i {
             margin-right: 10px;
             font-size: 2rem;
         }
-        
+
         nav ul {
             display: flex;
             list-style: none;
         }
-        
+
         nav ul li {
             margin-left: 1.5rem;
         }
-        
+
         nav ul li a {
             color: white;
             text-decoration: none;
@@ -70,70 +71,70 @@
             border-radius: 4px;
             transition: all 0.3s ease;
         }
-        
+
         nav ul li a:hover {
             background-color: rgba(255, 255, 255, 0.2);
         }
-        
+
         .active {
             background-color: rgba(255, 255, 255, 0.15);
         }
-        
+
         .page-header {
             padding: 3rem 0 1.5rem;
             text-align: center;
         }
-        
+
         .page-header h1 {
             font-size: 2.5rem;
             margin-bottom: 0.5rem;
             color: #2c3e50;
         }
-        
+
         .page-header p {
             color: #7f8c8d;
             font-size: 1.1rem;
         }
-        
+
         .contact-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2rem;
             margin-bottom: 3rem;
         }
-        
+
         .contact-info {
             background-color: white;
             border-radius: 10px;
             padding: 2rem;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         }
-        
+
         .contact-form {
             background-color: white;
             border-radius: 10px;
             padding: 2rem;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         }
-        
+
         h2 {
             color: #3498db;
             margin-bottom: 1.2rem;
             padding-bottom: 0.5rem;
             border-bottom: 2px solid #f0f0f0;
         }
-        
+
         h3 {
             color: #2c3e50;
             margin: 1.5rem 0 0.8rem;
         }
-        
+
         .info-item {
             display: flex;
             align-items: flex-start;
             margin-bottom: 1.5rem;
         }
-        
+
         .info-icon {
             background-color: #e8f4fc;
             width: 50px;
@@ -146,37 +147,37 @@
             color: #3498db;
             font-size: 1.2rem;
         }
-        
+
         .info-content h4 {
             color: #2c3e50;
             margin-bottom: 0.3rem;
         }
-        
+
         .info-content p {
             color: #7f8c8d;
             margin-bottom: 0;
         }
-        
+
         .info-content a {
             color: #3498db;
             text-decoration: none;
         }
-        
+
         .info-content a:hover {
             text-decoration: underline;
         }
-        
+
         .form-group {
             margin-bottom: 1.5rem;
         }
-        
+
         .form-group label {
             display: block;
             margin-bottom: 0.5rem;
             color: #2c3e50;
             font-weight: 500;
         }
-        
+
         .form-control {
             width: 100%;
             padding: 0.8rem 1rem;
@@ -185,17 +186,17 @@
             font-size: 1rem;
             transition: border 0.3s ease;
         }
-        
+
         .form-control:focus {
             border-color: #3498db;
             outline: none;
         }
-        
+
         textarea.form-control {
             min-height: 150px;
             resize: vertical;
         }
-        
+
         .btn {
             display: inline-block;
             background: linear-gradient(to right, #3498db, #2c3e50);
@@ -208,18 +209,18 @@
             font-weight: 500;
             transition: all 0.3s ease;
         }
-        
+
         .btn:hover {
             background: linear-gradient(to right, #2980b9, #1a252f);
             transform: translateY(-2px);
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
         }
-        
+
         .social-links {
             display: flex;
             margin-top: 2rem;
         }
-        
+
         .social-link {
             display: flex;
             align-items: center;
@@ -233,74 +234,75 @@
             text-decoration: none;
             transition: all 0.3s ease;
         }
-        
+
         .social-link:hover {
             transform: translateY(-3px);
         }
-        
+
         .social-link.whatsapp:hover {
             background-color: #25D366;
             color: white;
         }
-        
+
         .social-link.email:hover {
             background-color: #EA4335;
             color: white;
         }
-        
+
         .social-link.phone:hover {
             background-color: #4285F4;
             color: white;
         }
-        
+
         footer {
             background-color: #2c3e50;
             color: #ecf0f1;
             padding: 2.5rem 0;
             margin-top: 3rem;
         }
-        
+
         .footer-content {
             display: flex;
             flex-wrap: wrap;
             justify-content: space-between;
         }
-        
+
         .footer-section {
             flex: 1;
             min-width: 250px;
             margin-bottom: 1.5rem;
         }
-        
+
         .footer-section h3 {
             color: #ecf0f1;
             margin-bottom: 1.2rem;
             font-size: 1.3rem;
         }
-        
-        .footer-section p, .footer-section a {
+
+        .footer-section p,
+        .footer-section a {
             color: #bdc3c7;
             margin-bottom: 0.8rem;
             display: block;
             text-decoration: none;
         }
-        
+
         .footer-section a:hover {
             color: #3498db;
         }
-        
+
         .contact-info-footer {
             display: flex;
             align-items: center;
             margin-bottom: 0.8rem;
         }
-        
+
         .contact-info-footer i {
             margin-right: 10px;
             color: #3498db;
             width: 20px;
         }
-        
+
         .copyright {
             text-align: center;
             padding-top: 1.5rem;
@@ -309,14 +311,14 @@
             color: #95a5a6;
             font-size: 0.9rem;
         }
-        
+
         .map-container {
             margin-top: 2rem;
             border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
-        
+
         .map-placeholder {
             background-color: #e8f4fc;
             height: 200px;
@@ -326,33 +328,78 @@
             color: #3498db;
             font-weight: 500;
         }
-        
+
         @media (max-width: 768px) {
             .header-content {
                 flex-direction: column;
                 text-align: center;
             }
-            
+
             nav ul {
                 margin-top: 1rem;
                 justify-content: center;
             }
-            
+
             nav ul li {
                 margin: 0 0.5rem;
             }
-            
+
             .page-header h1 {
                 font-size: 2rem;
             }
-            
+
             .contact-container {
                 grid-template-columns: 1fr;
+            }
+        }
+
+        /* Elegant Notification Styles */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: #2c3e50;
+            padding: 1rem 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            z-index: 10000;
+            max-width: 350px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideInRight 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-weight: 500;
+            border-left: 5px solid rgba(255, 255, 255, 0.5);
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOutSlideRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+
+            to {
+                transform: translateX(100%);
+                opacity: 0;
             }
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
+
 <body>
     <header>
         <div class="container header-content">
@@ -376,12 +423,13 @@
             <h1>Contact Us</h1>
             <p>We'd love to hear from you. Reach out with any questions or feedback.</p>
         </div>
-        
+
         <div class="contact-container">
             <div class="contact-info">
                 <h2>Get in Touch</h2>
-                <p>Have questions about our AI tutoring platform? Need support with your account? Want to provide feedback? We're here to help!</p>
-                
+                <p>Have questions about our AI tutoring platform? Need support with your account? Want to provide
+                    feedback? We're here to help!</p>
+
                 <div class="info-item">
                     <div class="info-icon">
                         <i class="fas fa-phone-alt"></i>
@@ -392,7 +440,7 @@
                         <p>Monday to Friday, 9am to 6pm IST</p>
                     </div>
                 </div>
-                
+
                 <div class="info-item">
                     <div class="info-icon">
                         <i class="fas fa-envelope"></i>
@@ -403,7 +451,7 @@
                         <p>We typically respond within 24 hours</p>
                     </div>
                 </div>
-                
+
                 <div class="info-item">
                     <div class="info-icon">
                         <i class="fab fa-whatsapp"></i>
@@ -414,7 +462,7 @@
                         <p>Quick responses for urgent inquiries</p>
                     </div>
                 </div>
-                
+
                 <div class="social-links">
                     <a href="https://wa.me/917806921382" class="social-link whatsapp" target="_blank" title="WhatsApp">
                         <i class="fab fa-whatsapp"></i>
@@ -427,7 +475,7 @@
                     </a>
                 </div>
             </div>
-            
+
             <div class="contact-form">
                 <h2>Send Us a Message</h2>
                 <form id="contactForm">
@@ -435,25 +483,28 @@
                         <label for="name">Full Name</label>
                         <input type="text" id="name" class="form-control" placeholder="Your Name" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="email">Email Address</label>
-                        <input type="email" id="email" class="form-control" placeholder="your.email@example.com" required>
+                        <input type="email" id="email" class="form-control" placeholder="your.email@example.com"
+                            required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="subject">Subject</label>
-                        <input type="text" id="subject" class="form-control" placeholder="What is this regarding?" required>
+                        <input type="text" id="subject" class="form-control" placeholder="What is this regarding?"
+                            required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="message">Message</label>
-                        <textarea id="message" class="form-control" placeholder="Please describe your inquiry in detail..." required></textarea>
+                        <textarea id="message" class="form-control"
+                            placeholder="Please describe your inquiry in detail..." required></textarea>
                     </div>
-                    
+
                     <button type="submit" class="btn">Send Message</button>
                 </form>
-                
+
                 <div class="map-container">
                     <div class="map-placeholder">
                         <i class="fas fa-map-marker-alt"></i>
@@ -462,22 +513,27 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="contact-info" style="margin-top: 2rem;">
             <h2>Frequently Asked Questions</h2>
-            
+
             <div style="margin-top: 1.5rem;">
                 <h3>How does the AI tutor work?</h3>
-                <p>Our AI tutor uses advanced machine learning algorithms to analyze your learning patterns and adapt the content to your individual needs. It identifies knowledge gaps and provides personalized explanations and practice problems.</p>
-                
+                <p>Our AI tutor uses advanced machine learning algorithms to analyze your learning patterns and adapt
+                    the content to your individual needs. It identifies knowledge gaps and provides personalized
+                    explanations and practice problems.</p>
+
                 <h3>Is there a free trial available?</h3>
-                <p>Yes, we offer a 7-day free trial for all new users. You can access most features during the trial period to evaluate if our platform meets your learning needs.</p>
-                
+                <p>Yes, we offer a 7-day free trial for all new users. You can access most features during the trial
+                    period to evaluate if our platform meets your learning needs.</p>
+
                 <h3>What subjects does the AI tutor cover?</h3>
-                <p>Currently, we cover mathematics, science, computer programming, and language arts for K-12 and college levels. We're continuously expanding our subject offerings.</p>
-                
+                <p>Currently, we cover mathematics, science, computer programming, and language arts for K-12 and
+                    college levels. We're continuously expanding our subject offerings.</p>
+
                 <h3>Can I use the platform on multiple devices?</h3>
-                <p>Yes, your account can be accessed from any device with an internet connection. Our platform is fully responsive and works on desktop, tablet, and mobile devices.</p>
+                <p>Yes, your account can be accessed from any device with an internet connection. Our platform is fully
+                    responsive and works on desktop, tablet, and mobile devices.</p>
             </div>
         </div>
     </main>
@@ -487,9 +543,10 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <h3>AI Tutor E-Learning</h3>
-                    <p>Revolutionizing education through artificial intelligence. Personalized learning paths for every student.</p>
+                    <p>Revolutionizing education through artificial intelligence. Personalized learning paths for every
+                        student.</p>
                 </div>
-                
+
                 <div class="footer-section">
                     <h3>Quick Links</h3>
                     <a href="index.html">Home</a>
@@ -497,7 +554,7 @@
                     <a href="terms.html">Terms of Service</a>
                     <a href="privacy.html">Privacy Policy</a>
                 </div>
-                
+
                 <div class="footer-section">
                     <h3>Contact Information</h3>
                     <div class="contact-info-footer">
@@ -514,30 +571,50 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="copyright">
                 <p>&copy; 2023 AI Tutor E-Learning. All rights reserved.</p>
             </div>
         </div>
     </footer>
-    
+
     <script>
-        document.getElementById('contactForm').addEventListener('submit', function(e) {
+        document.getElementById('contactForm').addEventListener('submit', function (e) {
             e.preventDefault();
-            
+
             // Get form values
             const name = document.getElementById('name').value;
             const email = document.getElementById('email').value;
             const subject = document.getElementById('subject').value;
             const message = document.getElementById('message').value;
-            
+
             // In a real implementation, you would send this data to a server
             // For this example, we'll just show an alert
-            alert(`Thank you, ${name}! Your message has been received. We'll respond to you at ${email} as soon as possible.`);
-            
+            // Simple notification function to replicate elegant style
+            function showNotification(message) {
+                const existing = document.querySelector('.notification');
+                if (existing) existing.remove();
+
+                const notification = document.createElement('div');
+                notification.className = 'notification';
+                notification.innerHTML = `
+                    <i class="fas fa-check-circle" style="font-size: 1.2rem;"></i>
+                    <span>${message}</span>
+                `;
+                document.body.appendChild(notification);
+
+                setTimeout(() => {
+                    notification.style.animation = 'fadeOutSlideRight 0.4s forwards';
+                    setTimeout(() => notification.remove(), 400);
+                }, 4000);
+            }
+
+            showNotification(`Thank you, ${name}! Your message has been received.`);
+
             // Reset form
             document.getElementById('contactForm').reset();
         });
     </script>
 </body>
+
 </html>

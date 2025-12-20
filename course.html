@@ -245,35 +245,35 @@
         .play-video-btn:hover {
             background: #45a049;
         }
-        
+
         /* Approval message styles */
         .approval-message {
             background: white;
             border-radius: 10px;
             padding: 2rem;
             margin-bottom: 2rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             text-align: center;
             border-left: 5px solid #f39c12;
         }
-        
+
         .approval-message i {
             font-size: 3rem;
             color: #f39c12;
             margin-bottom: 1rem;
         }
-        
+
         .approval-message h3 {
             color: #333;
             margin-bottom: 1rem;
         }
-        
+
         .approval-message p {
             color: #666;
             margin-bottom: 0.5rem;
             line-height: 1.6;
         }
-        
+
         .status {
             display: inline-block;
             padding: 0.3rem 1rem;
@@ -281,50 +281,51 @@
             font-weight: 600;
             margin-top: 1rem;
         }
-        
+
         .status.pending {
             background-color: #fff3cd;
             color: #856404;
             border: 1px solid #ffeaa7;
         }
-        
+
         .status.rejected {
             background-color: #f8d7da;
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
-        
+
         .status.approved {
             background-color: #d4edda;
             color: #155724;
             border: 1px solid #c3e6cb;
         }
-        
-        .pending-approval, .rejected-approval {
+
+        .pending-approval,
+        .rejected-approval {
             width: 100%;
         }
-        
+
         /* Scroll container for main content */
         .scroll-container {
             max-height: 80vh;
             overflow-y: auto;
             padding-right: 10px;
         }
-        
+
         .scroll-container::-webkit-scrollbar {
             width: 8px;
         }
-        
+
         .scroll-container::-webkit-scrollbar-track {
             background: #f1f1f1;
             border-radius: 10px;
         }
-        
+
         .scroll-container::-webkit-scrollbar-thumb {
             background: #888;
             border-radius: 10px;
         }
-        
+
         .scroll-container::-webkit-scrollbar-thumb:hover {
             background: #555;
         }
@@ -535,20 +536,13 @@
     <script>
         // Update the submitRating function in course.html
         async function submitRating(rating, courseId, chapterIndex) {
-            console.log("Submitting rating from course.html:", {
-                rating,
-                courseId,
-                chapterIndex,
-                username: window.currentUsername
-            });
-
             if (rating < 1 || rating > 5) {
-                alert("Please select a rating between 1 and 5 stars");
+                showNotification("Please select a rating between 1 and 5 stars", "warning");
                 return;
             }
 
             if (!window.currentUsername) {
-                alert("Please log in to rate courses");
+                showNotification("Please log in to rate courses", "error");
                 showLogin('student');
                 return;
             }
@@ -568,41 +562,62 @@
                     })
                 });
 
-                console.log("Rating response status:", response.status);
                 const result = await response.json();
-                console.log("Rating response data:", result);
 
                 // Remove rating dialog
                 const dialog = document.querySelector('.star-rating-dialog');
                 if (dialog) dialog.remove();
 
                 if (result.success) {
-                    alert("Thank you for your rating!");
+                    showNotification("Thank you for your rating!", "success");
                     // Refresh to show updated ratings
                     if (window.loadCourses) {
                         window.loadCourses();
                     }
                 } else {
-                    alert("Error: " + (result.message || 'Failed to submit rating'));
+                    showNotification("Error: " + (result.message || 'Failed to submit rating'), "error");
                 }
             } catch (error) {
                 console.error("Rating error:", error);
-                alert("Failed to submit rating: " + error.message);
+                showNotification("Failed to submit rating: " + error.message, "error");
 
                 // Remove rating dialog on error too
                 const dialog = document.querySelector('.star-rating-dialog');
                 if (dialog) dialog.remove();
             }
         }
-        
+
         // JavaScript for course management
         let chapterCounter = 1;
 
         function toggleUploadForm() {
             const form = document.getElementById('tutorUploadForm');
             if (form) {
-                form.style.display = form.style.display === 'none' ? 'block' : 'none';
+                const isHidden = form.style.display === 'none';
+                form.style.display = isHidden ? 'block' : 'none';
+
+                // If opening and not specifically editing (checked by title emptiness or flag), reset
+                // But better to have explicit reset if just toggling
+                if (isHidden && !window.isEditingCourse) {
+                    resetUploadForm();
+                }
             }
+        }
+
+        function resetUploadForm() {
+            document.getElementById('courseUploadForm').reset();
+            document.getElementById('chaptersContainer').innerHTML = '';
+            // Re-add one default chapter
+            chapterCounter = 0;
+            addChapter();
+
+            // Reset edit state
+            window.isEditingCourse = false;
+            window.editingCourseId = null;
+
+            // Reset button text
+            const submitBtn = document.querySelector('#courseUploadForm button[type="submit"]');
+            submitBtn.innerHTML = '<i class="fas fa-upload"></i> Upload Course';
         }
 
         function addChapter() {
@@ -719,13 +734,13 @@
             event.preventDefault();
 
             if (!window.currentUsername) {
-                alert("Please log in as tutor to upload courses");
+                showNotification("Please log in as tutor to upload/manage courses", "error");
                 return;
             }
-            
+
             // Check if tutor is approved
             if (window.tutorApprovalStatus !== 'approved') {
-                alert("Only approved tutors can upload courses. Please wait for admin approval.");
+                showNotification("Only approved tutors can upload/manage courses. Please wait for admin approval.", "warning");
                 return;
             }
 
@@ -735,7 +750,10 @@
             const grade = document.getElementById('courseGrade').value;
             const description = document.getElementById('courseDescription').value;
 
-            // Collect chapters and videos
+            // Collect chapters and videos (Edit: minimal collection for metadata update for now as full chapter update is complex)
+            // However, the user expects full edit.
+            // Let's collect data as usual.
+
             const chapters = [];
             const chapterSections = document.querySelectorAll('.chapter-section');
 
@@ -754,21 +772,28 @@
                         }
                     } else {
                         const fileInput = videoInput.querySelector('.video-file');
+                        // Use existing value if available (handling edit case where file is not re-uploaded)
+                        // This is tricky. For now, assume if no file is selected, we keep it empty or need a way to preserve.
+                        // Since backend replaces chapter list whole, we need the old URLs.
+                        // This implementation assumes re-adding or new files. 
+                        // Real-world edit needs persistence of existing video URLs.
                         if (fileInput.files.length > 0) {
                             const file = fileInput.files[0];
-                            // Check file size (limit to 50MB for demo)
                             if (file.size > 50 * 1024 * 1024) {
-                                alert(`File ${file.name} is too large. Maximum size is 50MB.`);
+                                showNotification(`File ${file.name} is too large. Maximum size is 50MB.`, "error");
                                 return;
                             }
-                            // Convert file to base64 for storage
                             const base64 = await fileToBase64(file);
                             videoUrls.push(base64);
+                        } else {
+                            // Check if there was a pre-filled hidden value (for editing)
+                            const existingUrl = videoInput.getAttribute('data-existing-url');
+                            if (existingUrl) videoUrls.push(existingUrl);
                         }
                     }
                 }
 
-                if (chapterTitle && videoUrls.length > 0) {
+                if (chapterTitle) {
                     chapters.push({
                         title: chapterTitle,
                         videos: videoUrls
@@ -777,7 +802,7 @@
             }
 
             if (!title || !subject || !grade || chapters.length === 0) {
-                alert("Please fill all required fields and add at least one chapter with videos");
+                showNotification("Please fill all required fields and add at least one chapter with videos", "warning");
                 return;
             }
 
@@ -787,12 +812,26 @@
                 subject: subject,
                 grade: grade,
                 description: description,
-                chapters: chapters
+                chapters: chapters // This will overwrite chapters.
             };
 
             try {
-                const response = await fetch(window.BACKEND_URL + '/tutor/courses', {
-                    method: 'POST',
+                let url = window.BACKEND_URL + '/tutor/courses';
+                let method = 'POST';
+
+                if (window.isEditingCourse && window.editingCourseId) {
+                    url = window.BACKEND_URL + `/tutor/courses/${window.editingCourseId}`;
+                    method = 'PUT';
+                    // Note: PUT endpoint currently only updates metadata (Title, Desc, etc) in my implementation plan.
+                    // But here I'm sending chapters too. I need to make sure backend handles it or I update backend.
+                    // Checking api_server.py again... I only added metadata updates.
+                    // I should update api_server.py to allow chapter updates OR clarify limit.
+                    // Given the user request "edit their already posted course", they likely want to add videos etc.
+                    // I will update the backend in next step to support chapters if passed.
+                }
+
+                const response = await fetch(url, {
+                    method: method,
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(courseData)
                 });
@@ -800,47 +839,145 @@
                 const result = await response.json();
 
                 if (result.success) {
-                    alert("Course uploaded successfully!");
-                    // Reset form
-                    document.getElementById('courseUploadForm').reset();
-                    // Remove extra chapters
-                    while (chapterCounter > 1) {
-                        removeChapter(chapterCounter);
-                    }
-                    toggleUploadForm();
-                    // Reload courses
-                    if (window.loadCourses) {
-                        window.loadCourses();
-                    }
-                    if (window.loadMyUploads) {
-                        window.loadMyUploads();
-                    }
+                    showNotification(window.isEditingCourse ? "Course updated successfully!" : "Course uploaded successfully!", "success");
+                    resetUploadForm();
+                    toggleUploadForm(); // Close form
+                    loadCourses();
                 } else {
-                    alert("Error: " + result.message);
+                    showNotification("Error: " + result.message, "error");
                 }
             } catch (error) {
                 console.error("Upload error:", error);
-                alert("Failed to upload course. Please try again.");
+                showNotification("Failed to upload/update course. Please try again.", "error");
             }
         }
 
+        async function editCourse(courseId) {
+            try {
+                // Fetch course details
+                // We can find it in the current list or fetch fresh
+                // Using search/find from DOM or API. Since we have loadCourses, we likely have the data in memory if we stored it, 
+                // but simpler to fetch specific or just use the data if available.
+                // Let's just fetch all courses again or filter from display?
+                // Better: fetch fresh to ensure latest. But we don't have get-one endpoint easily exposed?
+                // We have /courses/search?q=... or just iterate existing if stored.
+                // Let's assume we can grab it from backend or filter.
+
+                const response = await fetch(window.BACKEND_URL + '/courses');
+                const result = await response.json();
+
+                if (result.success) {
+                    const course = result.courses.find(c => c._id === courseId);
+                    if (!course) {
+                        showNotification("Course not found", "error");
+                        return;
+                    }
+
+                    // Populate Form
+                    resetUploadForm(); // Clear first
+                    window.isEditingCourse = true;
+                    window.editingCourseId = courseId;
+
+                    document.getElementById('courseTitle').value = course.title;
+                    document.getElementById('courseSubject').value = course.subject;
+                    document.getElementById('courseGrade').value = course.grade;
+                    document.getElementById('courseDescription').value = course.description || '';
+
+                    // Populate Chapters (Complex)
+                    const chaptersContainer = document.getElementById('chaptersContainer');
+                    chaptersContainer.innerHTML = '';
+                    chapterCounter = 0;
+
+                    course.chapters.forEach((chapter, cIndex) => {
+                        chapterCounter++;
+                        const chapterDiv = document.createElement('div');
+                        chapterDiv.className = 'chapter-section';
+                        chapterDiv.setAttribute('data-chapter', chapterCounter);
+
+                        let videosHtml = '';
+                        chapter.videos.forEach(video => {
+                            // Try to determine type
+                            let isLink = video.startsWith('http');
+                            let val = video;
+                            // We can't show base64 easily in text input, but we can store it.
+                            // For simplification, allow adding NEW videos, but preserving OLD ones is hard visually.
+                            // We will render them as "Existing Video" inputs.
+
+                            videosHtml += `
+                            <div class="video-input">
+                                <select class="video-type" onchange="changeVideoType(this)">
+                                    <option value="link" ${isLink ? 'selected' : ''}>Video Link</option>
+                                    <option value="upload" ${!isLink ? 'selected' : ''}>Upload Video</option>
+                                </select>
+                                <input type="text" class="video-url" placeholder="Video URL" style="display: ${isLink ? 'block' : 'none'}" value="${isLink ? val : ''}" ${!isLink ? `data-existing-url="${val.replace(/"/g, '&quot;')}"` : ''}>
+                                ${!isLink ? `<span style="font-size:0.8rem; color: green; margin-right:5px;">Existing Video (Upload new to replace)</span>` : ''}
+                                <input type="file" class="video-file" accept="video/*" style="display: ${!isLink ? 'block' : 'none'}; width: auto;">
+                                <button type="button" class="remove-btn" onclick="removeVideo(this)">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                           `;
+                        });
+
+                        chapterDiv.innerHTML = `
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Chapter ${chapterCounter} Title*</label>
+                                    <input type="text" class="chapter-title" required value="${chapter.title.replace(/"/g, '&quot;')}">
+                                </div>
+                                <button type="button" class="remove-btn" onclick="removeChapter(${chapterCounter})">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <div class="video-section">
+                                <label>Video Links</label>
+                                ${videosHtml}
+                                <button type="button" class="add-btn" onclick="addVideo(this)">
+                                    <i class="fas fa-plus"></i> Add Another Video
+                                </button>
+                            </div>
+                       `;
+                        chaptersContainer.appendChild(chapterDiv);
+                    });
+
+                    // Change Button Text
+                    const submitBtn = document.querySelector('#courseUploadForm button[type="submit"]');
+                    submitBtn.innerHTML = '<i class="fas fa-save"></i> Update Course';
+
+                    // Show Form
+                    const form = document.getElementById('tutorUploadForm');
+                    form.style.display = 'block';
+                    form.scrollIntoView({ behavior: 'smooth' });
+
+                }
+            } catch (e) {
+                console.error(e);
+                showNotification("Error loading course details", "error");
+            }
+        }
+
+        // Expose to window
+        window.editCourse = editCourse;
+
+
+
         // ==================== FIXED VIDEO PLAYER FUNCTIONS ====================
-        
+
         // Improved YouTube URL detection and extraction
         function isYouTubeUrl(url) {
             if (!url) return false;
             const cleanUrl = url.trim().toLowerCase();
-            return cleanUrl.includes('youtube.com') || 
-                   cleanUrl.includes('youtu.be') || 
-                   cleanUrl.includes('youtube-nocookie.com');
+            return cleanUrl.includes('youtube.com') ||
+                cleanUrl.includes('youtu.be') ||
+                cleanUrl.includes('youtube-nocookie.com');
         }
 
         function getYouTubeId(url) {
             if (!url) return null;
-            
+
             let videoId = null;
             const cleanUrl = url.trim();
-            
+
             // Try different patterns
             // Pattern 1: youtu.be/VIDEO_ID
             if (cleanUrl.includes('youtu.be/')) {
@@ -871,12 +1008,12 @@
                     videoId = videoId.split('?')[0];
                 }
             }
-            
+
             // Validate video ID format (should be 11 characters)
             if (videoId && /^[a-zA-Z0-9_-]{11}$/.test(videoId)) {
                 return videoId;
             }
-            
+
             return null;
         }
 
@@ -887,7 +1024,7 @@
 
         function getVimeoId(url) {
             if (!url) return null;
-            
+
             const cleanUrl = url.trim();
             const patterns = [
                 /vimeo\.com\/(\d+)/,
@@ -895,14 +1032,14 @@
                 /vimeo\.com\/channels\/[^/]+\/(\d+)/,
                 /vimeo\.com\/groups\/[^/]+\/videos\/(\d+)/
             ];
-            
+
             for (const pattern of patterns) {
                 const match = cleanUrl.match(pattern);
                 if (match && match[1]) {
                     return match[1];
                 }
             }
-            
+
             return null;
         }
 
@@ -918,16 +1055,16 @@
 
             // Clear previous content
             videoPlayerContainer.innerHTML = '';
-            
+
             // Clean the URL
             let cleanUrl = videoUrl ? videoUrl.trim() : '';
-            
+
             if (!cleanUrl) {
                 videoPlayerContainer.innerHTML = '<div style="color: white; padding: 20px; text-align: center;">No video URL provided</div>';
                 videoModal.style.display = 'flex';
                 return;
             }
-            
+
             console.log("Playing video:", cleanUrl);
 
             // Check video type and create appropriate player
@@ -938,7 +1075,7 @@
                     videoModal.style.display = 'flex';
                     return;
                 }
-                
+
                 // Create YouTube iframe with proper attributes
                 const iframe = document.createElement('iframe');
                 iframe.width = '100%';
@@ -949,10 +1086,10 @@
                 iframe.allowFullscreen = true;
                 iframe.title = 'YouTube video player';
                 iframe.setAttribute('loading', 'lazy');
-                
+
                 videoPlayerContainer.appendChild(iframe);
                 console.log("YouTube iframe created with video ID:", videoId);
-                
+
             } else if (isVimeoUrl(cleanUrl)) {
                 const videoId = getVimeoId(cleanUrl);
                 if (!videoId) {
@@ -960,7 +1097,7 @@
                     videoModal.style.display = 'flex';
                     return;
                 }
-                
+
                 const iframe = document.createElement('iframe');
                 iframe.src = `https://player.vimeo.com/video/${videoId}?autoplay=1`;
                 iframe.width = '100%';
@@ -969,10 +1106,10 @@
                 iframe.allow = 'autoplay; fullscreen; picture-in-picture';
                 iframe.allowFullscreen = true;
                 iframe.title = 'Vimeo video player';
-                
+
                 videoPlayerContainer.appendChild(iframe);
                 console.log("Vimeo iframe created with video ID:", videoId);
-                
+
             } else if (cleanUrl.startsWith('data:video/') || cleanUrl.startsWith('blob:')) {
                 // For base64 encoded videos
                 const video = document.createElement('video');
@@ -1000,7 +1137,7 @@
                 video.appendChild(document.createTextNode('Your browser does not support the video tag.'));
                 videoPlayerContainer.appendChild(video);
                 console.log("Base64 video player created");
-                
+
             } else if (cleanUrl.startsWith('http')) {
                 // Generic video player for direct video URLs
                 const video = document.createElement('video');
@@ -1012,7 +1149,7 @@
 
                 const source = document.createElement('source');
                 source.src = cleanUrl;
-                
+
                 // Try to detect video type from URL extension
                 const urlLower = cleanUrl.toLowerCase();
                 if (urlLower.endsWith('.mp4')) {
@@ -1033,7 +1170,7 @@
                 video.appendChild(document.createTextNode('Your browser does not support the video tag.'));
                 videoPlayerContainer.appendChild(video);
                 console.log("Direct video player created");
-                
+
             } else {
                 // Unknown video format
                 videoPlayerContainer.innerHTML = `

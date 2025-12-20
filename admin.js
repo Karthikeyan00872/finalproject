@@ -23,7 +23,7 @@ function showAdminNotification(message, type = 'info') {
     if (existingNotification) {
         existingNotification.remove();
     }
-    
+
     // Create notification element
     const notification = document.createElement('div');
     notification.className = `admin-notification ${type}`;
@@ -36,7 +36,7 @@ function showAdminNotification(message, type = 'info') {
             </button>
         </div>
     `;
-    
+
     // Add styles
     notification.style.cssText = `
         position: fixed;
@@ -53,27 +53,27 @@ function showAdminNotification(message, type = 'info') {
         max-width: 400px;
         font-family: 'Segoe UI', Arial, sans-serif;
     `;
-    
+
     // Inner content style
     notification.querySelector('.notification-content').style.cssText = `
         display: flex;
         align-items: center;
         gap: 12px;
     `;
-    
+
     // Icon style
     notification.querySelector('.notification-content i').style.cssText = `
         font-size: 1.2rem;
         flex-shrink: 0;
     `;
-    
+
     // Text style
     notification.querySelector('.notification-content span').style.cssText = `
         flex: 1;
         font-size: 0.95rem;
         line-height: 1.4;
     `;
-    
+
     // Close button style
     notification.querySelector('.notification-close').style.cssText = `
         background: none;
@@ -85,9 +85,9 @@ function showAdminNotification(message, type = 'info') {
         opacity: 0.8;
         transition: opacity 0.2s;
     `;
-    
+
     document.body.appendChild(notification);
-    
+
     // Auto-remove after 5 seconds
     setTimeout(() => {
         if (notification.parentNode) {
@@ -95,7 +95,7 @@ function showAdminNotification(message, type = 'info') {
             setTimeout(() => notification.remove(), 300);
         }
     }, 5000);
-    
+
     // Add animation keyframes if not already present
     if (!document.querySelector('#notification-animations')) {
         const style = document.createElement('style');
@@ -127,152 +127,12 @@ function showAdminNotification(message, type = 'info') {
     }
 }
 
-// Confirmation modal function
-function showAdminConfirmModal(title, message, type = 'confirm') {
-    return new Promise((resolve) => {
-        const modal = document.createElement('div');
-        modal.className = 'admin-confirm-modal';
-        modal.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-        `;
-        
-        // Determine button colors based on type
-        let primaryColor = '#4CAF50';
-        let secondaryColor = '#6c757d';
-        
-        if (type === 'delete') {
-            primaryColor = '#f44336';
-        } else if (type === 'logout') {
-            primaryColor = '#ff9800';
-        } else if (type === 'approve') {
-            primaryColor = '#4CAF50';
-        }
-        
-        modal.innerHTML = `
-            <div class="confirm-modal-content" style="
-                background: white;
-                padding: 30px;
-                border-radius: 12px;
-                max-width: 450px;
-                width: 90%;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-                animation: modalFadeIn 0.3s ease-out;
-            ">
-                <h3 style="
-                    margin-top: 0;
-                    color: #333;
-                    border-bottom: 2px solid ${primaryColor};
-                    padding-bottom: 15px;
-                    margin-bottom: 20px;
-                ">
-                    <i class="fas ${type === 'delete' ? 'fa-trash' : type === 'logout' ? 'fa-sign-out-alt' : type === 'approve' ? 'fa-check' : 'fa-question-circle'}" 
-                       style="margin-right: 10px; color: ${primaryColor};"></i>
-                    ${title}
-                </h3>
-                
-                <div style="margin-bottom: 25px; color: #555; line-height: 1.6;">
-                    ${message}
-                </div>
-                
-                <div style="display: flex; gap: 15px; justify-content: flex-end;">
-                    <button id="confirmCancel" style="
-                        background: ${secondaryColor};
-                        color: white;
-                        border: none;
-                        padding: 10px 25px;
-                        border-radius: 6px;
-                        cursor: pointer;
-                        font-weight: 500;
-                        transition: background 0.2s;
-                    ">
-                        <i class="fas fa-times"></i> Cancel
-                    </button>
-                    <button id="confirmOk" style="
-                        background: ${primaryColor};
-                        color: white;
-                        border: none;
-                        padding: 10px 25px;
-                        border-radius: 6px;
-                        cursor: pointer;
-                        font-weight: 500;
-                        transition: background 0.2s;
-                    ">
-                        <i class="fas ${type === 'delete' ? 'fa-trash' : type === 'logout' ? 'fa-sign-out-alt' : type === 'approve' ? 'fa-check' : 'fa-check'}"></i> 
-                        ${type === 'delete' ? 'Delete' : type === 'logout' ? 'Logout' : type === 'approve' ? 'Approve' : 'Confirm'}
-                    </button>
-                </div>
-            </div>
-        `;
-        
-        document.body.appendChild(modal);
-        
-        // Add animation keyframes
-        if (!document.querySelector('#modal-animations')) {
-            const style = document.createElement('style');
-            style.id = 'modal-animations';
-            style.textContent = `
-                @keyframes modalFadeIn {
-                    from {
-                        opacity: 0;
-                        transform: translateY(-20px);
-                    }
-                    to {
-                        opacity: 1;
-                        transform: translateY(0);
-                    }
-                }
-                
-                .admin-confirm-modal button:hover {
-                    opacity: 0.9;
-                }
-            `;
-            document.head.appendChild(style);
-        }
-        
-        // Event listeners
-        modal.querySelector('#confirmCancel').addEventListener('click', () => {
-            modal.remove();
-            resolve(false);
-        });
-        
-        modal.querySelector('#confirmOk').addEventListener('click', () => {
-            modal.remove();
-            resolve(true);
-        });
-        
-        // Close on outside click
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.remove();
-                resolve(false);
-            }
-        });
-        
-        // Close on Escape key
-        const handleEscape = (e) => {
-            if (e.key === 'Escape') {
-                modal.remove();
-                document.removeEventListener('keydown', handleEscape);
-                resolve(false);
-            }
-        };
-        document.addEventListener('keydown', handleEscape);
-    });
-}
+// Confirmation modal function moved to common.js as showConfirmModal
 
 // Check if user is admin on page load
 function checkAdminAccess() {
     const userType = localStorage.getItem('userType');
-    
+
     if (!window.currentUsername || userType !== 'admin') {
         // Not an admin, redirect to home page
         showAdminNotification("Access denied. Admin privileges required.", "error");
@@ -281,7 +141,7 @@ function checkAdminAccess() {
         }, 2000);
         return false;
     }
-    
+
     // Set admin username
     adminUsernameSpan.textContent = window.currentUsername;
     return true;
@@ -293,22 +153,22 @@ function switchTab(tabName) {
     document.querySelectorAll('.tab-content').forEach(tab => {
         tab.classList.remove('active');
     });
-    
+
     // Remove active class from all tab buttons
     document.querySelectorAll('.admin-tab').forEach(btn => {
         btn.classList.remove('active');
     });
-    
+
     // Show selected tab
     document.getElementById(`${tabName}-tab`).classList.add('active');
-    
+
     // Add active class to clicked tab button
     event.target.classList.add('active');
-    
+
     currentTab = tabName;
-    
+
     // Load data for the tab
-    switch(tabName) {
+    switch (tabName) {
         case 'users':
             loadUsers();
             break;
@@ -331,11 +191,11 @@ async function fetchUsers() {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' }
         });
-        
+
         if (!response.ok) {
             throw new Error('Failed to fetch users');
         }
-        
+
         const data = await response.json();
         return data.users || [];
     } catch (error) {
@@ -347,7 +207,7 @@ async function fetchUsers() {
 // Load users into table
 async function loadUsers() {
     const users = await fetchUsers();
-    
+
     if (users.length === 0) {
         usersTableBody.innerHTML = `
             <tr>
@@ -356,18 +216,24 @@ async function loadUsers() {
         `;
         return;
     }
-    
+
     let html = '';
     users.forEach(user => {
         const registrationDate = new Date(user.createdAt).toLocaleDateString();
-        
-        // Don't show eye icon for admin users
+
+        // Don't show actions for admin users to prevent deletion of admins
         const viewButton = user.userType === 'admin' ? '' : `
             <button class="action-btn view-btn" onclick="viewUser('${user.username}')" title="View Details">
                 <i class="fas fa-eye"></i>
             </button>
         `;
-        
+
+        const deleteButton = user.userType === 'admin' ? '' : `
+            <button class="action-btn delete-btn" onclick="deleteUser('${user.username}')" title="Delete User">
+                <i class="fas fa-trash"></i>
+            </button>
+        `;
+
         // Determine status
         let status = '';
         if (user.userType === 'tutor') {
@@ -384,7 +250,7 @@ async function loadUsers() {
         } else if (user.userType === 'admin') {
             status = '<span class="status admin">Administrator</span>';
         }
-        
+
         html += `
             <tr>
                 <td><strong>${user.username}</strong></td>
@@ -397,16 +263,14 @@ async function loadUsers() {
                 <td>${status}</td>
                 <td>
                     ${viewButton}
-                    <button class="action-btn delete-btn" onclick="deleteUser('${user.username}')" title="Delete User">
-                        <i class="fas fa-trash"></i>
-                    </button>
+                    ${deleteButton}
                 </td>
             </tr>
         `;
     });
-    
+
     usersTableBody.innerHTML = html;
-    
+
     // Update stats
     updateStats(users);
 }
@@ -418,11 +282,11 @@ async function fetchPendingTutors() {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' }
         });
-        
+
         if (!response.ok) {
             throw new Error('Failed to fetch pending tutors');
         }
-        
+
         const data = await response.json();
         return data.pending_tutors || [];
     } catch (error) {
@@ -434,27 +298,28 @@ async function fetchPendingTutors() {
 // Load pending tutors
 async function loadPendingTutors() {
     const pendingTutors = await fetchPendingTutors();
-    
+
     if (pendingTutors.length === 0) {
         pendingTutorsTableBody.innerHTML = `
             <tr>
-                <td colspan="6" class="no-data">No pending tutor applications</td>
+                <td colspan="7" class="no-data">No pending tutor applications</td>
             </tr>
         `;
         pendingCountBadge.textContent = '0';
         return;
     }
-    
+
     let html = '';
     pendingTutors.forEach(tutor => {
         const appliedDate = new Date(tutor.applied_at).toLocaleDateString();
-        
+
         html += `
             <tr>
                 <td><strong>${tutor.username}</strong></td>
                 <td>${tutor.full_name}</td>
                 <td>${tutor.email}</td>
                 <td>${tutor.qualification}</td>
+                <td>${tutor.years_of_experience || '0'}</td>
                 <td>${appliedDate}</td>
                 <td>
                     <button class="action-btn approve-btn" onclick="approveTutor('${tutor.username}')" title="Approve Tutor">
@@ -470,10 +335,10 @@ async function loadPendingTutors() {
             </tr>
         `;
     });
-    
+
     pendingTutorsTableBody.innerHTML = html;
     pendingCountBadge.textContent = pendingTutors.length.toString();
-    
+
     // Update pending tutors count in stats
     pendingTutorsEl.textContent = pendingTutors.length;
 }
@@ -485,11 +350,11 @@ async function fetchApprovedTutors() {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' }
         });
-        
+
         if (!response.ok) {
             throw new Error('Failed to fetch approved tutors');
         }
-        
+
         const data = await response.json();
         return data.approved_tutors || [];
     } catch (error) {
@@ -501,7 +366,7 @@ async function fetchApprovedTutors() {
 // Load approved tutors
 async function loadApprovedTutors() {
     const approvedTutors = await fetchApprovedTutors();
-    
+
     if (approvedTutors.length === 0) {
         approvedTutorsTableBody.innerHTML = `
             <tr>
@@ -510,11 +375,11 @@ async function loadApprovedTutors() {
         `;
         return;
     }
-    
+
     let html = '';
     approvedTutors.forEach(tutor => {
         const approvedDate = tutor.approved_at ? new Date(tutor.approved_at).toLocaleDateString() : 'N/A';
-        
+
         html += `
             <tr>
                 <td><strong>${tutor.username}</strong></td>
@@ -526,7 +391,7 @@ async function loadApprovedTutors() {
             </tr>
         `;
     });
-    
+
     approvedTutorsTableBody.innerHTML = html;
 }
 
@@ -537,11 +402,11 @@ async function fetchRejectedTutors() {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' }
         });
-        
+
         if (!response.ok) {
             throw new Error('Failed to fetch rejected tutors');
         }
-        
+
         const data = await response.json();
         return data.rejected_tutors || [];
     } catch (error) {
@@ -553,7 +418,7 @@ async function fetchRejectedTutors() {
 // Load rejected tutors
 async function loadRejectedTutors() {
     const rejectedTutors = await fetchRejectedTutors();
-    
+
     if (rejectedTutors.length === 0) {
         rejectedTutorsTableBody.innerHTML = `
             <tr>
@@ -562,12 +427,12 @@ async function loadRejectedTutors() {
         `;
         return;
     }
-    
+
     let html = '';
     rejectedTutors.forEach(tutor => {
         const rejectedDate = tutor.rejected_at ? new Date(tutor.rejected_at).toLocaleDateString() : 'N/A';
         const rejectionReason = tutor.rejection_reason || 'No reason provided';
-        
+
         html += `
             <tr>
                 <td><strong>${tutor.username}</strong></td>
@@ -587,13 +452,13 @@ async function loadRejectedTutors() {
             </tr>
         `;
     });
-    
+
     rejectedTutorsTableBody.innerHTML = html;
 }
 
 // Get icon for user type
 function getUserTypeIcon(userType) {
-    switch(userType) {
+    switch (userType) {
         case 'student': return 'fa-user-graduate';
         case 'tutor': return 'fa-chalkboard-teacher';
         case 'admin': return 'fa-user-shield';
@@ -606,11 +471,11 @@ async function updateStats(users) {
     const totalUsers = users.length;
     const totalStudents = users.filter(u => u.userType === 'student').length;
     const totalApprovedTutors = users.filter(u => u.userType === 'tutor' && u.approval_status === 'approved').length;
-    
+
     totalUsersEl.textContent = totalUsers;
     totalStudentsEl.textContent = totalStudents;
     totalTutorsEl.textContent = totalApprovedTutors;
-    
+
     // Get pending tutors count
     try {
         const pendingTutors = await fetchPendingTutors();
@@ -630,7 +495,7 @@ async function checkSystemStatus() {
     } catch (error) {
         serverStatusEl.innerHTML = '<span class="status offline">Offline</span>';
     }
-    
+
     // Check database
     try {
         const response = await fetch(`${window.BACKEND_URL}/test-db`);
@@ -643,10 +508,10 @@ async function checkSystemStatus() {
     } catch (error) {
         databaseStatusEl.innerHTML = '<span class="status offline">Disconnected</span>';
     }
-    
+
     // Check API (Gemini)
     apiStatusEl.innerHTML = '<span class="status online">Operational</span>';
-    
+
     // Update timestamp
     lastUpdatedEl.textContent = new Date().toLocaleTimeString();
 }
@@ -661,25 +526,25 @@ async function viewUser(username) {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' }
         });
-        
+
         if (!response.ok) {
             throw new Error('Failed to fetch users');
         }
-        
+
         const data = await response.json();
         const users = data.users || [];
         const user = users.find(u => u.username === username);
-        
+
         if (!user) {
             showAdminNotification(`User ${username} not found`, "error");
             return;
         }
-        
+
         // Set the username in the details section
         document.getElementById('viewed-username').textContent = username;
-        
+
         let detailsHtml = '';
-        
+
         if (user.userType === 'student') {
             // Show student's enrolled courses and ratings
             detailsHtml = await getStudentDetails(username);
@@ -690,14 +555,14 @@ async function viewUser(username) {
             // Admin view - just show basic info
             detailsHtml = getAdminDetails(user);
         }
-        
+
         // Display the details section
         document.getElementById('user-details-content').innerHTML = detailsHtml;
         document.getElementById('user-details-section').style.display = 'block';
-        
+
         // Scroll to details section
         document.getElementById('user-details-section').scrollIntoView({ behavior: 'smooth' });
-        
+
     } catch (error) {
         console.error('Error viewing user:', error);
         showAdminNotification('Failed to load user details', "error");
@@ -709,14 +574,14 @@ async function viewTutorApplication(username) {
     try {
         const pendingTutors = await fetchPendingTutors();
         const tutor = pendingTutors.find(t => t.username === username);
-        
+
         if (!tutor) {
             showAdminNotification('Tutor application not found', "error");
             return;
         }
-        
+
         const appliedDate = new Date(tutor.applied_at).toLocaleDateString();
-        
+
         const modal = document.createElement('div');
         modal.className = 'modal';
         modal.style.cssText = `
@@ -731,7 +596,7 @@ async function viewTutorApplication(username) {
             align-items: center;
             z-index: 1000;
         `;
-        
+
         const modalContent = document.createElement('div');
         modalContent.className = 'modal-content';
         modalContent.style.cssText = `
@@ -743,7 +608,7 @@ async function viewTutorApplication(username) {
             overflow-y: auto;
             position: relative;
         `;
-        
+
         modalContent.innerHTML = `
             <span class="close-btn" onclick="this.parentElement.parentElement.remove()" style="position: absolute; top: 15px; right: 15px; cursor: pointer; font-size: 24px;">&times;</span>
             <h3><i class="fas fa-chalkboard-teacher"></i> Tutor Application: ${tutor.username}</h3>
@@ -760,7 +625,9 @@ async function viewTutorApplication(username) {
                     <h5>Educational Background</h5>
                     <p><strong>Qualification:</strong> ${tutor.qualification}</p>
                     <p><strong>Experience:</strong> ${tutor.experience || 'Not specified'}</p>
+                    <p><strong>Years of Experience:</strong> ${tutor.years_of_experience || '0'}</p>
                 </div>
+            </div>
             </div>
             
             <div class="application-date">
@@ -779,10 +646,10 @@ async function viewTutorApplication(username) {
                 </button>
             </div>
         `;
-        
+
         modal.appendChild(modalContent);
         document.body.appendChild(modal);
-        
+
     } catch (error) {
         console.error('Error viewing tutor application:', error);
         showAdminNotification('Failed to load tutor application details', "error");
@@ -793,7 +660,7 @@ async function viewTutorApplication(username) {
 function showRejectionModal(username) {
     const modal = document.createElement('div');
     modal.className = 'rejection-modal';
-    
+
     modal.innerHTML = `
         <div class="rejection-modal-content">
             <h3><i class="fas fa-times-circle"></i> Reject Tutor Application</h3>
@@ -810,22 +677,22 @@ function showRejectionModal(username) {
             </div>
         </div>
     `;
-    
+
     document.body.appendChild(modal);
 }
 
 // Approve tutor
 async function approveTutor(username) {
-    const confirmApprove = await showAdminConfirmModal(
+    const confirmApprove = await showConfirmModal(
         `Approve Tutor Application`,
         `Are you sure you want to approve <strong>${username}</strong> as a tutor?`,
         'approve'
     );
-    
+
     if (!confirmApprove) {
         return;
     }
-    
+
     try {
         const response = await fetch(`${window.BACKEND_URL}/admin/approve-tutor`, {
             method: 'POST',
@@ -835,9 +702,9 @@ async function approveTutor(username) {
                 admin_username: window.currentUsername
             })
         });
-        
+
         const data = await response.json();
-        
+
         if (data.success) {
             showAdminNotification(`Tutor ${username} approved successfully!`, "success");
             // Refresh all relevant tabs
@@ -856,7 +723,7 @@ async function approveTutor(username) {
 // Reject tutor
 async function rejectTutor(username) {
     const rejectionReason = document.getElementById('rejectionReason')?.value || 'Application rejected by admin';
-    
+
     try {
         const response = await fetch(`${window.BACKEND_URL}/admin/reject-tutor`, {
             method: 'POST',
@@ -867,14 +734,14 @@ async function rejectTutor(username) {
                 rejection_reason: rejectionReason
             })
         });
-        
+
         const data = await response.json();
-        
+
         if (data.success) {
             // Remove rejection modal
             const modal = document.querySelector('.rejection-modal');
             if (modal) modal.remove();
-            
+
             showAdminNotification(`Tutor ${username} rejected successfully!`, "success");
             // Refresh all relevant tabs
             loadPendingTutors();
@@ -891,23 +758,23 @@ async function rejectTutor(username) {
 
 // Approve a previously rejected tutor
 async function approveRejectedTutor(username) {
-    const confirmApprove = await showAdminConfirmModal(
+    const confirmApprove = await showConfirmModal(
         `Approve Previously Rejected Tutor`,
         `Are you sure you want to approve <strong>${username}</strong> who was previously rejected?`,
         'approve'
     );
-    
+
     if (!confirmApprove) {
         return;
     }
-    
+
     try {
         // First delete the rejected user
         await fetch(`${window.BACKEND_URL}/admin/users/${username}`, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' }
         });
-        
+
         // Then approve as new tutor
         const response = await fetch(`${window.BACKEND_URL}/admin/approve-tutor`, {
             method: 'POST',
@@ -917,9 +784,9 @@ async function approveRejectedTutor(username) {
                 admin_username: window.currentUsername
             })
         });
-        
+
         const data = await response.json();
-        
+
         if (data.success) {
             showAdminNotification(`Tutor ${username} approved successfully!`, "success");
             // Refresh all relevant tabs
@@ -943,19 +810,19 @@ async function getStudentDetails(username) {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' }
         });
-        
+
         if (!coursesResponse.ok) {
             throw new Error('Failed to fetch courses');
         }
-        
+
         const coursesData = await coursesResponse.json();
         const courses = coursesData.courses || [];
-        
+
         // Filter courses where student is enrolled
-        const enrolledCourses = courses.filter(course => 
+        const enrolledCourses = courses.filter(course =>
             course.enrollments && course.enrollments.includes(username)
         );
-        
+
         // Get student's ratings from all courses
         const studentRatings = {};
         courses.forEach(course => {
@@ -970,7 +837,7 @@ async function getStudentDetails(username) {
                 });
             }
         });
-        
+
         let html = `
             <div class="user-info-card">
                 <h4><i class="fas fa-user-graduate"></i> Student Information</h4>
@@ -979,7 +846,7 @@ async function getStudentDetails(username) {
                 <p><strong>Status:</strong> <span class="status active">Active</span></p>
             </div>
         `;
-        
+
         if (enrolledCourses.length === 0) {
             html += `
                 <div class="no-data-card">
@@ -1008,22 +875,22 @@ async function getStudentDetails(username) {
                             </thead>
                             <tbody>
             `;
-            
+
             enrolledCourses.forEach(course => {
                 const ratings = studentRatings[course._id] || [];
-                const avgRating = ratings.length > 0 
+                const avgRating = ratings.length > 0
                     ? (ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length).toFixed(1)
                     : 'Not rated';
-                
-                const ratingsDisplay = ratings.length > 0 
+
+                const ratingsDisplay = ratings.length > 0
                     ? ratings.map(r => `Chapter ${r.chapter + 1}: ${r.rating}★`).join(', ')
                     : 'No ratings';
-                
+
                 // Try to get enrollment date (simulated for now)
-                const enrollDate = course.created_at 
+                const enrollDate = course.created_at
                     ? new Date(course.created_at).toLocaleDateString()
                     : 'N/A';
-                
+
                 html += `
                     <tr>
                         <td><strong>${course.title}</strong></td>
@@ -1036,7 +903,7 @@ async function getStudentDetails(username) {
                     </tr>
                 `;
             });
-            
+
             html += `
                             </tbody>
                         </table>
@@ -1044,9 +911,9 @@ async function getStudentDetails(username) {
                 </div>
             `;
         }
-        
+
         return html;
-        
+
     } catch (error) {
         console.error('Error getting student details:', error);
         return `<div class="error-card">Error loading student details: ${error.message}</div>`;
@@ -1061,19 +928,19 @@ async function getTutorDetails(username) {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' }
         });
-        
+
         if (!coursesResponse.ok) {
             throw new Error('Failed to fetch courses');
         }
-        
+
         const coursesData = await coursesResponse.json();
         const courses = coursesData.courses || [];
-        
+
         // Filter courses created by this tutor
-        const tutorCourses = courses.filter(course => 
+        const tutorCourses = courses.filter(course =>
             course.tutor_username === username
         );
-        
+
         // Get all ratings for tutor's courses
         const courseRatings = {};
         tutorCourses.forEach(course => {
@@ -1081,11 +948,11 @@ async function getTutorDetails(username) {
                 courseRatings[course._id] = course.ratings;
             }
         });
-        
+
         // Get tutor info
         const users = await fetchUsers();
         const tutor = users.find(u => u.username === username);
-        
+
         let html = `
             <div class="user-info-card">
                 <h4><i class="fas fa-chalkboard-teacher"></i> Tutor Information</h4>
@@ -1097,7 +964,7 @@ async function getTutorDetails(username) {
                 <p><strong>Status:</strong> <span class="status ${tutor && tutor.approval_status === 'approved' ? 'active' : 'pending'}">${tutor && tutor.approval_status === 'approved' ? 'Approved Tutor' : 'Pending Approval'}</span></p>
             </div>
         `;
-        
+
         if (tutorCourses.length === 0) {
             html += `
                 <div class="no-data-card">
@@ -1126,12 +993,12 @@ async function getTutorDetails(username) {
                             </thead>
                             <tbody>
             `;
-            
+
             tutorCourses.forEach(course => {
                 const enrollments = course.enrollments || [];
                 const ratings = courseRatings[course._id] || [];
                 const avgRating = course.avg_rating || 0;
-                
+
                 // Group ratings by student
                 const ratingsByStudent = {};
                 ratings.forEach(rating => {
@@ -1140,7 +1007,7 @@ async function getTutorDetails(username) {
                     }
                     ratingsByStudent[rating.student].push(rating);
                 });
-                
+
                 html += `
                     <tr>
                         <td><strong>${course.title}</strong></td>
@@ -1157,7 +1024,7 @@ async function getTutorDetails(username) {
                     </tr>
                 `;
             });
-            
+
             html += `
                             </tbody>
                         </table>
@@ -1165,20 +1032,20 @@ async function getTutorDetails(username) {
                 </div>
             `;
         }
-        
+
         // Add tutor's questions if needed
         try {
             const questionsResponse = await fetch(`${window.BACKEND_URL}/questions`, {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json' }
             });
-            
+
             if (questionsResponse.ok) {
                 const questionsData = await questionsResponse.json();
-                const tutorQuestions = questionsData.questions.filter(q => 
+                const tutorQuestions = questionsData.questions.filter(q =>
                     q.tutor_username === username
                 );
-                
+
                 if (tutorQuestions.length > 0) {
                     html += `
                         <div class="questions-list">
@@ -1191,9 +1058,9 @@ async function getTutorDetails(username) {
         } catch (error) {
             console.error('Error fetching questions:', error);
         }
-        
+
         return html;
-        
+
     } catch (error) {
         console.error('Error getting tutor details:', error);
         return `<div class="error-card">Error loading tutor details: ${error.message}</div>`;
@@ -1208,19 +1075,19 @@ async function viewCourseDetails(courseId, tutorUsername) {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' }
         });
-        
+
         if (!response.ok) {
             throw new Error('Failed to fetch courses');
         }
-        
+
         const data = await response.json();
         const course = data.courses.find(c => c._id === courseId);
-        
+
         if (!course) {
             showAdminNotification('Course not found', "error");
             return;
         }
-        
+
         // Prepare detailed course information
         let courseDetails = `
             <div class="user-info-card">
@@ -1231,7 +1098,7 @@ async function viewCourseDetails(courseId, tutorUsername) {
                 <p><strong>Created:</strong> ${new Date(course.created_at).toLocaleDateString()}</p>
             </div>
         `;
-        
+
         // Show enrolled students
         const enrollments = course.enrollments || [];
         if (enrollments.length === 0) {
@@ -1252,7 +1119,7 @@ async function viewCourseDetails(courseId, tutorUsername) {
                 }
                 ratingsByStudent[rating.student].push(rating);
             });
-            
+
             courseDetails += `
                 <div class="enrolled-students">
                     <h4><i class="fas fa-user-graduate"></i> Enrolled Students (${enrollments.length})</h4>
@@ -1269,17 +1136,17 @@ async function viewCourseDetails(courseId, tutorUsername) {
                             </thead>
                             <tbody>
             `;
-            
+
             enrollments.forEach(student => {
                 const studentRatings = ratingsByStudent[student] || [];
-                const avgRating = studentRatings.length > 0 
+                const avgRating = studentRatings.length > 0
                     ? (studentRatings.reduce((sum, r) => sum + r.rating, 0) / studentRatings.length).toFixed(1)
                     : 'No ratings';
-                
+
                 const ratingDetails = studentRatings.length > 0
                     ? studentRatings.map(r => `Chapter ${r.chapter + 1}: ${r.rating}★`).join('<br>')
                     : 'No ratings yet';
-                
+
                 courseDetails += `
                     <tr>
                         <td><strong>${student}</strong></td>
@@ -1289,7 +1156,7 @@ async function viewCourseDetails(courseId, tutorUsername) {
                     </tr>
                 `;
             });
-            
+
             courseDetails += `
                             </tbody>
                         </table>
@@ -1297,7 +1164,7 @@ async function viewCourseDetails(courseId, tutorUsername) {
                 </div>
             `;
         }
-        
+
         // Show modal with course details
         const modal = document.createElement('div');
         modal.className = 'modal';
@@ -1313,7 +1180,7 @@ async function viewCourseDetails(courseId, tutorUsername) {
             align-items: center;
             z-index: 1000;
         `;
-        
+
         const modalContent = document.createElement('div');
         modalContent.className = 'modal-content';
         modalContent.style.cssText = `
@@ -1325,7 +1192,7 @@ async function viewCourseDetails(courseId, tutorUsername) {
             overflow-y: auto;
             position: relative;
         `;
-        
+
         modalContent.innerHTML = `
             <span class="close-btn" onclick="this.parentElement.parentElement.remove()" style="position: absolute; top: 15px; right: 15px; cursor: pointer; font-size: 24px;">&times;</span>
             ${courseDetails}
@@ -1335,10 +1202,10 @@ async function viewCourseDetails(courseId, tutorUsername) {
                 </button>
             </div>
         `;
-        
+
         modal.appendChild(modalContent);
         document.body.appendChild(modal);
-        
+
     } catch (error) {
         console.error('Error viewing course details:', error);
         showAdminNotification('Failed to load course details', "error");
@@ -1382,51 +1249,51 @@ async function deleteUser(username) {
         showAdminNotification("You cannot delete your own account!", "error");
         return;
     }
-    
-    const confirmDelete = await showAdminConfirmModal(
+
+    const confirmDelete = await showConfirmModal(
         `Delete User`,
         `Are you sure you want to delete user: <strong>${username}</strong>?<br><br>
         <small style="color: #ff6b6b;">This action cannot be undone.</small>`,
         'delete'
     );
-    
+
     if (!confirmDelete) {
         return;
     }
-    
+
     // Call backend API to delete user
     fetch(`${window.BACKEND_URL}/admin/users/${username}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' }
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showAdminNotification(`User ${username} deleted successfully.`, "success");
-            // Refresh current tab
-            switch(currentTab) {
-                case 'users':
-                    loadUsers();
-                    break;
-                case 'tutor-applications':
-                    loadPendingTutors();
-                    break;
-                case 'approved-tutors':
-                    loadApprovedTutors();
-                    break;
-                case 'rejected-tutors':
-                    loadRejectedTutors();
-                    break;
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAdminNotification(`User ${username} deleted successfully.`, "success");
+                // Refresh current tab
+                switch (currentTab) {
+                    case 'users':
+                        loadUsers();
+                        break;
+                    case 'tutor-applications':
+                        loadPendingTutors();
+                        break;
+                    case 'approved-tutors':
+                        loadApprovedTutors();
+                        break;
+                    case 'rejected-tutors':
+                        loadRejectedTutors();
+                        break;
+                }
+                closeUserDetails(); // Close details if open
+            } else {
+                showAdminNotification(`Error: ${data.message}`, "error");
             }
-            closeUserDetails(); // Close details if open
-        } else {
-            showAdminNotification(`Error: ${data.message}`, "error");
-        }
-    })
-    .catch(error => {
-        console.error('Error deleting user:', error);
-        showAdminNotification('Failed to delete user. Please try again.', "error");
-    });
+        })
+        .catch(error => {
+            console.error('Error deleting user:', error);
+            showAdminNotification('Failed to delete user. Please try again.', "error");
+        });
 }
 
 // Refresh functions for each tab
@@ -1453,23 +1320,23 @@ function exportData() {
 
 // Logout handler for admin
 async function adminLogout() {
-    const confirmLogout = await showAdminConfirmModal(
+    const confirmLogout = await showConfirmModal(
         `Confirm Logout`,
         `Are you sure you want to logout from admin panel?`,
         'logout'
     );
-    
+
     if (!confirmLogout) {
         return;
     }
-    
+
     // Clear admin session
     localStorage.removeItem('currentUsername');
     localStorage.removeItem('userType');
     localStorage.removeItem('tutorApprovalStatus');
-    
+
     showAdminNotification("Logged out successfully", "success");
-    
+
     // Redirect to home page
     setTimeout(() => {
         window.location.href = "index.html";
@@ -1493,14 +1360,14 @@ document.addEventListener('DOMContentLoaded', () => {
     window.refreshPendingTutors = refreshPendingTutors;
     window.refreshApprovedTutors = refreshApprovedTutors;
     window.refreshRejectedTutors = refreshRejectedTutors;
-    
+
     // Check if user is admin
     if (!checkAdminAccess()) {
         return;
     }
-    
+
     // Load initial data for active tab
-    switch(currentTab) {
+    switch (currentTab) {
         case 'users':
             loadUsers();
             break;
@@ -1514,12 +1381,12 @@ document.addEventListener('DOMContentLoaded', () => {
             loadRejectedTutors();
             break;
     }
-    
+
     checkSystemStatus();
-    
+
     // Set auto-refresh every 60 seconds
     setInterval(() => {
-        switch(currentTab) {
+        switch (currentTab) {
             case 'users':
                 loadUsers();
                 break;

@@ -16,7 +16,7 @@
             border-radius: 8px;
             padding: 20px;
             margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .user-info-card h4 {
@@ -58,11 +58,15 @@
             color: #c62828;
         }
 
-        .courses-list, .questions-list, .enrolled-students {
+        .courses-list,
+        .questions-list,
+        .enrolled-students {
             margin-top: 20px;
         }
 
-        .courses-list h4, .questions-list h4, .enrolled-students h4 {
+        .courses-list h4,
+        .questions-list h4,
+        .enrolled-students h4 {
             color: #333;
             margin-bottom: 15px;
             padding-bottom: 10px;
@@ -127,11 +131,11 @@
         .status.online {
             background-color: #4CAF50;
         }
-        
+
         .status.pending {
             background-color: #ff9800;
         }
-        
+
         .status.rejected {
             background-color: #f44336;
         }
@@ -226,6 +230,7 @@
                 opacity: 0;
                 transform: translateY(-50px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -253,7 +258,7 @@
             color: #999;
             padding: 20px;
         }
-        
+
         /* Tab styles */
         .admin-tabs {
             display: flex;
@@ -262,7 +267,7 @@
             overflow: hidden;
             margin-bottom: 0;
         }
-        
+
         .admin-tab {
             padding: 15px 30px;
             background: #e9ecef;
@@ -274,42 +279,42 @@
             flex: 1;
             text-align: center;
         }
-        
+
         .admin-tab:hover {
             background: #dee2e6;
         }
-        
+
         .admin-tab.active {
             background: white;
             color: #4CAF50;
             border-bottom: 3px solid #4CAF50;
         }
-        
+
         .tab-content {
             display: none;
             padding: 20px;
             background: white;
             border-radius: 0 0 8px 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-        
+
         .tab-content.active {
             display: block;
         }
-        
+
         .rejection-modal {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.5);
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 1000;
         }
-        
+
         .rejection-modal-content {
             background: white;
             padding: 30px;
@@ -317,12 +322,12 @@
             width: 400px;
             max-width: 90%;
         }
-        
+
         .rejection-modal-content h3 {
             margin-bottom: 20px;
             color: #333;
         }
-        
+
         .rejection-modal-content textarea {
             width: 100%;
             padding: 10px;
@@ -332,38 +337,38 @@
             resize: vertical;
             min-height: 100px;
         }
-        
+
         .rejection-modal-actions {
             display: flex;
             gap: 10px;
             justify-content: flex-end;
         }
-        
+
         .tutor-info-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 15px;
             margin-bottom: 20px;
         }
-        
+
         .tutor-info-card {
             background: #f8f9fa;
             padding: 15px;
             border-radius: 8px;
             border-left: 4px solid #4CAF50;
         }
-        
+
         .tutor-info-card h5 {
             margin: 0 0 10px 0;
             color: #333;
         }
-        
+
         .tutor-info-card p {
             margin: 5px 0;
             color: #666;
             font-size: 0.9rem;
         }
-        
+
         .application-date {
             font-size: 0.8rem;
             color: #999;
@@ -441,7 +446,8 @@
                     </button>
                     <button class="admin-tab" onclick="switchTab('tutor-applications')">
                         <i class="fas fa-user-clock"></i> Tutor Applications
-                        <span id="pending-count-badge" class="badge" style="background: #ff9800; color: white; padding: 2px 8px; border-radius: 10px; margin-left: 5px; font-size: 0.8rem;">0</span>
+                        <span id="pending-count-badge" class="badge"
+                            style="background: #ff9800; color: white; padding: 2px 8px; border-radius: 10px; margin-left: 5px; font-size: 0.8rem;">0</span>
                     </button>
                     <button class="admin-tab" onclick="switchTab('approved-tutors')">
                         <i class="fas fa-user-check"></i> Approved Tutors
@@ -450,7 +456,7 @@
                         <i class="fas fa-user-times"></i> Rejected Tutors
                     </button>
                 </div>
-                
+
                 <!-- User Management Tab -->
                 <div id="users-tab" class="tab-content active">
                     <div class="section-header">
@@ -480,7 +486,7 @@
                         </table>
                     </div>
                 </div>
-                
+
                 <!-- Tutor Applications Tab -->
                 <div id="tutor-applications-tab" class="tab-content">
                     <div class="section-header">
@@ -498,6 +504,7 @@
                                     <th>Full Name</th>
                                     <th>Email</th>
                                     <th>Qualification</th>
+                                    <th>Experience (Yrs)</th>
                                     <th>Applied Date</th>
                                     <th>Actions</th>
                                 </tr>
@@ -511,7 +518,7 @@
                         </table>
                     </div>
                 </div>
-                
+
                 <!-- Approved Tutors Tab -->
                 <div id="approved-tutors-tab" class="tab-content">
                     <div class="section-header">
@@ -542,7 +549,7 @@
                         </table>
                     </div>
                 </div>
-                
+
                 <!-- Rejected Tutors Tab -->
                 <div id="rejected-tutors-tab" class="tab-content">
                     <div class="section-header">
@@ -584,7 +591,7 @@
                         <i class="fas fa-times"></i> Close
                     </button>
                 </div>
-                
+
                 <div id="user-details-content">
                     <!-- Content will be loaded here -->
                 </div>
