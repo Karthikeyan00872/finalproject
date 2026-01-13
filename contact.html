@@ -579,40 +579,80 @@
     </footer>
 
     <script>
-        document.getElementById('contactForm').addEventListener('submit', function (e) {
+        const BACKEND_URL = 'http://localhost:5000';
+
+        // Simple notification function
+        function showNotification(message, type = 'success') {
+            const existing = document.querySelector('.notification');
+            if (existing) existing.remove();
+
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            const iconClass = type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle';
+            notification.innerHTML = `
+                <i class="fas ${iconClass}" style="font-size: 1.2rem;"></i>
+                <span>${message}</span>
+            `;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = 'fadeOutSlideRight 0.4s forwards';
+                setTimeout(() => notification.remove(), 400);
+            }, 4000);
+        }
+
+        document.getElementById('contactForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
             // Get form values
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const subject = document.getElementById('subject').value;
-            const message = document.getElementById('message').value;
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const subject = document.getElementById('subject').value.trim();
+            const message = document.getElementById('message').value.trim();
 
-            // In a real implementation, you would send this data to a server
-            // For this example, we'll just show an alert
-            // Simple notification function to replicate elegant style
-            function showNotification(message) {
-                const existing = document.querySelector('.notification');
-                if (existing) existing.remove();
-
-                const notification = document.createElement('div');
-                notification.className = 'notification';
-                notification.innerHTML = `
-                    <i class="fas fa-check-circle" style="font-size: 1.2rem;"></i>
-                    <span>${message}</span>
-                `;
-                document.body.appendChild(notification);
-
-                setTimeout(() => {
-                    notification.style.animation = 'fadeOutSlideRight 0.4s forwards';
-                    setTimeout(() => notification.remove(), 400);
-                }, 4000);
+            // Basic validation
+            if (!name || !email || !subject || !message) {
+                showNotification('Please fill in all fields.', 'error');
+                return;
             }
 
-            showNotification(`Thank you, ${name}! Your message has been received.`);
+            // Disable submit button to prevent multiple submissions
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
 
-            // Reset form
-            document.getElementById('contactForm').reset();
+            try {
+                const response = await fetch(BACKEND_URL + '/contact', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        email: email,
+                        subject: subject,
+                        message: message
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showNotification(result.message || 'Thank you! Your message has been sent successfully.');
+                    // Reset form
+                    document.getElementById('contactForm').reset();
+                } else {
+                    showNotification(result.message || 'Failed to send message. Please try again later.', 'error');
+                }
+            } catch (error) {
+                console.error('Contact form error:', error);
+                showNotification('Could not connect to server. Please check your connection and try again.', 'error');
+            } finally {
+                // Re-enable submit button
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
         });
     </script>
 </body>

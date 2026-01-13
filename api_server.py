@@ -1619,6 +1619,76 @@ def search_questions():
         print(f"Search questions error: {e}")
         return jsonify({"success": False, "message": str(e)}), 500
 
+# --- Contact Form Endpoint ---
+@app.route('/contact', methods=['POST'])
+def contact():
+    """Handle contact form submission and send email."""
+    data = request.get_json()
+    name = data.get('name')
+    email = data.get('email')
+    subject = data.get('subject')
+    message = data.get('message')
+    
+    if not all([name, email, subject, message]):
+        return jsonify({"success": False, "message": "All fields are required"}), 400
+    
+    if not validate_email(email):
+        return jsonify({"success": False, "message": "Invalid email format"}), 400
+    
+    # Admin email from environment or default
+    admin_email = os.getenv("ADMIN_EMAIL", "karthikeyan07820@gmail.com")
+    
+    try:
+        # Email body for admin
+        email_body = f"""
+Contact Form Submission from AI Tutor Website
+
+Name: {name}
+Email: {email}
+Subject: {subject}
+
+Message:
+{message}
+
+---
+This email was sent from the contact form on the AI Tutor website.
+        """
+        
+        # Send email to admin
+        sent = send_email(admin_email, f"Contact Form: {subject}", email_body.strip())
+        
+        if sent:
+            # Optionally send confirmation to user
+            confirmation_body = f"""
+Hi {name},
+
+Thank you for contacting AI Tutor. We have received your message and will get back to you as soon as possible.
+
+Your message:
+{message}
+
+Best regards,
+AI Tutor Team
+            """
+            send_email(email, "We received your message - AI Tutor", confirmation_body.strip())
+            
+            return jsonify({
+                "success": True,
+                "message": "Your message has been sent successfully. We'll get back to you soon!"
+            }), 200
+        else:
+            return jsonify({
+                "success": False,
+                "message": "Failed to send email. Please try again later or contact us directly."
+            }), 500
+            
+    except Exception as e:
+        print(f"Contact form error: {e}")
+        return jsonify({
+            "success": False,
+            "message": f"Server error: {str(e)}"
+        }), 500
+
 # --- Server Run ---
 if __name__ == '__main__':
     print("=" * 50)

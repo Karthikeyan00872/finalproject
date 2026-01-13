@@ -651,12 +651,13 @@ nav {
     margin: 3% auto;
 }
 
-/* Specific styling for Login Modal to reduce width */
+/* Specific styling for Login Modal */
 #loginModal .modal-content {
-    max-width: 300px;
-    /* Reduced to ~20% less than previous 340px */
+    max-width: 450px;
     padding: 2rem;
     background: linear-gradient(145deg, #ffffff, #f0f2f5);
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
 #loginModal h2 {

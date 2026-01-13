@@ -417,7 +417,7 @@ function toggleTutorRegistrationFields(userType) {
                 const scrollableDiv = document.getElementById('form-content-scrollable');
                 if (scrollableDiv) {
                     // Ensure it's scrollable with fixed height
-                    scrollableDiv.style.maxHeight = '300px';
+                    scrollableDiv.style.maxHeight = '400px';
                     scrollableDiv.style.overflowY = 'auto';
                     scrollableDiv.style.paddingRight = '10px';
 
@@ -475,7 +475,7 @@ function showRegistration() {
         setTimeout(() => {
             const scrollableDiv = document.getElementById('form-content-scrollable');
             if (scrollableDiv) {
-                scrollableDiv.style.maxHeight = '300px';
+                scrollableDiv.style.maxHeight = '400px';
                 scrollableDiv.style.overflowY = 'auto';
                 scrollableDiv.style.paddingRight = '10px';
                 scrollableDiv.style.marginBottom = '20px';
